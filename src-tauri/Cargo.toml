@@ -1,0 +1,23 @@
+[package]
+name = "balance-book"
+version = "0.1.0"
+description = "Keep track of personal income expenses"
+authors = ["Zane Kissel"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "1", features = [] }
+
+[dependencies]
+tauri = { version = "1", features = ["shell-open"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+diesel = { version = "*", default-features = false, features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
+diesel_migrations = "2.1.0"
+homedir = "0.2.1"
+
+[features]
+# This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]

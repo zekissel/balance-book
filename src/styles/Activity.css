@@ -1,0 +1,86 @@
+
+#cal-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+
+  width: 80vw;
+  height: 60vh;
+  padding: 0;
+  margin: 8rem auto 0 auto;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+#date-input {
+  margin: 0;
+  padding: 0;
+}
+
+menu {
+  width: 80vw;
+  padding: 0;
+  margin: 1rem;
+}
+
+table {
+  table-layout: fixed;
+  margin: 0;
+}
+
+tr:nth-child(odd) {
+  background-color: #f2f2f2;
+}
+
+td, th {
+  width: 8rem;
+  height: 8rem;
+  min-width: 6rem;
+  border: 1px solid #ccc;
+  
+}
+
+th {
+  height: fit-content;
+  padding: .5rem 0;
+}
+
+.day-tag {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(213, 216, 219);
+  font-weight: 540;
+  border-radius: 50%;
+  width: 1rem;
+}
+
+.cal-day {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
+  width: 100%;
+  height: 100%;
+}
+
+.cal-exp {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: fit-content;
+  background-color: #fce6ba;
+  margin: .2rem 0;
+
+  font-size: small;
+  border-radius: 18%;
+}
+
+.day-items {
+  height: 6rem;
+  overflow: hidden;
+  overflow-y: auto;
+}
