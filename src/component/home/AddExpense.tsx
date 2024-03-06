@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Category } from "../../typedef";
 
 interface ExpenseProps { toggle: () => void }
-export default function Expense ({ toggle }: ExpenseProps) {
+export default function AddExpense ({ toggle }: ExpenseProps) {
 
   const [store, setStore] = useState('');
   const [amount, setAmount] = useState(0);

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Expense from "./home/Expense";
+import AddExpense from "./home/AddExpense";
 
 export default function Home () {
 
@@ -13,7 +13,7 @@ export default function Home () {
       Home
 
       { showExpense ?
-        <Expense toggle={toggleExpense}/>
+        <AddExpense toggle={toggleExpense}/>
         :
         <button onClick={toggleExpense}>Add Expense</button>
       }

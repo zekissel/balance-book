@@ -4,6 +4,10 @@ import { Day, Month } from "../../typedef";
 
 export default function Calendar ({ expenses }: ActivityProps) {
 
+  const [showExpense, setShowExpense] = useState(false);
+  const toggleExpense = () => setShowExpense(!showExpense);
+
+
   const curDate = useRef(new Date());
   const calDate = useRef(new Date(curDate.current.setHours(0,0,0,0)));
 
@@ -57,34 +61,42 @@ export default function Calendar ({ expenses }: ActivityProps) {
     initWeeks();
   }
 
+  const processWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    if (e.deltaY > 0) shiftWeeks(1);
+    else shiftWeeks(-1);
+  }
+
   useEffect(() => {
     initWeeks();
     
   }, [expenses, curDate.current]);
 
   const todayStyle = { 
-    backgroundColor: 'rgb(156, 196, 235)', 
+    backgroundColor: '#69a6c1', 
     border: `2px solid rgb(106, 146, 185)`,
     fontWeight: '600'
   };
   return (
     <div id='cal-container'>
       <menu id='cal-tools'>
-        <span id='today'>{ curDate.current.toDateString() }</span>
+        <span id='today' onClick={() => {calDate.current = curDate.current; initWeeks()}}>{ curDate.current.toDateString() }</span>
 
         <span id='cal-shift'>
-          <button onClick={() => shiftWeeks(-1)}>&lt;</button>
+          <button onClick={() => shiftWeeks(-1)}>◀</button>
           <select value={calDate.current.getMonth()} onChange={(e) => { calDate.current = new Date(new Date(calDate.current.setMonth(Number(e.target.value))).setDate(7)); initWeeks();}}>
             { Month.map((month, index) => <option key={index} value={index}>{month}</option>)}
           </select>
           <select value={calDate.current.getFullYear()} onChange={(e) => { calDate.current = new Date(calDate.current.setFullYear(Number(e.target.value))); initWeeks(); }}>
             { [20,21,22,23,24].map((year, index) => <option key={index} value={year+2000}>{year+2000}</option>)}
           </select>
-          <button onClick={() => shiftWeeks(1)}>&gt;</button>
+          <button onClick={() => shiftWeeks(1)}>▶</button>
         </span>
+
+        <button onClick={toggleExpense}>Filters</button>
       </menu>
       
-      <table>
+      <table onWheel={processWheel}>
         <thead>
           <tr>
             <th>Sun</th>

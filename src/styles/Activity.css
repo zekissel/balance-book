@@ -23,8 +23,23 @@ menu {
   margin: 1rem;
 }
 
-menu > button {
+#activity-tools > button {
   font-size: 1.5rem;
+}
+
+#activity-extra > button {
+  font-size: 1.2rem;
+  margin: 1rem 0;
+}
+
+#activity-menu {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 89vw;
+  margin: 0;
+  padding: 0;
 }
 
 #cal-tools {
@@ -39,10 +54,19 @@ menu > button {
   background-color: #ccc;
 }
 
-#today {
+#today, #cal-tools > button {
   background-color: #f2f2f2;
   padding: .5rem;
   border-radius: 1vw;
+  border: none;
+}
+
+#today:hover, #cal-tools > button:hover {
+  background-color: #e2e2e2;
+}
+
+#cal-tools > button {
+  font-size: 1.1rem;
 }
 
 #cal-shift {
@@ -57,17 +81,32 @@ menu > button {
   min-width: fit-content;
   max-width: 40%;
   margin: 0;
-  padding: 0
+  padding: 0;
+}
+
+#cal-shift > button, #cal-shift > input {
+  margin: 0 .1rem;
+  padding: .1rem;
+  font-size: 1.5rem;
+  text-align: center;
 }
 
 table {
   table-layout: fixed;
   margin: 0;
+
+  border-radius: 1rem;
+  padding: .5rem;
+  background-color: #ccc;
 }
 
 tr:nth-child(odd) {
   background-color: #f2f2f2;
 }
+tr:nth-child(even) {
+  background-color: #e2e2e2;
+}
+
 
 td, th {
   width: 8rem;
@@ -80,6 +119,7 @@ td, th {
 th {
   height: fit-content;
   padding: .5rem 0;
+  background-color: #e2e2e2;
 }
 
 .day-tag {
@@ -87,10 +127,12 @@ th {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: rgb(213, 216, 219);
-  font-weight: 540;
+  background-color: #c6d9e1;
+  font-weight: 550;
+  
+  padding: .1rem;
+  width: 1.1rem;
   border-radius: 50%;
-  width: 1rem;
 }
 
 .cal-day {
