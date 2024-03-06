@@ -1,10 +1,11 @@
 import { ActivityProps } from "../../typedef";
-import { useEffect, useMemo, useState } from "react";
-import { Expense, Day } from "../../typedef";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Day, Month } from "../../typedef";
 
 export default function Calendar ({ expenses }: ActivityProps) {
 
-  const [curDate, setDate] = useState(new Date());
+  const curDate = useRef(new Date());
+  const calDate = useRef(new Date(curDate.current.setHours(0,0,0,0)));
 
   const [week1, setWeek1] = useState<Day[]>([]);
   const [week2, setWeek2] = useState<Day[]>([]);
@@ -29,32 +30,37 @@ export default function Calendar ({ expenses }: ActivityProps) {
   function fillDay (week: Day[], dayIndex: number) {
     week[dayIndex].expenses = expenses.filter(exp => {
       const expDate = new Date(exp.date);
-      const calDate = week[dayIndex].date;
-      return expDate.toDateString() == calDate.toDateString();
+      const dayDate = week[dayIndex].date;
+      return expDate.toDateString() == dayDate.toDateString();
     });
   }
 
   function fillWeek (offset: number = 0) {
-    const week: Day[] = [0, 1, 2, 3, 4, 5, 6].map((i) => ({ date: addDays(curDate, i - curDate.getDay() + offset), expenses: [] }));
+    const week: Day[] = [0, 1, 2, 3, 4, 5, 6].map((i) => ({ date: addDays(calDate.current, i - calDate.current.getDay() + offset), expenses: [] }));
 
-    for (let i = 0; i < curDate.getDay(); i++) fillDay(week, i);
-    for (let i = curDate.getDay(); i < 7; i++) fillDay(week, i);
+    for (let i = 0; i < calDate.current.getDay(); i++) fillDay(week, i);
+    for (let i = calDate.current.getDay(); i < 7; i++) fillDay(week, i);
 
     return week;
   }
 
   const initWeeks = () => {
-    setWeek1(fillWeek(-21));
-    setWeek2(fillWeek(-14));
-    setWeek3(fillWeek(-7));
-    setWeek4(fillWeek());
-    setWeek5(fillWeek(7));
+    setWeek1(fillWeek(-14));
+    setWeek2(fillWeek(-7));
+    setWeek3(fillWeek());
+    setWeek4(fillWeek(7));
+    setWeek5(fillWeek(14));
+  }
+
+  const shiftWeeks = (direction: number) => {
+    calDate.current = addDays(calDate.current, direction * 7);
+    initWeeks();
   }
 
   useEffect(() => {
     initWeeks();
     
-  }, [expenses, curDate]);
+  }, [expenses, curDate.current]);
 
   const todayStyle = { 
     backgroundColor: 'rgb(156, 196, 235)', 
@@ -63,7 +69,21 @@ export default function Calendar ({ expenses }: ActivityProps) {
   };
   return (
     <div id='cal-container'>
-      { curDate.toDateString() }
+      <menu id='cal-tools'>
+        <span id='today'>{ curDate.current.toDateString() }</span>
+
+        <span id='cal-shift'>
+          <button onClick={() => shiftWeeks(-1)}>&lt;</button>
+          <select value={calDate.current.getMonth()} onChange={(e) => { calDate.current = new Date(new Date(calDate.current.setMonth(Number(e.target.value))).setDate(7)); initWeeks();}}>
+            { Month.map((month, index) => <option key={index} value={index}>{month}</option>)}
+          </select>
+          <select value={calDate.current.getFullYear()} onChange={(e) => { calDate.current = new Date(calDate.current.setFullYear(Number(e.target.value))); initWeeks(); }}>
+            { [20,21,22,23,24].map((year, index) => <option key={index} value={year+2000}>{year+2000}</option>)}
+          </select>
+          <button onClick={() => shiftWeeks(1)}>&gt;</button>
+        </span>
+      </menu>
+      
       <table>
         <thead>
           <tr>
@@ -82,7 +102,7 @@ export default function Calendar ({ expenses }: ActivityProps) {
               {week.map((day, index) => (
                 <td key={index}>
                   <div className='cal-day'>
-                    <span className='day-tag' style={day.date.toDateString() === curDate.toDateString() ? todayStyle : undefined}>{ day.date.getDate() }</span>
+                    <span className='day-tag' style={day.date.toDateString() === curDate.current.toDateString() ? todayStyle : undefined}>{ day.date.getDate() }</span>
                     <div className='day-items'>
                       { day.expenses.map((expense, index) => 
                         <span className='cal-exp' key={index}>${expense.amount / 100} {expense.store}</span>

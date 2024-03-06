@@ -23,6 +23,43 @@ menu {
   margin: 1rem;
 }
 
+menu > button {
+  font-size: 1.5rem;
+}
+
+#cal-tools {
+  width: 50vw;
+  margin: .5rem auto;
+  padding: 1rem;
+  border-radius: 1vw;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  background-color: #ccc;
+}
+
+#today {
+  background-color: #f2f2f2;
+  padding: .5rem;
+  border-radius: 1vw;
+}
+
+#cal-shift {
+  background-color: #f2f2f2;
+  padding: .5rem;
+  border-radius: 1vw;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  min-width: fit-content;
+  max-width: 40%;
+  margin: 0;
+  padding: 0
+}
+
 table {
   table-layout: fixed;
   margin: 0;
@@ -70,7 +107,8 @@ th {
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  width: 100%;
+  width: 8rem;
+  min-width: 6rem;
   height: fit-content;
   background-color: #fce6ba;
   margin: .2rem 0;
