@@ -2,14 +2,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use database::models::Expense;
+use database::models::Income;
 
 pub mod database;
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
 
 #[tauri::command]
 fn add_expense(store: &str, amount: i32, category: &str, desc: &str, date: &str) -> Expense {
@@ -21,6 +17,16 @@ fn load_expenses() -> Vec<Expense> {
     database::api::get_expenses()
 }
 
+#[tauri::command]
+fn add_income(source: &str, amount: i32, category: &str, desc: &str, date: &str) -> Income {
+    database::api::create_income(source, amount, category, desc, date)
+}
+
+#[tauri::command]
+fn load_income() -> Vec<Income> {
+    database::api::get_income()
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|_app| {
@@ -29,7 +35,7 @@ fn main() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![greet, add_expense, load_expenses])
+        .invoke_handler(tauri::generate_handler![add_expense, load_expenses, add_income, load_income])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -5,7 +5,7 @@ use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 
-use super::models::{AddExpense, Expense};
+use super::models::{AddExpense, Expense, AddIncome, Income};
 
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
@@ -81,4 +81,31 @@ pub fn get_expenses() -> Vec<Expense> {
   expense
       .load::<Expense>(&mut establish_connection())
       .expect("Error loading expenses")
+}
+
+pub fn create_income(
+  source: &str, 
+  amount: i32,
+  category: &str,
+  desc: &str,
+  date: &str
+) -> Income {
+  use super::schema::income;
+  let connection = &mut establish_connection();
+
+  let new_income = AddIncome { source, amount, category, desc, date };
+
+  diesel::insert_into(income::table)
+      .values(&new_income)
+      .returning(Income::as_returning())
+      .get_result(connection)
+      .expect("Error saving new income")
+}
+
+pub fn get_income() -> Vec<Income> {
+  use super::schema::income::dsl::*;
+
+  income
+      .load::<Income>(&mut establish_connection())
+      .expect("Error loading income")
 }

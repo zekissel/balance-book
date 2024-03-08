@@ -59,6 +59,7 @@ menu {
   padding: .5rem;
   border-radius: 1vw;
   border: none;
+  cursor: pointer;
 }
 
 #today:hover, #cal-tools > button:hover {
@@ -113,7 +114,7 @@ td, th {
   height: 8rem;
   min-width: 6rem;
   border: 1px solid #ccc;
-  
+  text-overflow: ellipsis;
 }
 
 th {
@@ -161,6 +162,28 @@ th {
 
 .day-items {
   height: 6rem;
-  overflow: hidden;
-  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.exp-list-item {
+  background-color: #fce6ba;
+}
+
+.inc-list-item {
+  background-color: #c6e1d1;
+}
+
+.cal-inc {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  width: 8rem;
+  min-width: 6rem;
+  height: fit-content;
+  background-color: #c6e1d1;
+  margin: .2rem 0;
+
+  font-size: small;
+  border-radius: 18%;
 }

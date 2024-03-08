@@ -8,3 +8,14 @@ diesel::table! {
       date -> Text,
   }
 }
+
+diesel::table! {
+  income (id) {
+      id -> Integer,
+      source -> Text,
+      amount -> Integer,
+      category -> Text,
+      desc -> Text,
+      date -> Text,
+  }
+}

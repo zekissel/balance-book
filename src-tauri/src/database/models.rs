@@ -2,6 +2,7 @@ use diesel::prelude::*;
 use serde::Serialize;
 use serde::ser::SerializeStruct;
 use super::schema::expense;
+use super::schema::income;
 
 #[derive(Queryable, Selectable)]
 #[diesel(table_name = crate::database::schema::expense)]
@@ -35,6 +36,45 @@ impl Serialize for Expense {
 #[diesel(table_name = expense)]
 pub struct AddExpense<'a> {
     pub store: &'a str,
+    pub amount: i32,
+    pub category: &'a str,
+    pub desc: &'a str,
+    pub date: &'a str,
+}
+
+
+#[derive(Queryable, Selectable)]
+#[diesel(table_name = crate::database::schema::income)]
+#[diesel(check_for_backend(diesel::sqlite::Sqlite))]
+pub struct Income {
+    pub id: i32,
+    pub source: String,
+    pub amount: i32,
+    pub category: String,
+    pub desc: String,
+    pub date: String,
+}
+
+impl Serialize for Income {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut state = serializer.serialize_struct("Income", 6)?;
+        state.serialize_field("id", &self.id)?;
+        state.serialize_field("source", &self.source)?;
+        state.serialize_field("amount", &self.amount)?;
+        state.serialize_field("category", &self.category)?;
+        state.serialize_field("desc", &self.desc)?;
+        state.serialize_field("date", &self.date)?;
+        state.end()
+    }
+}
+
+#[derive(Insertable)]
+#[diesel(table_name = income)]
+pub struct AddIncome<'a> {
+    pub source: &'a str,
     pub amount: i32,
     pub category: &'a str,
     pub desc: &'a str,

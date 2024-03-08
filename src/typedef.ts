@@ -6,6 +6,13 @@ export enum State {
   Assets,
 }
 
+export interface UpdateLogProps {
+  signalExp: () => void;
+  signalInc: () => void;
+}
+
+export interface LogProps { expenses: Expense[], income: Income[] }
+
 export interface NavProps { setState: React.Dispatch<React.SetStateAction<State>> }
 export interface ActivityProps { expenses: Expense[] }
 
@@ -13,7 +20,7 @@ export enum Category {
   Rent = 'Rent',
   Utilities = 'Utilities',
   Services = 'Services',
-  Automobile = 'Automobile',
+  Transportation = 'Transportation',
   Groceries = 'Groceries',
   Textile = 'Textile',
   Appliance = 'Appliance',
@@ -22,12 +29,13 @@ export enum Category {
   Investment = 'Investment',
   Dog = 'Dog',
   Entertainment = 'Entertainment',
+  Gifts = 'Gifts',
   Food = 'Food',
   Dessert = 'Dessert',
   Alcohol = 'Alcohol',
   Games = 'Games',
   Other = 'Other',
-  None = 'None'
+  None = '---'
 }
 
 export interface Expense {
@@ -38,9 +46,27 @@ export interface Expense {
   date: Date;
 }
 
+export interface Income {
+  source: string;
+  amount: number;
+  category: IncomeCategory;
+  desc: string;
+  date: Date;
+}
+
+export enum IncomeCategory {
+  Salary = 'Salary',
+  SideJob = 'SideJob',
+  Investment = 'Investment',
+  Reimbursement = 'Reimbursement',
+  Other = 'Other',
+  None = '---',
+}
+
 export interface Day {
   date: Date;
   expenses: Expense[];
+  income: Income[];
 }
 
 export const Month = [

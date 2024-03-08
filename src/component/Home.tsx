@@ -1,9 +1,9 @@
 import { useState } from "react";
-import AddExpense from "./home/AddExpense";
+import AddLog from "./home/AddLog";
+import { UpdateLogProps } from "../typedef";
 
-export default function Home () {
-
-  
+interface HomeProps { updateLog: UpdateLogProps }
+export default function Home ({ updateLog }: HomeProps) {
 
   const [showExpense, setShowExpense] = useState(false);
   const toggleExpense = () => setShowExpense(!showExpense);
@@ -13,9 +13,9 @@ export default function Home () {
       Home
 
       { showExpense ?
-        <AddExpense toggle={toggleExpense}/>
+        <AddLog toggle={toggleExpense} updateLog={updateLog}/>
         :
-        <button onClick={toggleExpense}>Add Expense</button>
+        <button onClick={toggleExpense}>Log Transaction</button>
       }
     
     </>

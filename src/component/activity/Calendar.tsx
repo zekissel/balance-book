@@ -1,8 +1,10 @@
-import { ActivityProps } from "../../typedef";
+import { LogProps } from "../../typedef";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Day, Month } from "../../typedef";
 
-export default function Calendar ({ expenses }: ActivityProps) {
+
+interface CalendarProps { logs: LogProps }
+export default function Calendar ({ logs }: CalendarProps) {
 
   const [showExpense, setShowExpense] = useState(false);
   const toggleExpense = () => setShowExpense(!showExpense);
@@ -32,18 +34,31 @@ export default function Calendar ({ expenses }: ActivityProps) {
   }
 
   function fillDay (week: Day[], dayIndex: number) {
-    week[dayIndex].expenses = expenses.filter(exp => {
+    week[dayIndex].expenses = logs.expenses.filter(exp => {
       const expDate = new Date(exp.date);
       const dayDate = week[dayIndex].date;
       return expDate.toDateString() == dayDate.toDateString();
     });
+    week[dayIndex].income = logs.income.filter(inc => {
+      const incDate = new Date(inc.date);
+      const dayDate = week[dayIndex].date;
+      return incDate.toDateString() == dayDate.toDateString();
+    });
   }
 
   function fillWeek (offset: number = 0) {
-    const week: Day[] = [0, 1, 2, 3, 4, 5, 6].map((i) => ({ date: addDays(calDate.current, i - calDate.current.getDay() + offset), expenses: [] }));
+    const week: Day[] = [0, 1, 2, 3, 4, 5, 6].map((i) => ({ date: addDays(calDate.current, i - calDate.current.getDay() + offset), expenses: [], income: [] }));
 
     for (let i = 0; i < calDate.current.getDay(); i++) fillDay(week, i);
     for (let i = calDate.current.getDay(); i < 7; i++) fillDay(week, i);
+    for (let i = 0; i < 7; i++) {
+      week[i].expenses = week[i].expenses.sort((a, b) => {
+        return a.amount > b.amount ? -1 : 1;
+      });
+      week[i].income = week[i].income.sort((a, b) => {
+        return a.amount > b.amount ? -1 : 1;
+      });
+    }
 
     return week;
   }
@@ -70,7 +85,7 @@ export default function Calendar ({ expenses }: ActivityProps) {
   useEffect(() => {
     initWeeks();
     
-  }, [expenses, curDate.current]);
+  }, [logs, curDate.current]);
 
   const todayStyle = { 
     backgroundColor: '#69a6c1', 
@@ -116,8 +131,11 @@ export default function Calendar ({ expenses }: ActivityProps) {
                   <div className='cal-day'>
                     <span className='day-tag' style={day.date.toDateString() === curDate.current.toDateString() ? todayStyle : undefined}>{ day.date.getDate() }</span>
                     <div className='day-items'>
+                      { day.income.map((income, index) => 
+                        <span className='cal-inc' key={index}> + ${income.amount / 100} {income.source}</span>
+                      )}
                       { day.expenses.map((expense, index) => 
-                        <span className='cal-exp' key={index}>${expense.amount / 100} {expense.store}</span>
+                        <span className='cal-exp' key={index}> - ${expense.amount / 100} {expense.store}</span>
                       )}
                     </div>
                   </div>
