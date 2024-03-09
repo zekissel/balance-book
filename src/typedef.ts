@@ -8,7 +8,7 @@ export enum State {
 
 export interface NavProps { setState: React.Dispatch<React.SetStateAction<State>> }
 
-export interface LogProps { expenses: Expense[], income: Income[] }
+export type LogProps = (Expense | Income)[];
 export interface UpdateLogProps {
   signalExp: () => void;
   signalInc: () => void;
@@ -90,6 +90,7 @@ export enum Category {
 export const isExpense = (x: any): x is Expense => Object.keys(x).includes('store');
 
 export interface Expense {
+  id: number;
   store: string;
   amount: number;
   category: Category;
@@ -98,6 +99,7 @@ export interface Expense {
 }
 
 export interface Income {
+  id: number;
   source: string;
   amount: number;
   category: IncomeCategory;
@@ -116,11 +118,19 @@ export enum IncomeCategory {
 
 export interface Day {
   date: Date;
-  expenses: Expense[];
-  income: Income[];
+  transactions: (Expense | Income)[];
 }
 
 export const Month = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
 ]
+
+export function addDays(date: Date, days: number) {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate() + days,
+    0, 0, 0, 0
+  );
+}

@@ -184,3 +184,40 @@ nav > li:hover {
   list-style: none;
   margin: .3rem 0;
 }
+
+#viewday-container {
+  background-color: #d6d6d6;
+  border: 1px dashed #777;
+  padding: .5rem;
+  border-radius: 1vw;
+
+  width: 22rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  position: absolute;
+  z-index: 10;
+  top: 22rem;
+  right: 1rem;
+}
+
+#viewday-container > ul > li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 2rem;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#viewday-container > ul {
+  margin: 0;
+  padding: 0;
+}

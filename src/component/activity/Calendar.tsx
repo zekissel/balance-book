@@ -1,15 +1,12 @@
 import { LogProps } from "../../typedef";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Day, Month, Expense, Income } from "../../typedef";
+import { Day, Month, Expense, Income, addDays, isExpense } from "../../typedef";
 import Transaction from "../home/Transaction";
+import ViewDay from "./ViewDay";
 
 
 interface CalendarProps { logs: LogProps }
 export default function Calendar ({ logs }: CalendarProps) {
-
-  const [showExpense, setShowExpense] = useState(false);
-  const toggleExpense = () => setShowExpense(!showExpense);
-
 
   const curDate = useRef(new Date());
   const calDate = useRef(new Date(curDate.current.setHours(0,0,0,0)));
@@ -22,41 +19,21 @@ export default function Calendar ({ logs }: CalendarProps) {
 
   const weeks = useMemo(() => [week1, week2, week3, week4, week5], [week1, week2, week3, week4, week5]);
 
-  function addDays(date: Date, days: number) {
-    return new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate() + days,
-      date.getHours(),
-      date.getMinutes(),
-      date.getSeconds(),
-      date.getMilliseconds()
-    );
-  }
-
   function fillDay (week: Day[], dayIndex: number) {
-    week[dayIndex].expenses = logs.expenses.filter(exp => {
+    week[dayIndex].transactions = logs.filter(exp => {
       const expDate = new Date(exp.date);
       const dayDate = week[dayIndex].date;
       return expDate.toDateString() == dayDate.toDateString();
     });
-    week[dayIndex].income = logs.income.filter(inc => {
-      const incDate = new Date(inc.date);
-      const dayDate = week[dayIndex].date;
-      return incDate.toDateString() == dayDate.toDateString();
-    });
   }
 
   function fillWeek (offset: number = 0) {
-    const week: Day[] = [0, 1, 2, 3, 4, 5, 6].map((i) => ({ date: addDays(calDate.current, i - calDate.current.getDay() + offset), expenses: [], income: [] }));
+    const week: Day[] = [0, 1, 2, 3, 4, 5, 6].map((i) => ({ date: addDays(calDate.current, i - calDate.current.getDay() + offset), transactions: [] }));
 
     for (let i = 0; i < calDate.current.getDay(); i++) fillDay(week, i);
     for (let i = calDate.current.getDay(); i < 7; i++) fillDay(week, i);
     for (let i = 0; i < 7; i++) {
-      week[i].expenses = week[i].expenses.sort((a, b) => {
-        return a.amount > b.amount ? -1 : 1;
-      });
-      week[i].income = week[i].income.sort((a, b) => {
+      week[i].transactions = week[i].transactions.sort((a, b) => {
         return a.amount > b.amount ? -1 : 1;
       });
     }
@@ -88,69 +65,92 @@ export default function Calendar ({ logs }: CalendarProps) {
     
   }, [logs, curDate.current]);
 
-  const [selectedTransaction, setSelectedTransaction] = useState<Expense | Income | null>(null);
+  const [selectedTransactions, setSelectedTransactions] = useState<(Expense | Income)[]>([]);
+  const [selectedDay, setSelectedDay] = useState<Day[]>([]);
 
-  const todayStyle = { 
-    backgroundColor: '#69a6c1', 
-    border: `2px solid rgb(106, 146, 185)`,
-    fontWeight: '600'
-  };
   return (
     <div id='cal-container'>
       <menu id='cal-tools'>
+
         <span id='today' onClick={() => {calDate.current = curDate.current; initWeeks()}}>{ curDate.current.toDateString() }</span>
 
         <span id='cal-shift'>
           <button onClick={() => shiftWeeks(-1)}>◀</button>
+
           <select value={calDate.current.getMonth()} onChange={(e) => { calDate.current = new Date(new Date(calDate.current.setMonth(Number(e.target.value))).setDate(7)); initWeeks();}}>
             { Month.map((month, index) => <option key={index} value={index}>{month}</option>)}
           </select>
+
           <select value={calDate.current.getFullYear()} onChange={(e) => { calDate.current = new Date(calDate.current.setFullYear(Number(e.target.value))); initWeeks(); }}>
             { [20,21,22,23,24].map((year, index) => <option key={index} value={year+2000}>{year+2000}</option>)}
           </select>
+
           <button onClick={() => shiftWeeks(1)}>▶</button>
         </span>
-
-        <button onClick={toggleExpense}>Filters</button>
       </menu>
       
       <table onWheel={processWheel}>
+
         <thead>
           <tr>
-            <th>Sun</th>
-            <th>Mon</th>
-            <th>Tue</th>
-            <th>Wed</th>
-            <th>Thu</th>
-            <th>Fri</th>
-            <th>Sat</th>  
+            <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>  
           </tr>
         </thead>
+
         <tbody>
           { weeks.map((week) => (
             <tr>
               {week.map((day, index) => (
-                <td key={index}>
+                <td key={index} onClick={() => setSelectedDay([...selectedDay, day])}>
+
                   <div className='cal-day'>
-                    <span className='day-tag' style={day.date.toDateString() === curDate.current.toDateString() ? todayStyle : undefined}>{ day.date.getDate() }</span>
+                    <span className='day-tag' style={day.date.toDateString() === curDate.current.toDateString() ? todayStyle : undefined}>
+                      { day.date.getDate() }
+                    </span>
                     <div className='day-items'>
-                      { day.income.map((income, index) => 
-                        <span className='cal-inc' key={index} onClick={() => setSelectedTransaction(income)}> + ${income.amount / 100} {income.source}</span>
-                      )}
-                      { day.expenses.map((expense, index) => 
-                        <span className='cal-exp' key={index} onClick={() => setSelectedTransaction(expense)}> - ${expense.amount / 100} {expense.store}</span>
+                      { day.transactions.map((trans, index) => 
+                        <span 
+                          className={ isExpense(trans) ? 'cal-exp' : 'cal-inc'}
+                          key={index} 
+                          onClick={(e) => {setSelectedTransactions([...selectedTransactions, trans]); e.stopPropagation();}}
+                          > + ${trans.amount / 100} { isExpense(trans) ? trans.store : trans.source}</span>
                       )}
                     </div>
                   </div>
-              </td>
+
+                </td>
               ))}
             </tr>
           ))}
         </tbody>
-        
       </table>
-      { selectedTransaction && <Transaction transaction={selectedTransaction} toggle={() => setSelectedTransaction(null)} /> }
+
+      { selectedTransactions.length > 0 && 
+        selectedTransactions.map((trans, index) => (
+          <Transaction 
+            key={index} 
+            transaction={trans} 
+            toggle={() => setSelectedTransactions(selectedTransactions.filter(t => JSON.stringify(t) !== JSON.stringify(trans)))}
+          />
+        ))
+      }
+
+      { selectedDay.length > 0 && 
+        selectedDay.map((day, index) => (
+          <ViewDay 
+            key={index}
+            day={day}
+            toggle={() => setSelectedDay(selectedDay.filter(d => JSON.stringify(d) !== JSON.stringify(day)))}
+          />
+        ))
+      }
 
     </div>
   )
 }
+
+const todayStyle = { 
+  backgroundColor: '#69a6c1', 
+  border: `2px solid rgb(106, 146, 185)`,
+  fontWeight: '600'
+};
