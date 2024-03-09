@@ -160,3 +160,27 @@ nav > li:hover {
   background-color: #9ccbed;
   border-radius: 1vw;
 }
+
+.view-trans {
+  background-color: #d6d6d6;
+  border: 1px dashed #777;
+  padding: .5rem;
+  border-radius: 1vw;
+
+  width: 14rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  position: absolute;
+  z-index: 10;
+  top: 8rem;
+  right: 1rem;
+}
+
+.view-trans > li {
+  list-style: none;
+  margin: .3rem 0;
+}

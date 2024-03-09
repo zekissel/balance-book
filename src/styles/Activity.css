@@ -1,3 +1,6 @@
+#activity-container {
+  max-height: 98vh;
+}
 
 #cal-container {
   display: flex;
@@ -6,9 +9,9 @@
   align-items: start;
 
   width: 80vw;
-  height: 60vh;
+  height: 95%;
   padding: 0;
-  margin: 8rem auto 0 auto;
+  margin: 0 auto;
   font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
@@ -44,8 +47,8 @@ menu {
 
 #cal-tools {
   width: 50vw;
-  margin: .5rem auto;
-  padding: 1rem;
+  margin: 0 auto .2rem auto;
+  padding: .5rem;
   border-radius: 1vw;
 
   display: flex;
@@ -160,17 +163,8 @@ th {
   border-radius: 18%;
 }
 
-.day-items {
-  height: 6rem;
-  overscroll-behavior: contain;
-}
-
-.exp-list-item {
-  background-color: #fce6ba;
-}
-
-.inc-list-item {
-  background-color: #c6e1d1;
+.cal-exp:hover {
+  background-color: #f6d6aa;
 }
 
 .cal-inc {
@@ -186,4 +180,116 @@ th {
 
   font-size: small;
   border-radius: 18%;
+}
+.cal-inc:hover {
+  background-color: #b6d1c1;
+}
+
+.day-items {
+  height: 6rem;
+  overscroll-behavior: contain;
+}
+
+.exp-list-item, .inc-list-item {
+  width: 75%;
+  margin: .2rem 0;
+  padding: .2rem;
+  border-radius: .5rem;
+
+  display: grid;
+  grid-template-columns: 1fr 1.6fr 1fr 1.3fr 3fr;
+}
+
+.exp-list-item {
+  background-color: #fce6ba;
+}
+.exp-list-item:hover {
+  background-color: #f6d6aa;
+}
+
+.inc-list-item {
+  background-color: #c6e1d1;
+}
+.inc-list-item:hover {
+  background-color: #b6d1c1;
+
+}
+
+.list-date {
+  font-size: small;
+  font-weight: 550;
+  text-align: left;
+  padding: .1rem;
+}
+
+.list-amount {
+  font-weight: 550;
+  background-color: #f2f2f2;
+  border-radius: .5rem;
+  width: 6.5rem;
+  max-height: 1.5rem;
+  padding: .1rem .2rem;
+  justify-self: end;
+  text-align: right;
+}
+
+.list-cat {
+  background-color: #ffffff;
+  border-radius: .5rem;
+  padding: .2rem;
+  margin: .2rem;
+  width: fit-content;
+  max-height: 1.5rem;
+}
+
+.spot-date {
+  font-size: large;
+  font-weight: 550;
+  margin: .5rem 0;
+}
+
+.spot-tag-exp {
+  background-color:#fce6ba;
+  width: 75%;
+  margin: .2rem 0;
+  padding: .2rem;
+  border-radius: .5rem;
+  font-weight: 550;
+}
+
+.spot-tag-inc {
+  background-color:#c6e1d1;
+  width: 75%;
+  margin: .2rem 0;
+  padding: .2rem;
+  border-radius: .5rem;
+  font-weight: 550;
+}
+
+.spot-exit {
+  margin: 0 0 0 .2rem;
+}
+
+.spot-source {
+  font-size: large;
+  background-color: azure;
+  padding: .2rem;
+  margin: .2rem;
+  border-radius: .5rem;
+}
+
+.spot-cat {
+  font-size: large;
+  padding: .2rem;
+  margin: .2rem;
+  border-radius: .5rem;
+  background-color: #ffffff;
+}
+
+#list-element {
+  height: 89%;
+  overflow: hidden;
+  overflow-y: scroll;
+  border: 1px solid #ccc;
+  border-radius: 2rem;
 }

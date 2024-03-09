@@ -6,15 +6,64 @@ export enum State {
   Assets,
 }
 
+export interface NavProps { setState: React.Dispatch<React.SetStateAction<State>> }
+
+export interface LogProps { expenses: Expense[], income: Income[] }
 export interface UpdateLogProps {
   signalExp: () => void;
   signalInc: () => void;
 }
 
-export interface LogProps { expenses: Expense[], income: Income[] }
-
-export interface NavProps { setState: React.Dispatch<React.SetStateAction<State>> }
-export interface ActivityProps { expenses: Expense[] }
+export const getCategoryColor = (category: Category | IncomeCategory): string => {
+  switch (category) {
+    case Category.Rent:
+      return '#ffcc99';
+    case Category.Utilities:
+      return '#ffdfbf';
+    case Category.Services:
+      return '#ffb3b3';
+    case Category.Transportation:
+      return '#dabeff';
+    case Category.Groceries:
+      return '#d8bfae';
+    case Category.Textile:
+      return '#f7cfe8';
+    case Category.Appliance:
+      return '#cfcfcf';
+    case Category.Toilietries:
+      return '#e6e6b3';
+    case Category.Office:
+      return '#b3e6f7';
+    case Category.Investment:
+      return '#b3d9ff';
+    case Category.Dog:
+      return '#ffd9d9';
+    case Category.Entertainment:
+      return '#d9e6ff';
+    case Category.Gifts:
+      return '#ffe6cc';
+    case Category.Food:
+      return '#d9ffcc';
+    case Category.Dessert:
+      return '#ffd9d9';
+    case Category.Alcohol:
+      return '#e6ccff';
+    case Category.Games:
+      return '#e6d4cc';
+    case Category.Other:
+      return '#ffe0f0';
+    case Category.None:
+      return '#ffe0f0';
+    case IncomeCategory.Salary:
+      return '#ffdfbf';
+    case IncomeCategory.SideJob:
+      return '#ffb3b3';
+    case IncomeCategory.Reimbursement:
+      return '#d8bfae';
+    default:
+      return '#b3d9ff';
+  }
+}
 
 export enum Category {
   Rent = 'Rent',
@@ -37,6 +86,8 @@ export enum Category {
   Other = 'Other',
   None = '---'
 }
+
+export const isExpense = (x: any): x is Expense => Object.keys(x).includes('store');
 
 export interface Expense {
   store: string;

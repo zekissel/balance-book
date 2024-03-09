@@ -1,6 +1,7 @@
 import { LogProps } from "../../typedef";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Day, Month } from "../../typedef";
+import { Day, Month, Expense, Income } from "../../typedef";
+import Transaction from "../home/Transaction";
 
 
 interface CalendarProps { logs: LogProps }
@@ -87,6 +88,8 @@ export default function Calendar ({ logs }: CalendarProps) {
     
   }, [logs, curDate.current]);
 
+  const [selectedTransaction, setSelectedTransaction] = useState<Expense | Income | null>(null);
+
   const todayStyle = { 
     backgroundColor: '#69a6c1', 
     border: `2px solid rgb(106, 146, 185)`,
@@ -132,10 +135,10 @@ export default function Calendar ({ logs }: CalendarProps) {
                     <span className='day-tag' style={day.date.toDateString() === curDate.current.toDateString() ? todayStyle : undefined}>{ day.date.getDate() }</span>
                     <div className='day-items'>
                       { day.income.map((income, index) => 
-                        <span className='cal-inc' key={index}> + ${income.amount / 100} {income.source}</span>
+                        <span className='cal-inc' key={index} onClick={() => setSelectedTransaction(income)}> + ${income.amount / 100} {income.source}</span>
                       )}
                       { day.expenses.map((expense, index) => 
-                        <span className='cal-exp' key={index}> - ${expense.amount / 100} {expense.store}</span>
+                        <span className='cal-exp' key={index} onClick={() => setSelectedTransaction(expense)}> - ${expense.amount / 100} {expense.store}</span>
                       )}
                     </div>
                   </div>
@@ -146,6 +149,8 @@ export default function Calendar ({ logs }: CalendarProps) {
         </tbody>
         
       </table>
+      { selectedTransaction && <Transaction transaction={selectedTransaction} toggle={() => setSelectedTransaction(null)} /> }
+
     </div>
   )
 }

@@ -21,7 +21,11 @@ export default function AddLog ({ toggle, updateLog }: AddLogProps) {
         <button className='log-exit' onClick={toggle}>Cancel</button>
       </span>
 
-      <AddTransaction toggle={toggle} updateLog={updateLog} income={typeIncome} />
+      <AddTransaction 
+        toggle={toggle} 
+        updateLog={updateLog} 
+        income={typeIncome} 
+      />
 
       
     </fieldset>

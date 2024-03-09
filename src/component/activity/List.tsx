@@ -1,5 +1,6 @@
-import { useMemo } from "react";
-import { LogProps, Income, Expense } from "../../typedef";
+import { useMemo, useState } from "react";
+import { LogProps, Income, Expense, isExpense, getCategoryColor } from "../../typedef";
+import Transaction from "../home/Transaction";
 
 interface ListProps { logs: LogProps }
 export default function List ({ logs }: ListProps) {
@@ -13,9 +14,13 @@ export default function List ({ logs }: ListProps) {
     );
   }
 
+  function thisYear(date: Date) {
+    return new Date(date.getFullYear(), 0, 1, 0, 0, 0, 0);
+  }
+
   const transactions = useMemo(() => {
     let transactions: Array<Expense | Income> = [];
-    transactions = transactions.concat(logs.income).concat(logs.expenses).sort((a, b) => a.date.getTime() - b.date.getTime());
+    transactions = transactions.concat(logs.income).concat(logs.expenses).sort((a, b) => b.date.getTime() - a.date.getTime());
     return transactions;
   }, [logs]);
 
@@ -29,44 +34,49 @@ export default function List ({ logs }: ListProps) {
     return transactions.filter(t => (t.date.getTime() >= monthAgo.getTime()) && !pastWeekTransactions.includes(t));
   }, [transactions]);
 
+  const pastYearTransactions = useMemo(() => {
+    const yearAgo = thisYear(new Date());
+    return transactions.filter(t => (t.date.getTime() >= yearAgo.getTime()) && !pastMonthTransactions.includes(t) && !pastWeekTransactions.includes(t));
+  }, [transactions]);
+
   const otherTransactions = useMemo(() => {
-    return transactions.filter(t => !pastMonthTransactions.includes(t) && !pastWeekTransactions.includes(t));
+    return transactions.filter(t => !pastMonthTransactions.includes(t) && !pastWeekTransactions.includes(t) && !pastYearTransactions.includes(t));
   }, [pastWeekTransactions, transactions]);
 
-  const isExpense = (x: any): x is Expense => Object.keys(x).includes('store');
+
+  const allTransactions = useMemo(() => [
+    pastWeekTransactions,
+    pastMonthTransactions,
+    pastYearTransactions,
+    otherTransactions
+  ], [pastWeekTransactions, pastMonthTransactions, pastYearTransactions, otherTransactions]);
+  const transactionTitles = ['This Week', 'This Month', 'This Year', 'Previous'];
+
+
+  const [selectedTransaction, setSelectedTransaction] = useState<Expense | Income | null>(null);
 
   return (
-    <div>
-      <h2>Past Week</h2>
-      <ol>
-        {pastWeekTransactions.map((expense, index) => (
-          <li key={index} className={ isExpense(expense) ? 'exp-list-item' : 'inc-list-item'}>
-            <span>{expense.date.toDateString()} { isExpense(expense) ? expense.store : expense.source }</span>
-            <span> {isExpense(expense) ? `-$`: `+$`}{expense.amount / 100} </span>
-            <span>{expense.category} - {expense.desc}</span>
-          </li>
-        ))}
-      </ol>
-      <h2>Past Month</h2>
-      <ol>
-        {pastMonthTransactions.map((expense, index) => (
-          <li key={index} className={ isExpense(expense) ? 'exp-list-item' : 'inc-list-item'}>
-            <span>{expense.date.toDateString()} { isExpense(expense) ? expense.store : expense.source }</span>
-            <span> {isExpense(expense) ? `-$`: `+$`}{expense.amount / 100} </span>
-            <span>{expense.category} - {expense.desc}</span>
-          </li>
-        ))}
-      </ol>
-      <h2>Previous</h2>
-      <ol>
-        {otherTransactions.map((expense, index) => (
-          <li key={index} className={ isExpense(expense) ? 'exp-list-item' : 'inc-list-item'}>
-            <span>{expense.date.toDateString()} { isExpense(expense) ? expense.store : expense.source }</span>
-            <span> {isExpense(expense) ? `-$`: `+$`}{expense.amount / 100} </span>
-            <span>{expense.category} - {expense.desc}</span>
-          </li>
-        ))}
-      </ol>
+    <div id='list-element'>
+
+      {
+        allTransactions.map((transactionCollection, ind) => (
+          
+          <ol key={ind}>
+            <h2>{ transactionTitles[ind] }</h2>
+            {transactionCollection.map((transaction, index) => (
+              <li key={index} className={ isExpense(transaction) ? 'exp-list-item' : 'inc-list-item'} onClick={() => setSelectedTransaction(transaction)}>
+                <span className='list-date'>{transaction.date.toDateString().split(' ').slice(0, 3).join(' ')}</span>
+                <span> { isExpense(transaction) ? transaction.store : transaction.source }</span>
+                <span className='list-amount'> {isExpense(transaction) ? `-$`: `+$`}{transaction.amount / 100} </span>
+                <span className='list-cat' style={{ backgroundColor: getCategoryColor(transaction.category) }}>{transaction.category}</span><span> - {transaction.desc}</span>
+              </li>
+            ))}
+          </ol>
+        ))
+      }
+
+      { selectedTransaction && <Transaction transaction={selectedTransaction} toggle={() => setSelectedTransaction(null)} /> }
+
     </div>
   )
 }
