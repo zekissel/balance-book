@@ -1,12 +1,12 @@
-import { LogProps } from "../../typedef";
+import { LogProps, UpdateLogProps } from "../../typedef";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Day, Month, Expense, Income, addDays, isExpense } from "../../typedef";
 import Transaction from "../home/Transaction";
 import ViewDay from "./ViewDay";
 
 
-interface CalendarProps { logs: LogProps }
-export default function Calendar ({ logs }: CalendarProps) {
+interface CalendarProps { logs: LogProps, updateLog: UpdateLogProps }
+export default function Calendar ({ logs, updateLog }: CalendarProps) {
 
   const curDate = useRef(new Date());
   const calDate = useRef(new Date(curDate.current.setHours(0,0,0,0)));
@@ -75,7 +75,7 @@ export default function Calendar ({ logs }: CalendarProps) {
         <span id='today' onClick={() => {calDate.current = curDate.current; initWeeks()}}>{ curDate.current.toDateString() }</span>
 
         <span id='cal-shift'>
-          <button onClick={() => shiftWeeks(-1)}>◀</button>
+          <button onClick={() => shiftWeeks(-1)}><img src='left-arrow.svg' /></button>
 
           <select value={calDate.current.getMonth()} onChange={(e) => { calDate.current = new Date(new Date(calDate.current.setMonth(Number(e.target.value))).setDate(7)); initWeeks();}}>
             { Month.map((month, index) => <option key={index} value={index}>{month}</option>)}
@@ -85,7 +85,7 @@ export default function Calendar ({ logs }: CalendarProps) {
             { [20,21,22,23,24].map((year, index) => <option key={index} value={year+2000}>{year+2000}</option>)}
           </select>
 
-          <button onClick={() => shiftWeeks(1)}>▶</button>
+          <button onClick={() => shiftWeeks(1)}><img src='right-arrow.svg' /></button>
         </span>
       </menu>
       
@@ -131,6 +131,7 @@ export default function Calendar ({ logs }: CalendarProps) {
             key={index} 
             transaction={trans} 
             toggle={() => setSelectedTransactions(selectedTransactions.filter(t => JSON.stringify(t) !== JSON.stringify(trans)))}
+            updateLog={updateLog}
           />
         ))
       }

@@ -10,7 +10,7 @@ export default function Nav ({ setState }: NavProps) {
   return (
     <nav>
       <li id='nav-toggle' onClick={toggleNav}>
-        { showNav ? '< Close' : '>' }
+        <img src={ showNav ? 'close-arrow.svg' : 'open-arrow.svg' }/>
       </li>
 
       { showNav &&

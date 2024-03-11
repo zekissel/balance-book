@@ -38,8 +38,8 @@ fn load_income() -> Vec<Income> {
 }
 
 #[tauri::command]
-fn update_income(id: i32, store: &str, amount: i32, category: &str, desc: &str, date: &str) -> Income {
-    database::api::update_income(id, store, amount, category, desc, date)
+fn update_income(id: i32, source: &str, amount: i32, category: &str, desc: &str, date: &str) -> Income {
+    database::api::update_income(id, source, amount, category, desc, date)
 }
 
 #[tauri::command]

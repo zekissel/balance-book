@@ -344,3 +344,11 @@ th {
 #filter-field > li > input[type="number"] {
   width: 6rem;
 }
+
+.delete-trans {
+  color: #fff;
+  background-color: #ee3b3b;
+  border-radius: 1vw;
+  border: none;
+  cursor: pointer;
+}

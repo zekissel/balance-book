@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api/tauri";
 
 export enum State {
   Home,
@@ -140,4 +141,24 @@ export function getEnumKeys<
    TEnumValue extends string | number,
 >(enumVariable: { [key in T]: TEnumValue }) {
     return Object.keys(enumVariable) as Array<T>;
+}
+
+export async function getExpenses(): Promise<Expense[]> {
+  return await invoke("load_expenses")
+    .then(data => {
+      const exp = data as Expense[];
+      exp.forEach(e => e.date = new Date(new Date(e.date).toDateString()));
+      exp.sort((a, b) => a.date > b.date ? -1 : 1);
+      return exp;
+    })
+}
+
+export async function getIncome(): Promise<Income[]> {
+  return await invoke("load_income")
+    .then(data => {
+      const inc = data as Income[];
+      inc.forEach(i => i.date = new Date(new Date(i.date).toDateString()));
+      inc.sort((a, b) => a.date > b.date ? -1 : 1);
+      return inc;
+    })
 }

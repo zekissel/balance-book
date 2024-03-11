@@ -1,11 +1,10 @@
-import { invoke } from "@tauri-apps/api/tauri";
-import { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 
 import List from "./activity/List";
 import Calendar from "./activity/Calendar";
 import "../styles/Activity.css";
-import { Category, Expense, Income, IncomeCategory, getEnumKeys, isExpense } from "../typedef";
-import AddLog from "./home/AddLog";
+import { Category, Expense, Income, IncomeCategory, getEnumKeys, isExpense, getExpenses, getIncome } from "../typedef";
+import EditLog from "./home/CreateLog";
 
 export default function Activity () {
 
@@ -15,8 +14,8 @@ export default function Activity () {
     endDate: null,
     category: [],
     source: [''],
-    lowAmount: 0,
-    highAmount: 0,
+    lowAmount: '0',
+    highAmount: '0',
   });
 
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -26,6 +25,8 @@ export default function Activity () {
   const [income, setIncome] = useState<Income[]>([]);
   const [signalInc, setSignalInc] = useState(false);
   const signalNewIncome = () => setSignalInc(!signalInc);
+
+  const updateLog = { signalExp: signalNewExpense, signalInc: signalNewIncome };
 
   const transactions = useMemo(() => {
     let transactions: Array<Expense | Income> = [];
@@ -40,41 +41,22 @@ export default function Activity () {
 
     if (filters.source[0].length > 0) transactions = transactions.filter(t => filters.source.map(s => s.toUpperCase().trim()).includes((isExpense(t) ? t.store : t.source).toUpperCase()));
 
-    if (filters.lowAmount > 0) transactions = transactions.filter(t => t.amount >= filters.lowAmount);
-    if (filters.highAmount > 0) transactions = transactions.filter(t => t.amount <= filters.highAmount);
+    if (Number(filters.lowAmount) > 0) transactions = transactions.filter(t => t.amount >= Math.round(Number(filters.lowAmount) + Number.EPSILON) * 100);
+    if (Number(filters.highAmount) > 0) transactions = transactions.filter(t => t.amount <= Math.round(Number(filters.highAmount) + Number.EPSILON) * 100);
 
     transactions = transactions.sort((a, b) => b.date.getTime() - a.date.getTime());
-    console.log(transactions)
     return transactions;
   }, [expenses, income, filters]);
-  const updateLog = { signalExp: signalNewExpense, signalInc: signalNewIncome };
 
-  async function getExpenses() {
-    await invoke("load_expenses")
-      .then(data => {
-        const exp = data as Expense[];
-        exp.forEach(e => e.date = new Date(new Date(e.date).toDateString()));
-        exp.sort((a, b) => a.date > b.date ? -1 : 1);
-        setExpenses(exp);
-      })
-  }
-
-  async function getIncome() {
-    await invoke("load_income")
-      .then(data => {
-        const inc = data as Income[];
-        inc.forEach(i => i.date = new Date(new Date(i.date).toDateString()));
-        inc.sort((a, b) => a.date > b.date ? -1 : 1);
-        setIncome(inc);
-      })
-  }
+  const refreshExpenses = async () => { setExpenses(await getExpenses()) };
+  const refreshIncome = async () => { setIncome(await getIncome()) };
 
   useEffect(() => {
-    getExpenses()
+    refreshExpenses();
   }, [signalExp])
 
   useEffect(() => {
-    getIncome()
+    refreshIncome();
   }, [signalInc])
 
 
@@ -87,7 +69,7 @@ export default function Activity () {
 
   const filtersActiveStyle = { backgroundColor: `#abc`}
   const anyFiltersActive = () => {
-    return (filters.type !== `all` || filters.startDate !== null || filters.endDate !== null || filters.category.length > 0 || filters.source[0].length > 0 || filters.lowAmount > 0 || filters.highAmount > 0)
+    return (filters.type !== `all` || filters.startDate !== null || filters.endDate !== null || filters.category.length > 0 || filters.source[0].length > 0 || Number(filters.lowAmount) !== 0 || Number(filters.highAmount) !== 0)
   };
 
   return (
@@ -101,18 +83,18 @@ export default function Activity () {
         
         <span id='activity-extra'>
           <button onClick={toggleGUI} disabled={showGUI}>Log Transaction</button>
-          <button onClick={toggleFilter} disabled={filterGUI}  style={anyFiltersActive() ? filtersActiveStyle : undefined}>Filter</button>
+          <button onClick={toggleFilter} disabled={filterGUI}  style={anyFiltersActive() ? filtersActiveStyle : undefined}>Filters<img src='/filter.svg'/></button>
         </span>
         
       </menu>
 
       { listView ?
-        <List logs={transactions}/>
+        <List logs={transactions} updateLog={updateLog} />
         :
-        <Calendar logs={transactions}/> 
+        <Calendar logs={transactions} updateLog={updateLog}/> 
       }
 
-      { showGUI && <AddLog toggle={toggleGUI} updateLog={updateLog}/>}
+      { showGUI && <EditLog toggle={toggleGUI} updateLog={updateLog} />}
 
       { filterGUI && 
         <Filter toggle={toggleFilter} filters={filters} setFilters={setFilters} /> 
@@ -130,8 +112,8 @@ interface Filters {
   endDate: Date | null,
   category: string[],
   source: string[],
-  lowAmount: number,
-  highAmount: number,
+  lowAmount: string,
+  highAmount: string,
 }
 
 
@@ -142,6 +124,19 @@ function Filter ({ toggle, filters, setFilters }: FilterProps) {
   const toggleStartDate = () => setShowStartDate(!showStartDate);
   const [showEndDate, setShowEndDate] = useState(filters.endDate !== null);
   const toggleEndDate = () => setShowEndDate(!showEndDate);
+
+  const handleLowAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const am = e.target.value;
+    if (!am || am.match(/^\d{1,}(\.\d{0,2})?$/)) {
+      setFilters({ ...filters, lowAmount: am});
+    }
+  }
+  const handleHighAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const am = e.target.value;
+    if (!am || am.match(/^\d{1,}(\.\d{0,2})?$/)) {
+      setFilters({ ...filters, highAmount: am});
+    }
+  }
 
   return (
     <fieldset id='filter-field'><legend>Set Filters</legend>
@@ -190,11 +185,11 @@ function Filter ({ toggle, filters, setFilters }: FilterProps) {
 
       <li>
         <label>Low Amount</label>
-        <input type='number' step={.01} value={filters.lowAmount / 100} onChange={(e) => setFilters({...filters, lowAmount: Number(e.target.value) * 100})}/>
+        <input type='text' value={filters.lowAmount} onChange={handleLowAmount}/>
       </li>
       <li>
         <label>High Amount</label>
-        <input type='number' step={.01} value={filters.highAmount / 100} onChange={(e) => setFilters({...filters, highAmount: Number(e.target.value) * 100})}/>
+        <input type='text' value={filters.highAmount} onChange={handleHighAmount}/>
       </li>
 
       <li>
@@ -204,8 +199,8 @@ function Filter ({ toggle, filters, setFilters }: FilterProps) {
           endDate: null,
           category: [],
           source: [''],
-          lowAmount: 0,
-          highAmount: 0, 
+          lowAmount: '0',
+          highAmount: '0', 
         })}>Clear Filters</button>
         <button onClick={toggle}>X</button>
       </li>
