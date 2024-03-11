@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { invoke } from "@tauri-apps/api/tauri";
-import { UpdateLogProps, Category, IncomeCategory } from '../../typedef';
+import { UpdateLogProps, Category, IncomeCategory, getEnumKeys } from '../../typedef';
 
 interface AddLogProps { toggle: () => void, updateLog: UpdateLogProps}
 export default function AddLog ({ toggle, updateLog }: AddLogProps) {
@@ -17,8 +17,6 @@ export default function AddLog ({ toggle, updateLog }: AddLogProps) {
         
         <input type='radio' name='type' value='Income' id='inc' onChange={() => setTypeIncome(true)}/>
         <label htmlFor='inc'>Income</label>
-
-        <button className='log-exit' onClick={toggle}>Cancel</button>
       </span>
 
       <AddTransaction 
@@ -26,6 +24,8 @@ export default function AddLog ({ toggle, updateLog }: AddLogProps) {
         updateLog={updateLog} 
         isIncome={typeIncome} 
       />
+
+      <button onClick={toggle}>Cancel</button>
       
     </fieldset>
   );
@@ -116,9 +116,3 @@ function AddTransaction ({ toggle, isIncome, updateLog }: TransactionProps) {
   );
 }
 
-function getEnumKeys<
-   T extends string,
-   TEnumValue extends string | number,
->(enumVariable: { [key in T]: TEnumValue }) {
-    return Object.keys(enumVariable) as Array<T>;
-}

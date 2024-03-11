@@ -67,8 +67,8 @@ nav > li:hover {
 
   position: absolute;
   z-index: 10;
-  top: 15rem;
-  right: 22rem;
+  top: 6rem;
+  left: 8rem;
 }
 
 .add-log > legend {
@@ -78,9 +78,6 @@ nav > li:hover {
   border: 1px dashed #777;
 }
 
-.log-exit {
-  margin-left: 4rem;
-}
 
 .add-exp {
   background-color: #d6d6d6;

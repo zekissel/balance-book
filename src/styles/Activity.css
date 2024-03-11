@@ -324,8 +324,8 @@ th {
 
   position: absolute;
   z-index: 10;
-  top: 4rem;
-  right: 18rem;
+  top: 6rem;
+  right: 16.5rem;
 }
 
 #filter-field > legend {
@@ -339,4 +339,8 @@ th {
   list-style: none;
   min-width: 100%;
   text-align: center;
+}
+
+#filter-field > li > input[type="number"] {
+  width: 6rem;
 }

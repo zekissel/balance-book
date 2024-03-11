@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import List from "./activity/List";
 import Calendar from "./activity/Calendar";
 import "../styles/Activity.css";
-import { Expense, Income } from "../typedef";
+import { Category, Expense, Income, IncomeCategory, getEnumKeys, isExpense } from "../typedef";
 import AddLog from "./home/AddLog";
 
 export default function Activity () {
@@ -13,10 +13,10 @@ export default function Activity () {
     type: `all`,
     startDate: null,
     endDate: null,
-    category: null,
-    source: null,
-    lowAmount: null,
-    highAmount: null,
+    category: [],
+    source: [''],
+    lowAmount: 0,
+    highAmount: 0,
   });
 
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -29,12 +29,22 @@ export default function Activity () {
 
   const transactions = useMemo(() => {
     let transactions: Array<Expense | Income> = [];
+
     if (filters.type === `expense` || filters.type === `all`) transactions = transactions.concat(expenses);
     if (filters.type === `income` || filters.type === `all`) transactions = transactions.concat(income);
+
     if (filters.startDate !== null) transactions = transactions.filter(t => t.date.getTime() >= filters.startDate!.getTime());
     if (filters.endDate !== null) transactions = transactions.filter(t => t.date.getTime() <= filters.endDate!.getTime());
 
+    if (filters.category.length > 0) transactions = transactions.filter(t => filters.category.includes(t.category.toString()));
+
+    if (filters.source[0].length > 0) transactions = transactions.filter(t => filters.source.map(s => s.toUpperCase().trim()).includes((isExpense(t) ? t.store : t.source).toUpperCase()));
+
+    if (filters.lowAmount > 0) transactions = transactions.filter(t => t.amount >= filters.lowAmount);
+    if (filters.highAmount > 0) transactions = transactions.filter(t => t.amount <= filters.highAmount);
+
     transactions = transactions.sort((a, b) => b.date.getTime() - a.date.getTime());
+    console.log(transactions)
     return transactions;
   }, [expenses, income, filters]);
   const updateLog = { signalExp: signalNewExpense, signalInc: signalNewIncome };
@@ -75,7 +85,10 @@ export default function Activity () {
   const toggleGUI = () => setShowGUI(!showGUI);
   const toggleFilter = () => setFilterGUI(!filterGUI);
 
-
+  const filtersActiveStyle = { backgroundColor: `#abc`}
+  const anyFiltersActive = () => {
+    return (filters.type !== `all` || filters.startDate !== null || filters.endDate !== null || filters.category.length > 0 || filters.source[0].length > 0 || filters.lowAmount > 0 || filters.highAmount > 0)
+  };
 
   return (
     <div id='activity-container'>
@@ -88,7 +101,7 @@ export default function Activity () {
         
         <span id='activity-extra'>
           <button onClick={toggleGUI} disabled={showGUI}>Log Transaction</button>
-          <button onClick={toggleFilter} disabled={filterGUI}>Filter</button>
+          <button onClick={toggleFilter} disabled={filterGUI}  style={anyFiltersActive() ? filtersActiveStyle : undefined}>Filter</button>
         </span>
         
       </menu>
@@ -109,15 +122,18 @@ export default function Activity () {
   );
 }
 
+
+
 interface Filters {
   type: string,
   startDate: Date | null,
   endDate: Date | null,
-  category: string | null,
-  source: string | null,
-  lowAmount: number | null,
-  highAmount: number | null,
+  category: string[],
+  source: string[],
+  lowAmount: number,
+  highAmount: number,
 }
+
 
 interface FilterProps { toggle: () => void, filters: Filters, setFilters: React.Dispatch<React.SetStateAction<Filters>> }
 function Filter ({ toggle, filters, setFilters }: FilterProps) {
@@ -148,22 +164,37 @@ function Filter ({ toggle, filters, setFilters }: FilterProps) {
 
       <li>
         <label>Category</label>
-        <select>
-          <option value={undefined}>All</option>
-
+        <select multiple 
+          onChange={(e) => {
+            if (filters.category.includes(e.target.value)) setFilters({...filters, category: filters.category.filter(c => c !== e.target.value)});
+            else setFilters({...filters, category: [...filters.category, e.target.value]})
+          }}>
+          {getEnumKeys(Category).map((key, index) => (
+            
+            <option style={filters.category.includes(Category[key]) ? { backgroundColor: `#abc` }:undefined} key={index} value={Category[key]}>
+              {Category[key]}
+            </option>
+          ))}
+          {getEnumKeys(IncomeCategory).map((key, index) => (
+            <option style={filters.category.includes(IncomeCategory[key]) ? { backgroundColor: `#abc` }:undefined} key={index} value={IncomeCategory[key]}>
+              {IncomeCategory[key]}
+            </option>
+          ))}
         </select>
       </li>
 
       <li>
         <label>Store/Source</label>
-        <input type='text' onChange={(e) => setFilters({...filters, source: e.target.value})}/>
+        <input type='text' value={filters.source} onChange={(e) => setFilters({...filters, source: e.target.value.split(',')})}/>
       </li>
 
       <li>
         <label>Low Amount</label>
-        <input type='number' step={.01} onChange={(e) => setFilters({...filters, lowAmount: Number(e.target.value)})}/>
+        <input type='number' step={.01} value={filters.lowAmount / 100} onChange={(e) => setFilters({...filters, lowAmount: Number(e.target.value) * 100})}/>
+      </li>
+      <li>
         <label>High Amount</label>
-        <input type='number' step={.01} onChange={(e) => setFilters({...filters, highAmount: Number(e.target.value)})}/>
+        <input type='number' step={.01} value={filters.highAmount / 100} onChange={(e) => setFilters({...filters, highAmount: Number(e.target.value) * 100})}/>
       </li>
 
       <li>
@@ -171,10 +202,10 @@ function Filter ({ toggle, filters, setFilters }: FilterProps) {
           type: `all`, 
           startDate: null,
           endDate: null,
-          category: null,
-          source: null,
-          lowAmount: null,
-          highAmount: null, 
+          category: [],
+          source: [''],
+          lowAmount: 0,
+          highAmount: 0, 
         })}>Clear Filters</button>
         <button onClick={toggle}>X</button>
       </li>

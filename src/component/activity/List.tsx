@@ -35,7 +35,7 @@ export default function List ({ logs }: ListProps) {
   ], [pastWeekTransactions, pastMonthTransactions, pastYearTransactions, otherTransactions]);
 
   const transactionTitles = ['This Week', 'This Month', 'This Year', 'Previous'];
-  const [selectedTransaction, setSelectedTransaction] = useState<Expense | Income | null>(null);
+  const [selectedTransactions, setSelectedTransactions] = useState<(Expense | Income)[]>([]);
 
   return (
     <div id='list-element'>
@@ -46,7 +46,7 @@ export default function List ({ logs }: ListProps) {
           <ol key={ind}>
             <h2>{ transactionTitles[ind] }</h2>
             {transactionCollection.map((transaction, index) => (
-              <li key={index} className={ isExpense(transaction) ? 'exp-list-item' : 'inc-list-item'} onClick={() => setSelectedTransaction(transaction)}>
+              <li key={index} className={ isExpense(transaction) ? 'exp-list-item' : 'inc-list-item'} onClick={() => setSelectedTransactions([...selectedTransactions, transaction])}>
                 <span className='list-date'>{transaction.date.toDateString().split(' ').slice(0, 3).join(' ')}</span>
                 <span> { isExpense(transaction) ? transaction.store : transaction.source }</span>
                 <span className='list-amount'> {isExpense(transaction) ? `-$`: `+$`}{transaction.amount / 100} </span>
@@ -57,7 +57,15 @@ export default function List ({ logs }: ListProps) {
         ))
       }
 
-      { selectedTransaction && <Transaction transaction={selectedTransaction} toggle={() => setSelectedTransaction(null)} /> }
+      { selectedTransactions.length > 0 && 
+        selectedTransactions.map((trans, index) => (
+          <Transaction 
+            key={index} 
+            transaction={trans} 
+            toggle={() => setSelectedTransactions(selectedTransactions.filter(t => JSON.stringify(t) !== JSON.stringify(trans)))}
+          />
+        ))
+      } 
 
     </div>
   )

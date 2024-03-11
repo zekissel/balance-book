@@ -110,9 +110,9 @@ export interface Income {
 export enum IncomeCategory {
   Salary = 'Salary',
   SideJob = 'SideJob',
-  Investment = 'Investment',
+  Investment = 'InvestmentIncome',
   Reimbursement = 'Reimbursement',
-  Other = 'Other',
+  Other = 'OtherIncome',
   None = '---',
 }
 
@@ -133,4 +133,11 @@ export function addDays(date: Date, days: number) {
     date.getDate() + days,
     0, 0, 0, 0
   );
+}
+
+export function getEnumKeys<
+   T extends string,
+   TEnumValue extends string | number,
+>(enumVariable: { [key in T]: TEnumValue }) {
+    return Object.keys(enumVariable) as Array<T>;
 }

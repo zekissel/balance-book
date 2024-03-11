@@ -18,6 +18,16 @@ fn load_expenses() -> Vec<Expense> {
 }
 
 #[tauri::command]
+fn update_expense(id: i32, store: &str, amount: i32, category: &str, desc: &str, date: &str) -> Expense {
+    database::api::update_expense(id, store, amount, category, desc, date)
+}
+
+#[tauri::command]
+fn delete_expense(id: i32) {
+    database::api::delete_expense(id);
+}
+
+#[tauri::command]
 fn add_income(source: &str, amount: i32, category: &str, desc: &str, date: &str) -> Income {
     database::api::create_income(source, amount, category, desc, date)
 }
@@ -25,6 +35,16 @@ fn add_income(source: &str, amount: i32, category: &str, desc: &str, date: &str)
 #[tauri::command]
 fn load_income() -> Vec<Income> {
     database::api::get_income()
+}
+
+#[tauri::command]
+fn update_income(id: i32, store: &str, amount: i32, category: &str, desc: &str, date: &str) -> Income {
+    database::api::update_income(id, store, amount, category, desc, date)
+}
+
+#[tauri::command]
+fn delete_income(id: i32) {
+    database::api::delete_income(id);
 }
 
 fn main() {
@@ -35,7 +55,7 @@ fn main() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![add_expense, load_expenses, add_income, load_income])
+        .invoke_handler(tauri::generate_handler![add_expense, load_expenses, update_expense, delete_expense, add_income, load_income, update_income, delete_income])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
