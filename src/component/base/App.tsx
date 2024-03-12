@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Nav from "./Nav";
-import { State } from "../typedef";
-import "../styles/App.css";
+import { State } from "../../typedef";
+import "../../styles/App.css";
 import Home from "./Home";
 import Activity from "./Activity";
 import Stats from "./Stats";

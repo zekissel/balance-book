@@ -1,7 +1,7 @@
 import { LogProps, UpdateLogProps } from "../../typedef";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Day, Month, Expense, Income, addDays, isExpense } from "../../typedef";
-import Transaction from "../home/Transaction";
+import Transaction from "../transaction/ViewTransaction";
 import ViewDay from "./ViewDay";
 
 

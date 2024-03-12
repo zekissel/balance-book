@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { invoke } from "@tauri-apps/api/tauri";
 import { UpdateLogProps, Category, IncomeCategory, getEnumKeys, Expense, Income, isExpense } from '../../typedef';
+import Draggable from 'react-draggable';
 
 interface CreateLogProps { toggle: () => void, updateLog: UpdateLogProps}
 export default function CreateLog ({ toggle, updateLog }: CreateLogProps) {
@@ -8,8 +9,10 @@ export default function CreateLog ({ toggle, updateLog }: CreateLogProps) {
   const [addIncome, setAddIncome] = useState(false);
 
   return (
+    <Draggable handle='.handle'>
     <fieldset className='add-log'>
-      <legend>New Transaction</legend>
+      <legend>Add Log</legend>
+      <div className='handle'><img draggable={false} src='/move-arrow.svg' /></div>
 
       <span>
         <input type='radio' name='type' value='Expense' id='exp' onChange={() => setAddIncome(false)} defaultChecked/>
@@ -26,8 +29,9 @@ export default function CreateLog ({ toggle, updateLog }: CreateLogProps) {
         updateLog={updateLog} 
         isIncome={addIncome}
       />
-      
+
     </fieldset>
+    </Draggable>
   );
 }
 

@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useEffect } from "react";
 
-import List from "./activity/List";
-import Calendar from "./activity/Calendar";
-import "../styles/Activity.css";
-import { Category, Expense, Income, IncomeCategory, getEnumKeys, isExpense, getExpenses, getIncome } from "../typedef";
-import EditLog from "./home/CreateLog";
+import List from "../activity/List";
+import Calendar from "../activity/Calendar";
+import "../../styles/Activity.css";
+import { Category, Expense, Income, IncomeCategory, getEnumKeys, isExpense, getExpenses, getIncome } from "../../typedef";
+import EditLog from "../transaction/CreateLog";
 
 export default function Activity () {
 

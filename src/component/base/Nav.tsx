@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavProps, State } from "../typedef";
+import { NavProps, State } from "../../typedef";
 
 
 export default function Nav ({ setState }: NavProps) {

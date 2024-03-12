@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { LogProps, Income, Expense, isExpense, getCategoryColor, addDays, UpdateLogProps } from "../../typedef";
-import Transaction from "../home/Transaction";
+import Transaction from "../transaction/ViewTransaction";
 
 interface ListProps { logs: LogProps, updateLog: UpdateLogProps }
 export default function List ({ logs, updateLog }: ListProps) {
