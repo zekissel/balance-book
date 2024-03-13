@@ -5,9 +5,9 @@ export enum State {
   Activity,
   Stats,
   Assets,
+  Profile,
+  Settings,
 }
-
-export interface NavProps { setState: React.Dispatch<React.SetStateAction<State>> }
 
 export type LogProps = (Expense | Income)[];
 export interface UpdateLogProps {
@@ -161,4 +161,14 @@ export async function getIncome(): Promise<Income[]> {
       inc.sort((a, b) => a.date > b.date ? -1 : 1);
       return inc;
     })
+}
+
+export interface Filters {
+  type: string,
+  startDate: Date | null,
+  endDate: Date | null,
+  category: string[],
+  source: string[],
+  lowAmount: string,
+  highAmount: string,
 }

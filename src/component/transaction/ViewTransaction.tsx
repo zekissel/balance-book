@@ -18,7 +18,7 @@ export default function Transaction ({ transaction, toggle, updateLog }: Transac
         <li className='spot-date'>
           { transaction.date.toDateString().split(' ').slice(1).join(' ') }
           <div className='handle'><img draggable={false} src='/move-arrow.svg' /></div>
-          <button onClick={toggleEdits}><img src='cog.svg' /></button>
+          <button onClick={toggleEdits}><img src='/cog.svg' /></button>
           <button className='spot-exit' onClick={toggle}><img src="x.svg" /></button>
         </li>
 

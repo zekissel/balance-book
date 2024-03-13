@@ -12,8 +12,8 @@ function App() {
   
 
   return (
-    <div id='base'>
-      <Nav setState={setUIState}/>
+    <div className='app'>
+      <Nav state={UIState} setState={setUIState}/>
 
       <main>
         { UIState === State.Home &&

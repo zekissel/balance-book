@@ -1,6 +1,47 @@
-#activity-container {
-  max-height: 98vh;
+.activity-root {
+  height: 99.6vh;
+  width: 100%;
+  padding: 0;
+  margin: 0 auto;
 }
+
+menu.activity-menu {
+  background-color: #dfe2e0;
+  height: 3rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-bottom: 2px solid #739d88;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+div.activity-menu-main > button {
+  font-size: 20px;
+  font-weight: 540;
+  margin: .2rem;
+  padding: .2rem .5rem;
+  border-radius: 1vw;
+  cursor: pointer;
+  background-color: #dfe2e0;
+  border: none;
+  border-bottom: 2px solid #6b6b6b;
+}
+
+div.activity-menu-main > button:hover {
+  background-color: #93ceb4;
+  color: #191919;
+}
+
+#activity-menu-current {
+  background-color: #93ceb4;
+  color: #191919;
+}
+
+
 
 #cal-container {
   display: flex;
@@ -12,7 +53,7 @@
   height: 95%;
   padding: 0;
   margin: 0 auto;
-  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  
 
   user-select: none;
   -moz-user-select: none;
@@ -25,30 +66,6 @@
   padding: 0;
 }
 
-menu {
-  width: 80vw;
-  padding: 0;
-  margin: 1rem;
-}
-
-#activity-tools > button {
-  font-size: 1.5rem;
-}
-
-#activity-extra > button {
-  font-size: 1.2rem;
-  margin: 1rem 0;
-}
-
-#activity-menu {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 89vw;
-  margin: 0;
-  padding: 0;
-}
 
 #cal-tools {
   width: 50vw;
@@ -309,41 +326,6 @@ th {
   -webkit-user-select: none;
 }
 
-#filter-field {
-  background-color: #d6d6d6;
-  border: 1px dashed #777;
-  padding: .5rem;
-  border-radius: 1vw;
-
-  width: 22rem;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  position: absolute;
-  z-index: 10;
-  top: 6rem;
-  right: 16.5rem;
-}
-
-#filter-field > legend {
-  background-color: #d6d6d6;
-  padding: .5rem;
-  border-radius: 1vw;
-  border: 1px dashed #777;
-}
-
-#filter-field > li {
-  list-style: none;
-  min-width: 100%;
-  text-align: center;
-}
-
-#filter-field > li > input[type="number"] {
-  width: 6rem;
-}
 
 .delete-trans {
   color: #fff;
