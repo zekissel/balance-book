@@ -6,6 +6,7 @@ import '../../styles/Filter.css';
 interface FilterProps { toggle: () => void, filters: Filters, setFilters: React.Dispatch<React.SetStateAction<Filters>> }
 export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
 
+
   const [showStartDate, setShowStartDate] = useState(filters.startDate !== null);
   const toggleStartDate = () => setShowStartDate(!showStartDate);
   const [showEndDate, setShowEndDate] = useState(filters.endDate !== null);
@@ -26,6 +27,21 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
     }
   }
 
+  const resetFilters = () => {
+    setFilters({ 
+      type: `all`, 
+      startDate: null,
+      endDate: null,
+      category: [],
+      source: [''],
+      lowAmount: '0',
+      highAmount: '0', 
+    });
+    setShowStartDate(false);
+    setShowEndDate(false);
+    setShowCategory(false);
+  };
+
   return (
     <menu className='filter-menu'>
 
@@ -39,16 +55,20 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
       </li>
 
       <li>
-        <label onClick={() => { toggleStartDate(); setFilters({...filters, startDate: null}); }}>Start Date: </label>
-        { showStartDate && <input type='date' defaultValue={filters.startDate?.toDateString()} onChange={(e) => setFilters({...filters, startDate: new Date(e.target.value)})}/> }
+        <label className='filter-menu-togglable' onClick={() => { toggleStartDate(); setFilters({...filters, startDate: null}); }}>Start Date: </label>
+        { showStartDate && <input type='date' value={filters.startDate?.toISOString().substring(0, 10)} onChange={(e) => setFilters({...filters, startDate: new Date(e.target.value)})}/> }
+        { !showStartDate && <span>None</span>}
       </li>
       <li>
-        <label onClick={() => { toggleEndDate(); setFilters({...filters, endDate: null}); }}>End Date: </label>
-        { showEndDate && <input type='date' onChange={(e) => setFilters({...filters, endDate: new Date(e.target.value)})} defaultValue={filters.endDate?.toDateString()}/> }
+        <label className='filter-menu-togglable' onClick={() => { toggleEndDate(); setFilters({...filters, endDate: null}); }}>End Date: </label>
+        { showEndDate && <input type='date' value={filters.endDate?.toISOString().substring(0, 10)} onChange={(e) => setFilters({...filters, endDate: new Date(e.target.value)})} /> }
+        { !showEndDate && <span>None</span>}
       </li>
 
       <li>
-        <label onClick={() => { toggleCategory(); setFilters({...filters, category: []}) }}>Category: </label>
+        <span className='filter-menu-heading'><label className='filter-menu-togglable' onClick={() => { toggleCategory(); setFilters({...filters, category: []}) }}>Categories: </label>
+          <span id='category-img' onClick={toggleCategory}>{ showCategory ? <img src='/close-up.svg' /> : <img src='/open-down.svg' /> }</span>
+        </span>
         { showCategory &&
           <select multiple size={5} value={filters.category}
             onChange={(e) => {
@@ -68,33 +88,30 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
             ))}
           </select>
         }
+        { !showCategory && (filters.category.length > 0 ? <span id='filter-category-list'>{ filters.category.map((c) => c.toString() + ' ')}</span> : <span>None</span>)}
       </li>
 
       <li>
         <label>Store/Source: </label>
-        <input type='text' value={filters.source} onChange={(e) => setFilters({...filters, source: e.target.value.split(',')})}/>
+        <input 
+          type='text' 
+          value={filters.source} 
+          onChange={(e) => setFilters({...filters, source: e.target.value.split(',')})}
+        />
       </li>
 
       <li>
-        <label>Low Amount</label>
+        <label>Low Amount: </label>
         <input type='text' value={filters.lowAmount} onChange={handleLowAmount}/>
       </li>
       <li>
-        <label>High Amount</label>
+        <label>High Amount: </label>
         <input type='text' value={filters.highAmount} onChange={handleHighAmount}/>
       </li>
 
       <li>
-        <button onClick={() => setFilters({ 
-          type: `all`, 
-          startDate: null,
-          endDate: null,
-          category: [],
-          source: [''],
-          lowAmount: '0',
-          highAmount: '0', 
-        })}>Clear Filters</button>
-        <button onClick={toggle}>X</button>
+        <button onClick={resetFilters}>Clear Filters</button>
+        <button onClick={toggle}>Close</button>
       </li>
 
     </menu>

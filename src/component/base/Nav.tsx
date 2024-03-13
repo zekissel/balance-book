@@ -33,13 +33,13 @@ export default function Nav ({ state, setState }: NavProps) {
         { fullNav ? 'Statistics' : <img draggable={false} src='/stats.svg' alt='Statistics' />}
         </li>
         <li id={state === State.Assets ? 'nav-current' : undefined} onClick={() => setState(State.Assets)}>
-        { fullNav ? 'Assets' : <img draggable={false} src='/graph.svg' alt='Assets' />}
+        { fullNav ? 'Assets' : <img draggable={false} src='/wallet.svg' alt='Assets' />}
         </li>
       </ul>
 
       <ul className={ fullNav ? 'nav-extra' : 'nav-extra nav-inverse'}>
         <li id={state === State.Profile ? 'nav-current' : undefined} onClick={() => setState(State.Profile)}>
-        { fullNav ? 'Profile' : <img draggable={false} src='/globe.svg' alt='Profile' />}
+        { fullNav ? 'Profile' : <img draggable={false} src='/user.svg' alt='Profile' />}
         </li>
         <li id={state === State.Settings ? 'nav-current' : undefined} onClick={() => setState(State.Settings)}>
         { fullNav ? 'Settings' : <img draggable={false} src='/cog.svg' alt='Settings' />}

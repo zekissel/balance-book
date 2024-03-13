@@ -13,9 +13,38 @@ menu.filter-menu {
   align-items: start;
 
   overflow: visible;
+  position: relative;
+  z-index: 10;
 }
 
 menu.filter-menu > li {
   list-style: none;
+  display: flex;
+  flex-direction: column;
+  background-color: #b2b2b2;
+  border-radius: 1vw;
 }
 
+menu.filter-menu > li > input[type="text"] {
+  width: 6.5rem;
+}
+
+label.filter-menu-togglable:hover, #category-img:hover {
+  border: 2px solid #6e9684;
+  padding: .1rem;
+  border-radius: 1vw;
+}
+
+span.filter-menu-heading {
+  display: flex;
+  flex-direction: row;
+
+  margin-bottom: -.4rem;
+}
+
+#filter-category-list {
+  max-height: 1.8rem;
+  max-width: 10rem;
+  overflow: scroll;
+  background-color: #e6ece7;
+}

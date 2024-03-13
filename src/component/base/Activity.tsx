@@ -49,8 +49,8 @@ export default function Activity () {
 
     if (filters.source[0].length > 0) transactions = transactions.filter(t => filters.source.map(s => s.toUpperCase().trim()).includes((isExpense(t) ? t.store : t.source).toUpperCase()));
 
-    if (Number(filters.lowAmount) > 0) transactions = transactions.filter(t => t.amount >= Math.round(Number(filters.lowAmount) + Number.EPSILON) * 100);
-    if (Number(filters.highAmount) > 0) transactions = transactions.filter(t => t.amount <= Math.round(Number(filters.highAmount) + Number.EPSILON) * 100);
+    if (Number(filters.lowAmount) > 0) transactions = transactions.filter(t => (t.amount - ((Number(filters.lowAmount)) * 100)) >= 0 );
+    if (Number(filters.highAmount) > 0) transactions = transactions.filter(t => (t.amount - ((Number(filters.highAmount)) * 100)) <= 0 );
 
     transactions = transactions.sort((a, b) => b.date.getTime() - a.date.getTime());
     return transactions;
@@ -74,7 +74,7 @@ export default function Activity () {
   const toggleAddLog = () => setAddLogGUI(!addLogGUI);
   
 
-  const filtersActiveStyle = { backgroundColor: `#abc`}
+  const filtersActiveStyle = { backgroundColor: `#a0bacb`}
 
   return (
     <div className='activity-root'>
@@ -99,11 +99,11 @@ export default function Activity () {
         
         <div className='activity-menu-main'>
           <button 
-            onClick={toggleAddLog} 
-            disabled={addLogGUI}
+            onClick={toggleAddLog}
           >
             <img src='/log.svg' /> Add Log
           </button>
+          { addLogGUI && <EditLog toggle={toggleAddLog} updateLog={updateLog} />}
           <button 
             onClick={toggleFilter}
             style={anyFiltersActive() ? filtersActiveStyle : undefined}
@@ -120,9 +120,7 @@ export default function Activity () {
         :
         <Calendar logs={transactions} updateLog={updateLog}/> 
       }
-
-      { addLogGUI && <EditLog toggle={toggleAddLog} updateLog={updateLog} />}
-
+      
     </div>
   );
 }

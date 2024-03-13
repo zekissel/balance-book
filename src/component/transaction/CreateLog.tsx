@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { invoke } from "@tauri-apps/api/tauri";
 import { UpdateLogProps, Category, IncomeCategory, getEnumKeys, Expense, Income, isExpense } from '../../typedef';
-import Draggable from 'react-draggable';
+import '../../styles/Log.css';
 
 interface CreateLogProps { toggle: () => void, updateLog: UpdateLogProps}
 export default function CreateLog ({ toggle, updateLog }: CreateLogProps) {
@@ -9,10 +9,7 @@ export default function CreateLog ({ toggle, updateLog }: CreateLogProps) {
   const [addIncome, setAddIncome] = useState(false);
 
   return (
-    <Draggable handle='.handle'>
-    <fieldset className='add-log'>
-      <legend>Add Log</legend>
-      <div className='handle'><img draggable={false} src='/move-arrow.svg' /></div>
+    <menu className='new-log'>
 
       <span>
         <input type='radio' name='type' value='Expense' id='exp' onChange={() => setAddIncome(false)} defaultChecked/>
@@ -30,8 +27,7 @@ export default function CreateLog ({ toggle, updateLog }: CreateLogProps) {
         isIncome={addIncome}
       />
 
-    </fieldset>
-    </Draggable>
+    </menu>
   );
 }
 
@@ -104,16 +100,16 @@ export function EditTransaction ({ log, toggle, cancel, isIncome, updateLog }: T
   }
 
   return (
-    <fieldset className='add-exp'>
+    <fieldset className='new-trans'>
       <legend>{ log ? 'Edit' : 'New' }{ isIncome ? ` Income` : ` Expense` }</legend>
 
-      <span className='exp-main'>
-        <li>{ isIncome ? `Source`: `Store`}:<input type='text' value={store} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStore(e.target.value)}/></li>
-        <li>Amount:<input type='text' value={amount} onChange={updateAmount}/></li>
+      <span className='new-trans-main'>
+        <li><label>{ isIncome ? `Source`: `Store`}: </label><input type='text' value={store} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStore(e.target.value)}/></li>
+        <li><label>Amount: </label><input type='text' value={amount} onChange={updateAmount}/></li>
       </span>
       
-      <span className='exp-detail'>
-        <li>Category:
+      <span className='new-trans-detail'>
+        <li><label>Category: </label>
         { isIncome ?
           <select value={incomeCategory} onChange={(e) => setIncomeCategory(IncomeCategory[e.target.value as keyof typeof IncomeCategory])}>
             {getEnumKeys(IncomeCategory).map((key, index) => (
@@ -132,16 +128,16 @@ export function EditTransaction ({ log, toggle, cancel, isIncome, updateLog }: T
           </select>
         }
         </li>
-        <li>Date:
+        <li><label>Date: </label>
           <input className='date-pick' type='date' value={date.toISOString().substring(0, 10)} onChange={(e) => {
             setDate(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')));
             }} />
         </li>
       </span>
-      <li>Description:<textarea value={desc} onChange={(e) => setDesc(e.target.value)}></textarea></li>
+      <li><label>Desc: </label><textarea value={desc} onChange={(e) => setDesc(e.target.value)}></textarea></li>
       
 
-      <button className='exp-sub' onClick={isIncome ? addIncome : addExpense}>Submit</button>
+      <button className='new-trans-submit' onClick={isIncome ? addIncome : addExpense}>Submit</button>
       <button onClick={cancel}>Cancel</button>
       { log && <button className='delete-trans' onClick={deleteTransaction}>Delete</button> }
     </fieldset>
