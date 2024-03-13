@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { LogProps, Income, Expense, isExpense, getCategoryColor, addDays, UpdateLogProps } from "../../typedef";
-import Transaction from "../transaction/ViewTransaction";
+import ViewLog from "../transaction/ViewLog";
 
 interface ListProps { logs: LogProps, updateLog: UpdateLogProps }
 export default function List ({ logs, updateLog }: ListProps) {
@@ -59,7 +59,7 @@ export default function List ({ logs, updateLog }: ListProps) {
 
       { selectedTransactions.length > 0 && 
         selectedTransactions.map((trans, index) => (
-          <Transaction 
+          <ViewLog 
             key={index} 
             transaction={trans} 
             toggle={() => setSelectedTransactions(selectedTransactions.filter(t => JSON.stringify(t) !== JSON.stringify(trans)))}

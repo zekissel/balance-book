@@ -66,7 +66,7 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
       </li>
 
       <li>
-        <span className='filter-menu-heading'><label className='filter-menu-togglable' onClick={() => { toggleCategory(); setFilters({...filters, category: []}) }}>Categories: </label>
+        <span className='filter-menu-heading'><label className={filters.category.length === 0 ? 'filter-menu-togglable':'filter-menu-togglable-nonempty'} onClick={() => { toggleCategory(); setFilters({...filters, category: []}) }}>Categories: </label>
           <span id='category-img' onClick={toggleCategory}>{ showCategory ? <img src='/close-up.svg' /> : <img src='/open-down.svg' /> }</span>
         </span>
         { showCategory &&
@@ -88,7 +88,7 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
             ))}
           </select>
         }
-        { !showCategory && (filters.category.length > 0 ? <span id='filter-category-list'>{ filters.category.map((c) => c.toString() + ' ')}</span> : <span>None</span>)}
+        { !showCategory && (filters.category.length > 0 ? <div id='filter-category-list'>{ filters.category.map((c) => c.toString() + ' ')}</div> : <span>None</span>)}
       </li>
 
       <li>
@@ -109,9 +109,9 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
         <input type='text' value={filters.highAmount} onChange={handleHighAmount}/>
       </li>
 
-      <li>
-        <button onClick={resetFilters}>Clear Filters</button>
-        <button onClick={toggle}>Close</button>
+      <li className='filter-menu-meta'>
+        <button id='clear-filters' onClick={resetFilters}>Clear Filters</button>
+        <button onClick={toggle}>Hide</button>
       </li>
 
     </menu>

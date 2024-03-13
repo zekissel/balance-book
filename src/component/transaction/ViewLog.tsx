@@ -1,10 +1,10 @@
 import { Expense, Income, UpdateLogProps, getCategoryColor, isExpense } from "../../typedef";
 import Draggable from "react-draggable";
 import { useState } from "react";
-import { EditTransaction } from "./CreateLog";
+import { EditLog } from "./EditLog";
 
-interface TransactionProps { transaction: Expense | Income, toggle: () => void, updateLog: UpdateLogProps}
-export default function Transaction ({ transaction, toggle, updateLog }: TransactionProps) {
+interface ViewLogProps { transaction: Expense | Income, toggle: () => void, updateLog: UpdateLogProps}
+export default function ViewLog ({ transaction, toggle, updateLog }: ViewLogProps) {
 
   const [editsActive, setEditsActive] = useState(false);
   const toggleEdits = () => setEditsActive(!editsActive);
@@ -23,7 +23,7 @@ export default function Transaction ({ transaction, toggle, updateLog }: Transac
         </li>
 
         { editsActive ? 
-          <EditTransaction log={transaction} toggle={toggle} cancel={toggleEdits} updateLog={updateLog} isIncome={!isExpense(transaction)} />
+          <EditLog log={transaction} toggle={toggle} cancel={toggleEdits} updateLog={updateLog} isIncome={!isExpense(transaction)} />
         :
           <>
             <li>

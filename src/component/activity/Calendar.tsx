@@ -1,7 +1,7 @@
 import { LogProps, UpdateLogProps } from "../../typedef";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Day, Month, Expense, Income, addDays, isExpense } from "../../typedef";
-import Transaction from "../transaction/ViewTransaction";
+import ViewLog from "../transaction/ViewLog";
 import ViewDay from "./ViewDay";
 
 
@@ -127,7 +127,7 @@ export default function Calendar ({ logs, updateLog }: CalendarProps) {
 
       { selectedTransactions.length > 0 && 
         selectedTransactions.map((trans, index) => (
-          <Transaction 
+          <ViewLog 
             key={index} 
             transaction={trans} 
             toggle={() => setSelectedTransactions(selectedTransactions.filter(t => JSON.stringify(t) !== JSON.stringify(trans)))}
