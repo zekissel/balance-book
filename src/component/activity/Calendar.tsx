@@ -19,6 +19,18 @@ export default function Calendar ({ logs, updateLog, showFilter }: CalendarProps
   const [week5, setWeek5] = useState<Day[]>([]);
 
   const weeks = useMemo(() => [week1, week2, week3, week4, week5], [week1, week2, week3, week4, week5]);
+  const yearRange = useMemo(() => {
+    if (logs.length === 0) return Array.from({ length: 8 }, (_, i) => (curDate.current.getFullYear() - 3) + i);
+    const minYear = logs.reduce((min, log) => {
+      const logYear = new Date(log.date).getFullYear();
+      return logYear < min.date.getFullYear() ? log : min;
+    }).date.getFullYear() - 3;
+    const maxYear = Math.max(logs.reduce((max, log) => {
+      const logYear = new Date(log.date).getFullYear();
+      return logYear > max.date.getFullYear() ? log : max;
+    }).date.getFullYear(), curDate.current.getFullYear()) + 5;
+    return Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
+  }, [logs]);
 
   function fillDay (week: Day[], dayIndex: number) {
     week[dayIndex].transactions = logs.filter(exp => {
@@ -97,7 +109,7 @@ export default function Calendar ({ logs, updateLog, showFilter }: CalendarProps
           </select>
 
           <select value={calDate.current.getFullYear()} onChange={(e) => { calDate.current = new Date(calDate.current.setFullYear(Number(e.target.value))); initWeeks(); }}>
-            { [20,21,22,23,24].map((year, index) => <option key={index} value={year+2000}>{year+2000}</option>)}
+            { yearRange.map((year, index) => <option key={index} value={year}>{year}</option>)}
           </select>
 
           <button onClick={() => shiftWeeks(1)}><img src='right-arrow.svg' /></button>

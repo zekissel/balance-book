@@ -5,6 +5,7 @@ export enum State {
   Activity,
   Stats,
   Assets,
+  Market,
   Profile,
   Settings,
 }

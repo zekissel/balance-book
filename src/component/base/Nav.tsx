@@ -35,6 +35,9 @@ export default function Nav ({ state, setState }: NavProps) {
         <li id={state === State.Assets ? 'nav-current' : undefined} onClick={() => setState(State.Assets)}>
         { fullNav ? 'Assets' : <img draggable={false} src='/wallet.svg' alt='Assets' />}
         </li>
+        <li id={state === State.Market ? 'nav-current' : undefined} onClick={() => setState(State.Market)}>
+        { fullNav ? 'Market' : <img draggable={false} src='/candles.svg' alt='Market' />}
+        </li>
       </ul>
 
       <ul className={ fullNav ? 'nav-extra' : 'nav-extra nav-inverse'}>
