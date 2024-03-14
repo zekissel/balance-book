@@ -269,50 +269,6 @@ th {
   max-height: 1.5rem;
 }
 
-.spot-date {
-  font-size: large;
-  font-weight: 550;
-  margin: .5rem 0;
-}
-
-.spot-tag-exp {
-  background-color:#fce6ba;
-  width: 75%;
-  margin: .2rem 0;
-  padding: .2rem;
-  border-radius: .5rem;
-  font-weight: 550;
-}
-
-.spot-tag-inc {
-  background-color:#c6e1d1;
-  width: 75%;
-  margin: .2rem 0;
-  padding: .2rem;
-  border-radius: .5rem;
-  font-weight: 550;
-}
-
-.spot-exit {
-  margin: 0 0 0 .2rem;
-}
-
-.spot-source {
-  font-size: large;
-  background-color: azure;
-  padding: .2rem;
-  margin: .2rem;
-  border-radius: .5rem;
-}
-
-.spot-cat {
-  font-size: large;
-  padding: .2rem;
-  margin: .2rem;
-  border-radius: .5rem;
-  background-color: #ffffff;
-}
-
 #list-element {
   height: 89%;
   overflow: hidden;
@@ -324,13 +280,4 @@ th {
   -moz-user-select: none;
   -webkit-text-select: none;
   -webkit-user-select: none;
-}
-
-
-.delete-trans {
-  color: #fff;
-  background-color: #ee3b3b;
-  border-radius: 1vw;
-  border: none;
-  cursor: pointer;
 }

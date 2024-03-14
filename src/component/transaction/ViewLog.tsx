@@ -2,6 +2,7 @@ import { Expense, Income, UpdateLogProps, getCategoryColor, isExpense } from "..
 import Draggable from "react-draggable";
 import { useState } from "react";
 import { EditLog } from "./EditLog";
+import '../../styles/Log.css';
 
 interface ViewLogProps { transaction: Expense | Income, toggle: () => void, updateLog: UpdateLogProps}
 export default function ViewLog ({ transaction, toggle, updateLog }: ViewLogProps) {
@@ -11,35 +12,35 @@ export default function ViewLog ({ transaction, toggle, updateLog }: ViewLogProp
 
 
   return (
-      <Draggable>
-      <div className='view-trans'>
-        
+      <Draggable handle=".handle">
+        <div className='view-log'>
+          
 
-        <li className='spot-date'>
-          { transaction.date.toDateString().split(' ').slice(1).join(' ') }
-          <div className='handle'><img draggable={false} src='/move-arrow.svg' /></div>
-          <button onClick={toggleEdits}><img src='/cog.svg' /></button>
-          <button className='spot-exit' onClick={toggle}><img src="x.svg" /></button>
-        </li>
+          <li className='view-log-meta'>
+            <button onClick={toggleEdits}><img src='/edit.svg' /></button>
+            <div className='handle'><img draggable={false} src='/move-arrow.svg' /></div>
+            <button className='spot-exit' onClick={toggle}><img src="x.svg" /></button>
+          </li>
 
-        { editsActive ? 
-          <EditLog log={transaction} toggle={toggle} cancel={toggleEdits} updateLog={updateLog} isIncome={!isExpense(transaction)} />
-        :
-          <>
-            <li>
-              <span className={isExpense(transaction) ? 'spot-tag-exp' : 'spot-tag-inc'}>{ isExpense(transaction) ? `- ` : `+ ` }{ `$${transaction.amount / 100}` }</span>
-            </li>
-            <li>
-              <span className='spot-source'>{ isExpense(transaction) ? transaction.store : transaction.source }</span>
-              <span className='spot-cat' style={{ backgroundColor: getCategoryColor(transaction.category) }}>{ transaction.category }</span>
-            </li>
-            
-            <li>{ transaction.desc }</li>
-          </>
-        }
-        
+          { editsActive ? 
+            <EditLog log={transaction} toggle={toggle} cancel={toggleEdits} updateLog={updateLog} isIncome={!isExpense(transaction)} />
+          :
+            <fieldset className='view-log-static'>
+              <legend>{ transaction.date.toDateString().split(' ').slice(1).join(' ') }</legend>
+              <li className='view-log-main'>
+                <span className={isExpense(transaction) ? 'view-log-expense' : 'view-log-income'}>{ isExpense(transaction) ? `- ` : `+ ` }{ `$${transaction.amount / 100}` }</span>
+                <span className='view-log-source'>{ isExpense(transaction) ? transaction.store : transaction.source }</span>
+              </li>
+              <li className='view-log-category'>
+                <span style={{ backgroundColor: getCategoryColor(transaction.category) }}>{ transaction.category }</span>
+              </li>
+              
+              <li className='view-log-desc'>{ transaction.desc }</li>
+            </fieldset>
+          }
+          
 
-      </div>
+        </div>
       </Draggable>
   )
 }

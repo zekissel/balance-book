@@ -80,8 +80,7 @@ export function EditLog ({ log, toggle, cancel, isIncome, updateLog }: EditLogPr
         <li><label>Amount: </label><input type='text' value={amount} onChange={updateAmount}/></li>
       </div>
       
-      <span className='new-trans-detail'>
-        <li><label>Category: </label>
+      <li className='new-trans-detail'>
         { isIncome ?
           <select value={incomeCategory} onChange={(e) => setIncomeCategory(IncomeCategory[e.target.value as keyof typeof IncomeCategory])}>
             {getEnumKeys(IncomeCategory).map((key, index) => (
@@ -99,13 +98,10 @@ export function EditLog ({ log, toggle, cancel, isIncome, updateLog }: EditLogPr
             ))}
           </select>
         }
-        </li>
-        <li><label>Date: </label>
-          <input className='date-pick' type='date' value={date.toISOString().substring(0, 10)} onChange={(e) => {
-            setDate(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')));
-            }} />
-        </li>
-      </span>
+        <input className='date-pick' type='date' value={date.toISOString().substring(0, 10)} onChange={(e) => {
+          setDate(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')));
+          }} />
+      </li>
       <li className='new-trans-desc'><label>Desc: </label><textarea value={desc} onChange={(e) => setDesc(e.target.value)}></textarea></li>
       
       <li className='new-trans-meta'>

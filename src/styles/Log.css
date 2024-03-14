@@ -41,6 +41,12 @@ fieldset.new-trans > legend {
   border-bottom: 2px solid #6b6b6b;
 }
 
+li.new-trans-detail {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
 div.new-trans-main > li { 
   width: 100%; 
   display: flex;
@@ -74,3 +80,91 @@ li.new-trans-meta {
   display: flex;
   justify-content: space-around;
 }
+
+li.new-trans-meta > button {
+  font-size: 16px;
+  font-weight: 540;
+  margin: .2rem;
+  padding: .2rem .5rem;
+  border-radius: 1vw;
+  cursor: pointer;
+  border: none;
+  border-bottom: 2px solid #6b6b6b;
+  color: #191919;
+}
+
+button.new-trans-submit { background-color: #b1dce0; }
+button.new-trans-submit:hover { background-color: #99bdc0; }
+
+button.delete-trans { background-color: #f2b2a8; }
+button.delete-trans:hover { background-color: #d99a90; }
+
+div.view-log {
+  position: absolute;
+  z-index: 20;
+  right: 1rem;
+  top: 4rem;
+
+  height: fit-content;
+  min-width: 14rem;
+  max-width: 20rem;
+
+  background-color: rgba(182, 191, 182, 0.6);
+  border: 2px solid #739d88;
+  border-radius: 1vw;
+  padding: 1rem;
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+}
+
+div.view-log > li {
+  list-style: none;
+}
+
+li.view-log-meta {
+  margin: 0 auto;
+  width: 60%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  background-color: #c0c0c08f;
+  padding: .2rem;
+  border-radius: 1vw;
+}
+
+fieldset.view-log-static {
+  padding: 0rem;
+  margin: 0;
+  list-style: none;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+
+  border-radius: 1vw;
+}
+
+li.view-log-main, li.view-log-category, li.view-log-desc {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.view-log-expense, .view-log-income, .view-log-source, .view-log-category > span {
+  padding: .1rem .2rem;
+  margin: .2rem 0;
+  border-radius: 1vw;
+  border: 1px dashed #6b6b6b;
+}
+
+.view-log-source { background-color: rgba(207, 250, 246, 0.6); }
+.view-log-desc { margin: .5rem 0; }
+.view-log-income { background-color: #c6e1d1; }
+.view-log-expense { background-color: #fce6ba; }
