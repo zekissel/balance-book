@@ -1,14 +1,11 @@
 import { useMemo, useState } from "react";
 import { LogProps, Income, Expense, isExpense, getCategoryColor, addDays, UpdateLogProps } from "../../typedef";
 import ViewLog from "../transaction/ViewLog";
+import '../../styles/List.css';
 
-interface ListProps { logs: LogProps, updateLog: UpdateLogProps }
-export default function List ({ logs, updateLog }: ListProps) {
+interface ListProps { logs: LogProps, updateLog: UpdateLogProps, showFilter: boolean }
+export default function List ({ logs, updateLog, showFilter }: ListProps) {
 
-
-  function thisYear(date: Date) {
-    return new Date(date.getFullYear(), 0, 1, 0, 0, 0, 0);
-  }
 
   const pastWeekTransactions = useMemo(() => {
     const weekAgo = addDays(new Date(), -7);
@@ -20,37 +17,42 @@ export default function List ({ logs, updateLog }: ListProps) {
     return logs.filter(t => (t.date.getTime() >= monthAgo.getTime()) && !pastWeekTransactions.includes(t));
   }, [logs]);
 
-  const pastYearTransactions = useMemo(() => {
-    const yearAgo = thisYear(new Date());
+  const past90DTransactions = useMemo(() => {
+    const yearAgo = addDays(new Date(), -90);
     return logs.filter(t => (t.date.getTime() >= yearAgo.getTime()) && !pastMonthTransactions.includes(t) && !pastWeekTransactions.includes(t));
   }, [logs]);
 
   const otherTransactions = useMemo(() => {
-    return logs.filter(t => !pastMonthTransactions.includes(t) && !pastWeekTransactions.includes(t) && !pastYearTransactions.includes(t));
+    return logs.filter(t => !pastMonthTransactions.includes(t) && !pastWeekTransactions.includes(t) && !past90DTransactions.includes(t));
   }, [pastWeekTransactions, logs]);
 
 
   const allTransactions = useMemo(() => [
-    pastWeekTransactions, pastMonthTransactions, pastYearTransactions, otherTransactions
-  ], [pastWeekTransactions, pastMonthTransactions, pastYearTransactions, otherTransactions]);
+    pastWeekTransactions, pastMonthTransactions, past90DTransactions, otherTransactions
+  ], [pastWeekTransactions, pastMonthTransactions, past90DTransactions, otherTransactions]);
 
-  const transactionTitles = ['This Week', 'This Month', 'This Year', 'Previous'];
+  const transactionTitles = ['7 Days', '30 Days', '90 Days', 'Previous'];
   const [selectedTransactions, setSelectedTransactions] = useState<(Expense | Income)[]>([]);
+  const updateSelected = (transaction: Expense | Income) => {
+    if (selectedTransactions.includes(transaction)) setSelectedTransactions(selectedTransactions.filter(t => JSON.stringify(t) !== JSON.stringify(transaction)));
+    else setSelectedTransactions([...selectedTransactions, transaction]);
+  };
 
   return (
-    <div id='list-element'>
+    <div className={showFilter?'main-down-shift list-root':'list-root'}>
 
       {
         allTransactions.map((transactionCollection, ind) => (
           
-          <ol key={ind}>
+          <ol className='list-main' key={ind}>
             <h2>{ transactionTitles[ind] }</h2>
             {transactionCollection.map((transaction, index) => (
-              <li key={index} className={ isExpense(transaction) ? 'exp-list-item' : 'inc-list-item'} onClick={() => setSelectedTransactions([...selectedTransactions, transaction])}>
-                <span className='list-date'>{transaction.date.toDateString().split(' ').slice(0, 3).join(' ')}</span>
-                <span> { isExpense(transaction) ? transaction.store : transaction.source }</span>
-                <span className='list-amount'> {isExpense(transaction) ? `-$`: `+$`}{transaction.amount / 100} </span>
-                <span className='list-cat' style={{ backgroundColor: getCategoryColor(transaction.category) }}>{transaction.category}</span><span> - {transaction.desc}</span>
+              <li key={index} className={ (isExpense(transaction) ? 'list-item-expense' : 'list-item-income') + ' list-item'} onClick={() => updateSelected(transaction)}>
+                <span className='list-item-date'>{transaction.date.toDateString().split(' ').slice(0, 3).join(' ')}</span>
+                <span className='list-item-source'> { isExpense(transaction) ? transaction.store : transaction.source }</span>
+                <span className='list-item-amount'> {isExpense(transaction) ? `-$`: `+$`}{transaction.amount / 100} </span>
+                <span className='list-item-category' style={{ backgroundColor: getCategoryColor(transaction.category) }}>{transaction.category}</span>
+                <span className='list-item-desc'> - {transaction.desc}</span>
               </li>
             ))}
           </ol>

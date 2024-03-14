@@ -53,8 +53,8 @@ div.new-trans-main > li {
 }
 div.new-trans-main > li > input { width: 100%; }
 
-fieldset.new-trans-income { background-color: #c6e1d1; }
-fieldset.new-trans-expense { background-color: #fce6ba; }
+fieldset.new-trans-income { background-color: #c6e1d181; }
+fieldset.new-trans-expense { background-color: #fce6ba81; }
 
 span.new-log-radio {
   font-size: 1rem;
@@ -149,6 +149,14 @@ fieldset.view-log-static {
   align-items: start;
 
   border-radius: 1vw;
+}
+
+fieldset.view-log-static > legend {
+  margin: .2rem;
+  padding: .2rem .5rem;
+  border-radius: 1vw;
+  background-color: #dfe2e0;
+  border-bottom: 2px solid #6b6b6b;
 }
 
 li.view-log-main, li.view-log-category, li.view-log-desc {

@@ -3,10 +3,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Day, Month, Expense, Income, addDays, isExpense } from "../../typedef";
 import ViewLog from "../transaction/ViewLog";
 import ViewDay from "./ViewDay";
+import '../../styles/Calendar.css';
 
 
-interface CalendarProps { logs: LogProps, updateLog: UpdateLogProps }
-export default function Calendar ({ logs, updateLog }: CalendarProps) {
+interface CalendarProps { logs: LogProps, updateLog: UpdateLogProps, showFilter: boolean }
+export default function Calendar ({ logs, updateLog, showFilter }: CalendarProps) {
 
   const curDate = useRef(new Date());
   const calDate = useRef(new Date(curDate.current.setHours(0,0,0,0)));
@@ -67,14 +68,28 @@ export default function Calendar ({ logs, updateLog }: CalendarProps) {
 
   const [selectedTransactions, setSelectedTransactions] = useState<(Expense | Income)[]>([]);
   const [selectedDay, setSelectedDay] = useState<Day[]>([]);
+  const updateSelectedTransactions = (transaction: Expense | Income) => {
+    if (selectedTransactions.includes(transaction)) {
+      setSelectedTransactions(selectedTransactions.filter(t => JSON.stringify(t) !== JSON.stringify(transaction)));
+    } else {
+      setSelectedTransactions([...selectedTransactions, transaction]);
+    }
+  }
+  const updateSelectedDays = (day: Day) => {
+    if (selectedDay.includes(day)) {
+      setSelectedDay(selectedDay.filter(d => JSON.stringify(d) !== JSON.stringify(day)));
+    } else {
+      setSelectedDay([...selectedDay, day]);
+    }
+  }
 
   return (
-    <div id='cal-container'>
-      <menu id='cal-tools'>
+    <div className={showFilter?'main-down-shift calendar-root':'calendar-root'}>
+      <menu className="calendar-menu">
 
-        <span id='today' onClick={() => {calDate.current = curDate.current; initWeeks()}}>{ curDate.current.toDateString() }</span>
+        <span className='calendar-menu-today' onClick={() => {calDate.current = curDate.current; initWeeks()}}>{ curDate.current.toDateString() }</span>
 
-        <span id='cal-shift'>
+        <span className='calendar-shift'>
           <button onClick={() => shiftWeeks(-1)}><img src='left-arrow.svg' /></button>
 
           <select value={calDate.current.getMonth()} onChange={(e) => { calDate.current = new Date(new Date(calDate.current.setMonth(Number(e.target.value))).setDate(7)); initWeeks();}}>
@@ -101,9 +116,9 @@ export default function Calendar ({ logs, updateLog }: CalendarProps) {
           { weeks.map((week) => (
             <tr>
               {week.map((day, index) => (
-                <td key={index} onClick={() => setSelectedDay([...selectedDay, day])}>
+                <td key={index} onClick={() => updateSelectedDays(day)}>
 
-                  <div className='cal-day'>
+                  <div className='calendar-day'>
                     <span className='day-tag' style={day.date.toDateString() === curDate.current.toDateString() ? todayStyle : undefined}>
                       { day.date.getDate() }
                     </span>
@@ -112,8 +127,8 @@ export default function Calendar ({ logs, updateLog }: CalendarProps) {
                         <span 
                           className={ isExpense(trans) ? 'cal-exp' : 'cal-inc'}
                           key={index} 
-                          onClick={(e) => {setSelectedTransactions([...selectedTransactions, trans]); e.stopPropagation();}}
-                          > + ${trans.amount / 100} { isExpense(trans) ? trans.store : trans.source}</span>
+                          onClick={(e) => {updateSelectedTransactions(trans); e.stopPropagation();}}
+                          > {isExpense(trans)?'-':'+'} ${trans.amount / 100} { isExpense(trans) ? trans.store : trans.source}</span>
                       )}
                     </div>
                   </div>
@@ -153,5 +168,6 @@ export default function Calendar ({ logs, updateLog }: CalendarProps) {
 const todayStyle = { 
   backgroundColor: '#69a6c1', 
   border: `2px solid rgb(106, 146, 185)`,
-  fontWeight: '600'
+  fontWeight: '600',
+  color: '#fff',
 };

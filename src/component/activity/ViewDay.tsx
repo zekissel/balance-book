@@ -1,28 +1,40 @@
 import Draggable from "react-draggable";
+import { useMemo } from "react";
 import { Day, isExpense } from "../../typedef";
+import '../../styles/ViewDay.css';
 
 interface ViewDayProps { day: Day, toggle: () => void}
 export default function ViewDay ({ day, toggle }: ViewDayProps) {
 
+  const netTransaction = useMemo(() => {
+    return day.transactions.reduce((acc, t) => acc + (isExpense(t) ? -t.amount : t.amount), 0);
+  }, [day.transactions]);
+
   return (
-    <Draggable>
-      <div id='viewday-container'>
+    <Draggable handle='.handle'>
+      <div id='view-day-root'>
         
-        <h3>{day.date.toDateString()}</h3>
+        <h4>{day.date.toDateString()}</h4>
+
+        { netTransaction !== 0 && <h3 className={netTransaction > 0?'view-day-positive':'view-day-negative'} >{netTransaction > 0 ? `+$${netTransaction / 100}` : `-$${-netTransaction / 100}`}</h3> }
     
-        <ul>
+        <ol className='view-day-list'>
           { day.transactions.map((t, i) => 
-            <li key={i}>
-              <span className='spot-source'>{isExpense(t) ? t.store : t.source}</span>
-              <span className='list-amount'>{isExpense(t) ? `-$` : `+$`}{t.amount / 100}</span>
-              <span>{t.desc}</span>
+            <li key={i} className='view-day-item'>
+              <span className='view-day-source'>{isExpense(t) ? t.store : t.source}</span>
+              <span className='view-day-amount'>{isExpense(t) ? `-$` : `+$`}{t.amount / 100}</span>
+              <span className='view-day-desc'>{t.desc}</span>
             </li>
           )}
 
           { day.transactions.length === 0 && <li>No transactions</li>}
-        </ul>
+        </ol>
 
-        <button onClick={toggle}>X</button>
+        <span>
+          <img className='handle' draggable={false} src='/move-arrow.svg'/>
+          <img src='x.svg' onClick={toggle} />
+        </span>
+        
 
       </div>
     </Draggable>

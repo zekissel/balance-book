@@ -116,9 +116,9 @@ export default function Activity () {
       { filterGUI && <Filter toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
 
       { listView ?
-        <List logs={transactions} updateLog={updateLog} />
+        <List logs={transactions} updateLog={updateLog} showFilter={filterGUI} />
         :
-        <Calendar logs={transactions} updateLog={updateLog}/> 
+        <Calendar logs={transactions} updateLog={updateLog} showFilter={filterGUI} /> 
       }
       
     </div>
