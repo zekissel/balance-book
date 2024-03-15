@@ -3,6 +3,7 @@
 
 use database::models::Expense;
 use database::models::Income;
+use database::models::Account;
 
 pub mod database;
 
@@ -47,6 +48,26 @@ fn delete_income(id: i32) {
     database::api::delete_income(id);
 }
 
+#[tauri::command]
+fn add_account(account_type: &str, account_id: &str, balance: i32, date: &str) -> Account {
+    database::api::create_account(account_type, account_id, balance, date)
+}
+
+#[tauri::command]
+fn load_account() -> Vec<Account> {
+    database::api::get_account()
+}
+
+#[tauri::command]
+fn update_account(id: i32, account_type: &str, account_id: &str, balance: i32, date: &str) -> Account {
+    database::api::update_account(id, account_type, account_id, balance, date)
+}
+
+#[tauri::command]
+fn delete_account(id: i32) {
+    database::api::delete_account(id);
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|_app| {
@@ -55,7 +76,7 @@ fn main() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![add_expense, load_expenses, update_expense, delete_expense, add_income, load_income, update_income, delete_income])
+        .invoke_handler(tauri::generate_handler![add_expense, load_expenses, update_expense, delete_expense, add_income, load_income, update_income, delete_income, add_account, load_account, update_account, delete_account])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

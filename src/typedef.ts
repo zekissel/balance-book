@@ -173,3 +173,28 @@ export interface Filters {
   lowAmount: string,
   highAmount: string,
 }
+
+
+export interface Account {
+  id: number;
+  account_type: AccountType;
+  account_id: string;
+  balance: number;
+  date: Date;
+}
+
+export enum AccountType {
+  Checking = "Checking",
+  Savings = "Savings",
+  Investing = "Investing",
+}
+
+export async function getAccounts(): Promise<Account[]> {
+  return await invoke("load_account")
+    .then(data => {
+      const acc = data as Account[];
+      acc.forEach(e => e.date = new Date(new Date(e.date).toDateString()));
+      acc.sort((a, b) => a.date > b.date ? -1 : 1);
+      return acc;
+    })
+}

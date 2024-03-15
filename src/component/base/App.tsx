@@ -5,6 +5,7 @@ import "../../styles/App.css";
 import Home from "./Home";
 import Activity from "./Activity";
 import Stats from "./Stats";
+import Assets from "./Assets";
 
 function App() {
   const [UIState, setUIState] = useState(State.Home);
@@ -29,8 +30,21 @@ function App() {
         }
 
         { UIState === State.Assets &&
+          <Assets />
+        }
+
+        { UIState === State.Market &&
           <>not made</>
         }
+
+        { UIState === State.Profile &&
+          <>not made</>
+        }
+
+        { UIState === State.Settings &&
+          <>not made</>
+        }
+        
       </main>
     </div>
   );

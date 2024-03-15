@@ -46,7 +46,9 @@ li.list-item {
 }
 
 li.list-item-expense { background-color: #fce6ba65; }
+li.list-item-expense:hover { background-color: #f6d6aa99; }
 li.list-item-income { background-color: #c6e1d165; }
+li.list-item-income:hover { background-color: #b6d1c199; }
 
 span.list-item-date {
   font-family:'Courier New', Courier, monospace;

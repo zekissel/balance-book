@@ -19,3 +19,13 @@ diesel::table! {
       date -> Text,
   }
 }
+
+diesel::table! {
+  account (id) {
+      id -> Integer,
+      account_type -> Text,
+      account_id -> Text,
+      balance -> Integer,
+      date -> Text,
+  }
+}

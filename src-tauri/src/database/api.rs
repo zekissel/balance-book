@@ -5,7 +5,7 @@ use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 
-use super::models::{AddExpense, Expense, AddIncome, Income};
+use super::models::{AddExpense, Expense, AddIncome, Income, AddAccount, Account};
 
 
 /* ----- initialize database connection and migrations */
@@ -170,4 +170,59 @@ pub fn delete_income(id_i: i32) {
   diesel::delete(income.find(id_i))
     .execute(connection)
     .expect("Error deleting income");
+}
+
+
+pub fn create_account(
+  account_type: &str, 
+  account_id: &str, 
+  balance: i32,
+  date: &str
+) -> Account {
+  use super::schema::account;
+  let connection = &mut establish_connection();
+
+  let new_account = AddAccount { account_type, account_id, balance, date };
+
+  diesel::insert_into(account::table)
+    .values(&new_account)
+    .returning(Account::as_returning())
+    .get_result(connection)
+    .expect("Error saving new account")
+}
+
+pub fn get_account() -> Vec<Account> {
+  use super::schema::account::dsl::*;
+
+  account
+    .load::<Account>(&mut establish_connection())
+    .expect("Error loading account")
+}
+
+pub fn update_account(
+  id_i: i32,
+  account_type_i: &str, 
+  account_id_i: &str, 
+  balance_i: i32,
+  date_i: &str
+) -> Account {
+  use super::schema::account::dsl::*;
+
+  let connection = &mut establish_connection();
+
+  diesel::update(account.find(id_i))
+    .set((account_type.eq(account_type_i), account_id.eq(account_id_i), balance.eq(balance_i), date.eq(date_i)))
+    .returning(Account::as_returning())
+    .get_result(connection)
+    .expect("Error updating account")
+}
+
+pub fn delete_account(id_i: i32) {
+  use super::schema::account::dsl::*;
+
+  let connection = &mut establish_connection();
+
+  diesel::delete(account.find(id_i))
+    .execute(connection)
+    .expect("Error deleting account");
 }
