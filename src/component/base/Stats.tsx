@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Income, Expense, getExpenses, getIncome, Filters } from "../../typedef"
+import { Income, Expense, getExpenses, getIncome, Filters, filterTransactions } from "../../typedef"
 import StatsPage from "../stats/StatsPage"
 import Filter from "../activity/Filter";
 import "../../styles/Stats.css"
@@ -21,6 +21,14 @@ export default function Stats () {
   const anyFiltersActive = () => {
     return (filters.type !== `all` || filters.startDate !== null || filters.endDate !== null || filters.category.length > 0 || filters.source[0].length > 0 || Number(filters.lowAmount) !== 0 || Number(filters.highAmount) !== 0)
   };
+  const anyDateFilters = () => {
+    return (filters.startDate !== null || filters.endDate !== null)
+  }
+  const getTimeRangeFromDate = () => {
+    if (filters.startDate === null) return 0;
+    const end = filters.endDate?.getTime() ?? new Date().getTime();
+    return Math.floor((end - filters.startDate.getTime()) / (1000 * 60 * 60 * 24));
+  }
 
 
   const [income, setIncome] = useState<Income[]>([]);
@@ -34,13 +42,12 @@ export default function Stats () {
   }, [])
 
   const allTransactions = useMemo(() => {
-    let transactions: Array<Income | Expense> = [];
-    return transactions.concat(income).concat(expenses).sort((a, b) => b.date.getTime() - a.date.getTime());
-  }, [income, expenses])
+    return filterTransactions({ expenses, income, filters });
+  }, [income, expenses, filters])
 
 
-  const [timeRange, setTimeRange] = useState(14);
-  const [rangeMultiplier, setRangeMultiplier] = useState(1);
+  const [timeRange, setTimeRange] = useState(2);
+  const [rangeMultiplier, setRangeMultiplier] = useState(7);
 
   const updateRangeDays = (e: React.ChangeEvent<HTMLInputElement>) => {
     const am = e.target.value;
@@ -53,11 +60,11 @@ export default function Stats () {
     <div className={filterGUI?'main-down-shift stats-root':'stats-root'}>
       <menu className='dynamic-menu'>
         <div className='dynamic-menu-main'>
-          <button id={ rangeMultiplier > 0 ? 'dynamic-menu-current' : undefined}><input type='text' value={timeRange} onChange={updateRangeDays}/></button>
-          <button id={ rangeMultiplier === 1 ? 'dynamic-menu-current' : undefined} onClick={() => setRangeMultiplier(1)}><img src='/cal-day.svg' /> Days</button>
-          <button id={ rangeMultiplier === 7 ? 'dynamic-menu-current' : undefined} onClick={() => setRangeMultiplier(7)}><img src='/cal-week.svg' /> Weeks</button>
-          <button id={ rangeMultiplier === 30 ? 'dynamic-menu-current' : undefined} onClick={() => setRangeMultiplier(30)}><img src='/calendar.svg' /> Months</button>
-          <button id={ rangeMultiplier === 365 ? 'dynamic-menu-current' : undefined} onClick={() => setRangeMultiplier(365)}><img src='/cal-year.svg' /> Years</button>
+          <button id={ !anyDateFilters() && rangeMultiplier > 0 ? 'dynamic-menu-current' : undefined}><input type='text' value={timeRange} onChange={updateRangeDays}/></button>
+          <button id={ !anyDateFilters() && rangeMultiplier === 1 ? 'dynamic-menu-current' : undefined} onClick={() => setRangeMultiplier(1)}><img src='/cal-day.svg' /> Days</button>
+          <button id={ !anyDateFilters() && rangeMultiplier === 7 ? 'dynamic-menu-current' : undefined} onClick={() => setRangeMultiplier(7)}><img src='/cal-week.svg' /> Weeks</button>
+          <button id={ !anyDateFilters() && rangeMultiplier === 30 ? 'dynamic-menu-current' : undefined} onClick={() => setRangeMultiplier(30)}><img src='/calendar.svg' /> Months</button>
+          <button id={ !anyDateFilters() && rangeMultiplier === 365 ? 'dynamic-menu-current' : undefined} onClick={() => setRangeMultiplier(365)}><img src='/cal-year.svg' /> Years</button>
         </div>
 
         <div className='dynamic-menu-main'>
@@ -68,7 +75,7 @@ export default function Stats () {
 
       { filterGUI && <Filter toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
 
-      <StatsPage transactions={allTransactions} timeRange={timeRange * rangeMultiplier} />
+      <StatsPage transactions={allTransactions} timeRange={anyDateFilters() ? getTimeRangeFromDate() : timeRange * rangeMultiplier} endDate={filters.endDate ?? null}/>
 
     </div>
   )

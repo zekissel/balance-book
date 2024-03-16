@@ -5,12 +5,13 @@ import PieIncomeGraph from "./PieIncomeGraph";
 import PieExpenseGraph from "./PieExpenseGraph";
 import LineGraph from "./LineGraph";
 
-interface StatsPageProps { transactions: (Income | Expense)[], timeRange: number }
-export default function StatsPage ({ transactions, timeRange }: StatsPageProps) {
+interface StatsPageProps { transactions: (Income | Expense)[], timeRange: number, endDate: Date | null }
+export default function StatsPage ({ transactions, timeRange, endDate }: StatsPageProps) {
 
   const modifedTransactions = useMemo(() => {
-    const now = new Date(new Date().toDateString()).getTime();
-    return transactions.filter(t => (now - t.date.getTime()) < (timeRange * 24 * 60 * 60 * 1000));
+    if (timeRange === 0) return transactions;
+    const end = new Date((endDate ?? new Date()).toDateString()).getTime();
+    return transactions.filter(t => (end - t.date.getTime()) < (timeRange * 24 * 60 * 60 * 1000));
   }, [transactions, timeRange]);
 
   const netBalance = useMemo(() => {
@@ -18,9 +19,10 @@ export default function StatsPage ({ transactions, timeRange }: StatsPageProps) 
   }, [modifedTransactions]);
 
   const minDate = useMemo(() => {
-    const now = new Date();
-    return new Date(new Date(now.getTime() - (timeRange * 24 * 60 * 60 * 1000)).toDateString());
-  }, [timeRange]);
+    if (timeRange === 0) return new Date(Math.min(...modifedTransactions.map(t => t.date.getTime())));
+    const stop = ( endDate ?? new Date());
+    return new Date(new Date(stop.getTime() - (timeRange * 24 * 60 * 60 * 1000)).toDateString());
+  }, [timeRange, modifedTransactions]);
 
   const numExpenses = useMemo(() => {
     return modifedTransactions.filter(t => isExpense(t)).length;
@@ -74,7 +76,7 @@ export default function StatsPage ({ transactions, timeRange }: StatsPageProps) 
         </div>
       
         <div className='stats-main-box'>
-          <LineGraph transactions={modifedTransactions} range={timeRange} />
+          <LineGraph transactions={modifedTransactions} range={timeRange > 0 ? timeRange : Math.round(((endDate ?? new Date()).getTime() - minDate.getTime() + (2*24*60*60*1000)) / (24 * 60 * 60 * 1000))} endDate={endDate} />
         </div>
       </div>
 

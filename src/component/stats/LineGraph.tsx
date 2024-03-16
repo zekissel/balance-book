@@ -3,15 +3,16 @@ import { Income, Expense, isExpense } from "../../typedef";
 import '../../styles/Graph.css'
 import { useMemo } from "react";
 
-interface GraphProps { transactions: (Income | Expense)[], range: number }
-export default function TotalGraph ({ transactions, range }: GraphProps) {
+interface GraphProps { transactions: (Income | Expense)[], range: number, endDate: Date | null}
+export default function TotalGraph ({ transactions, range, endDate }: GraphProps) {
   interface SeriesDay { date: Date, total: number }
 
   const timeFrameTotals = useMemo(() => {
-    let totals: SeriesDay[] = Array.from({ length: range }, (_, i) => { return { date: new Date(new Date().getTime() - (i * 24 * 60 * 60 * 1000)), total: 0 } });
+    console.log(range)
+    let totals: SeriesDay[] = Array.from({ length: range }, (_, i) => { return { date: new Date((endDate ?? new Date()).getTime() - (i * 24 * 60 * 60 * 1000)), total: 0 } });
     transactions.forEach(t => {
-      const index = Math.floor((new Date().getTime() - t.date.getTime()) / (24 * 60 * 60 * 1000));
-      if (index < range) {
+      const index = Math.floor(((endDate ?? new Date()).getTime() - t.date.getTime()) / (24 * 60 * 60 * 1000));
+      if (range === 0 || index < range) {
         totals[index].total += (isExpense(t) ? -1 : 1) * (t.amount / 100);
       }
     })
@@ -25,6 +26,9 @@ export default function TotalGraph ({ transactions, range }: GraphProps) {
       case 90: return 10;
       case 182: return 18;
       case 365: return 30;
+      default: 
+        if (range > 365) return 60;
+        else return 15;
     }
   }, [range]);
 

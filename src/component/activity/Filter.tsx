@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Filters, Category, IncomeCategory, getEnumKeys } from '../../typedef';
+import { Filters, Category, IncomeCategory, getEnumKeys, addDays } from '../../typedef';
 import '../../styles/Filter.css';
 
 
@@ -56,12 +56,12 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
 
       <li>
         <label className='filter-menu-togglable' onClick={() => { toggleStartDate(); setFilters({...filters, startDate: null}); }}>Start Date: </label>
-        { showStartDate && <input type='date' value={filters.startDate?.toISOString().substring(0, 10)} onChange={(e) => setFilters({...filters, startDate: new Date(e.target.value)})}/> }
+        { showStartDate && <input type='date' value={ filters.startDate ? (addDays(filters.startDate!, 1).toISOString().substring(0, 10)) : undefined } onChange={(e) => setFilters({...filters, startDate: addDays(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')), -1)})}/> }
         { !showStartDate && <span>None</span>}
       </li>
       <li>
         <label className='filter-menu-togglable' onClick={() => { toggleEndDate(); setFilters({...filters, endDate: null}); }}>End Date: </label>
-        { showEndDate && <input type='date' value={filters.endDate?.toISOString().substring(0, 10)} onChange={(e) => setFilters({...filters, endDate: new Date(e.target.value)})} /> }
+        { showEndDate && <input type='date' value={filters.endDate ? (addDays(filters.endDate!, 1).toISOString().substring(0, 10)) : undefined} onChange={(e) => setFilters({...filters, endDate: addDays(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')), -1)})} /> }
         { !showEndDate && <span>None</span>}
       </li>
 

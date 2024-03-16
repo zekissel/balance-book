@@ -211,3 +211,23 @@ export function generateRandomColor(color: string, color2: string, income: boole
 
   return `#${Math.random() > .5 ? color : color2}`;
 }
+
+export function filterTransactions ({ expenses, income, filters }: { expenses: Expense[], income: Income[], filters: Filters }): (Expense | Income)[] {
+  let transactions: Array<Expense | Income> = [];
+
+  if (filters.type === `expense` || filters.type === `all`) transactions = transactions.concat(expenses);
+  if (filters.type === `income` || filters.type === `all`) transactions = transactions.concat(income);
+
+  if (filters.startDate !== null) transactions = transactions.filter(t => t.date.getTime() >= filters.startDate!.getTime());
+  if (filters.endDate !== null) transactions = transactions.filter(t => t.date.getTime() <= filters.endDate!.getTime());
+
+  if (filters.category.length > 0) transactions = transactions.filter(t => filters.category.includes(t.category.toString()));
+
+  if (filters.source[0].length > 0) transactions = transactions.filter(t => filters.source.map(s => s.toUpperCase().trim()).includes((isExpense(t) ? t.store : t.source).toUpperCase()));
+
+  if (Number(filters.lowAmount) > 0) transactions = transactions.filter(t => (t.amount - ((Number(filters.lowAmount)) * 100)) >= 0 );
+  if (Number(filters.highAmount) > 0) transactions = transactions.filter(t => (t.amount - ((Number(filters.highAmount)) * 100)) <= 0 );
+
+  transactions = transactions.sort((a, b) => b.date.getTime() - a.date.getTime());
+  return transactions;
+}

@@ -4,7 +4,7 @@ import List from "../activity/List";
 import Calendar from "../activity/Calendar";
 import "../../styles/Activity.css";
 import "../../styles/Menu.css";
-import { Expense, Income, isExpense, getExpenses, getIncome, Filters } from "../../typedef";
+import { Expense, Income, isExpense, getExpenses, getIncome, Filters, filterTransactions } from "../../typedef";
 import EditLog from "../transaction/CreateLog";
 import Filter from "../activity/Filter";
 
@@ -38,23 +38,7 @@ export default function Activity () {
   const updateLog = { signalExp: signalNewExpense, signalInc: signalNewIncome };
 
   const transactions = useMemo(() => {
-    let transactions: Array<Expense | Income> = [];
-
-    if (filters.type === `expense` || filters.type === `all`) transactions = transactions.concat(expenses);
-    if (filters.type === `income` || filters.type === `all`) transactions = transactions.concat(income);
-
-    if (filters.startDate !== null) transactions = transactions.filter(t => t.date.getTime() >= filters.startDate!.getTime());
-    if (filters.endDate !== null) transactions = transactions.filter(t => t.date.getTime() <= filters.endDate!.getTime());
-
-    if (filters.category.length > 0) transactions = transactions.filter(t => filters.category.includes(t.category.toString()));
-
-    if (filters.source[0].length > 0) transactions = transactions.filter(t => filters.source.map(s => s.toUpperCase().trim()).includes((isExpense(t) ? t.store : t.source).toUpperCase()));
-
-    if (Number(filters.lowAmount) > 0) transactions = transactions.filter(t => (t.amount - ((Number(filters.lowAmount)) * 100)) >= 0 );
-    if (Number(filters.highAmount) > 0) transactions = transactions.filter(t => (t.amount - ((Number(filters.highAmount)) * 100)) <= 0 );
-
-    transactions = transactions.sort((a, b) => b.date.getTime() - a.date.getTime());
-    return transactions;
+    return filterTransactions({ expenses, income, filters });
   }, [expenses, income, filters]);
 
   const refreshExpenses = async () => { setExpenses(await getExpenses()) };
