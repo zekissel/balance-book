@@ -10,14 +10,15 @@ export default function TotalGraph ({ transactions }: GraphProps) {
     let totals: { [key: string]: number } = {};
     transactions.forEach(t => {
       if (totals[t.category] === undefined) totals[t.category] = 0;
-      if (isExpense(t)) totals[t.category] -= (t.amount / 100);
-      else totals[t.category] += (t.amount / 100);
+      if (isExpense(t)) totals[t.category] -= Math.round(t.amount / 100);
+      else totals[t.category] += Math.round(t.amount / 100);
     });
+    totals
     return totals;
   }, [transactions]);
 
-  const categories = useMemo(() => Object.keys(categoryTotals).map(cat => cat.slice(0, 10)), [categoryTotals]);
-  const totals = useMemo(() => Object.values(categoryTotals).map(t => new Object({value: t, itemStyle: { color: t > 0 ? '#739d88' : '#f6d6aa' }, label: {normal:{show:true,position:t > 0 ?'top':'bottom',}} })), [categoryTotals]);
+  const categories = useMemo(() => Object.keys(categoryTotals).sort((a, b) => categoryTotals[a] - categoryTotals[b]).map(cat => cat.slice(0, 10)), [categoryTotals]);
+  const totals = useMemo(() => Object.values(categoryTotals).sort((a, b) => a - b).map(t => new Object({value: t, itemStyle: { color: t > 0 ? '#739d88' : '#f6d6aa' }, label: {normal:{show:true,position:t > 0 ?'top':'bottom',formatter: '${c}'}} })), [categoryTotals]);
 
   const option = {
     xAxis: {
@@ -38,7 +39,7 @@ export default function TotalGraph ({ transactions }: GraphProps) {
       }
     ],
     title: {
-      text: 'Category Totals',
+      text: 'Total Amounts by Category',
     }
   }; 
 

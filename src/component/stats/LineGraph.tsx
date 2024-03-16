@@ -45,12 +45,12 @@ export default function TotalGraph ({ transactions, range }: GraphProps) {
     },
     series: [
       {
-        data: timeFrameTotals.map(t => new Object({value: t.total, label: {normal:{show:t.total !== 0,position:t.total > 0 ?'top':'bottom',}} })),
+        data: timeFrameTotals.map(t => new Object({value: t.total, label: {normal:{show:t.total !== 0,position:t.total > 0 ?'top':'bottom',formatter: '${c}'}} })),
         type: 'line',
       }
     ],
     title: {
-      text: 'Net Balance by Day'
+      text: 'Net Transactions by Day'
     }
   };
 

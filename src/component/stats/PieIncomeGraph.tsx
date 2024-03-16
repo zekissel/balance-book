@@ -15,8 +15,8 @@ export default function PieIncomeGraph ({ transactions }: GraphProps) {
     return totals;
   }, [transactions]);
 
-  const categories = useMemo(() => Object.keys(categoryTotals).map(cat => cat.slice(0, 10)), [categoryTotals]);
-  const totals = useMemo(() => Object.values(categoryTotals), [categoryTotals]);
+  const categories = useMemo(() => Object.keys(categoryTotals).sort((a, b) => categoryTotals[b] - categoryTotals[a]).map(cat => cat.slice(0, 10)), [categoryTotals]);
+  const totals = useMemo(() => Object.values(categoryTotals).sort((a, b) => b - a), [categoryTotals]);
 
   const netIncome = useMemo(() => { return totals.reduce((acc, t) => acc + t, 0); }, [totals]);
 

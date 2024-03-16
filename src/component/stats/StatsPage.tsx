@@ -44,7 +44,7 @@ export default function StatsPage ({ transactions, timeRange }: StatsPageProps) 
   return (
     <div className='stats-main'>
       <div className='stats-main-row'>
-        <div className='stats-main-box'>
+        <div className='stats-main-box-short'>
           <h3>
             Net Balance: <span id='stats-main-net' style={netBalance > 0 ? netStyleProfit : netStyleLoss}>{ netBalance > 0 ? `+$${(netBalance / 100).toFixed(2)}` : `-$${(netBalance / -100).toFixed(2)}` }</span>
           </h3>
@@ -55,7 +55,7 @@ export default function StatsPage ({ transactions, timeRange }: StatsPageProps) 
           </div>
         </div>
       
-        <div className='stats-main-box'>
+        <div className='stats-main-box-long'>
           <TotalGraph transactions={modifedTransactions} />
         </div>
       </div>
