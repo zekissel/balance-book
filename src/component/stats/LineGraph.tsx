@@ -51,7 +51,8 @@ export default function TotalGraph ({ transactions, range }: GraphProps) {
     ],
     title: {
       text: 'Net Transactions by Day'
-    }
+    },
+    //dataZoom: {  },
   };
 
   return (
