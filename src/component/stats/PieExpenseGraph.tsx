@@ -1,5 +1,5 @@
 import ReactECharts from "echarts-for-react";
-import { Income, Expense, isExpense } from "../../typedef";
+import { Income, Expense, isExpense, generateRandomColor } from "../../typedef";
 import '../../styles/Graph.css'
 import { useMemo } from "react";
 
@@ -20,31 +20,19 @@ export default function PieExpenseGraph ({ transactions }: GraphProps) {
 
   const netExpense = useMemo(() => { return totals.reduce((acc, t) => acc + t, 0); }, [totals]);
 
-  function generateRandomColor() {
-    const letters = '789ABCDEF';
-    let color = 'e2cb64';
-    let color2 = 'f6d6aa';
-    color = Math.random() > .5 ? (parseInt(color, 16) + 0x111111).toString(16) : (parseInt(color2, 16) - 0x111111).toString(16);
-
-    for (let i = 0; i < 2; i++) {
-      color += letters[Math.floor(Math.random() * letters.length)];
-      color2 += letters[Math.floor(Math.random() * letters.length)];
-    }
-
-    return `#${Math.random() < .5 ? color : color2}`;
-  }
 
   const option = {
     legend: {
       orient: "vertical",
       left: "right",
-      data: categories.map((c, i) => `${c} (${Math.round((totals[i] / netExpense) * 100)})`),
+      data: categories.map((c, i) => `${c} (${Math.round((totals[i] / netExpense) * 100)}%)`),
     },
     series: [
       {
         type: 'pie',
-        data: totals.map((t, i) => ({ value: t, name: `${categories[i]} (${Math.round((t / netExpense) * 100)})`, itemStyle: { color: generateRandomColor() }})),
-        y: 15,
+        data: totals.map((t, i) => ({ value: t, name: `${categories[i]} (${Math.round((t / netExpense) * 100)}%)`, itemStyle: { color: generateRandomColor('e2cb64', 'f6d6aa', false) }})),
+        y: 30,
+        x: -70,
       }
     ],
     title: {

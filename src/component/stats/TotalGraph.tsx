@@ -17,7 +17,7 @@ export default function TotalGraph ({ transactions }: GraphProps) {
   }, [transactions]);
 
   const categories = useMemo(() => Object.keys(categoryTotals).map(cat => cat.slice(0, 10)), [categoryTotals]);
-  const totals = useMemo(() => Object.values(categoryTotals).map(t => new Object({ value: t, itemStyle: { color: t > 0 ? '#739d88' : '#f6d6aa' } })), [categoryTotals]);
+  const totals = useMemo(() => Object.values(categoryTotals).map(t => new Object({value: t, itemStyle: { color: t > 0 ? '#739d88' : '#f6d6aa' }, label: {normal:{show:true,position:t > 0 ?'top':'bottom',}} })), [categoryTotals]);
 
   const option = {
     xAxis: {
@@ -35,12 +35,6 @@ export default function TotalGraph ({ transactions }: GraphProps) {
         data: totals,
         type: 'bar',
         itemStyle: { color: '#739d88' },
-        label: {
-          normal: {
-              show: true,
-              position: 'top'
-            }
-        }
       }
     ],
     title: {
@@ -49,7 +43,7 @@ export default function TotalGraph ({ transactions }: GraphProps) {
   }; 
 
   return (
-    <div className='stats-graph' onClick={() => console.log(option)}>
+    <div className='stats-graph'>
       <ReactECharts option={option} />
     </div>
   )

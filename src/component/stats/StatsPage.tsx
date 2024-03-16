@@ -1,8 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Expense, Income, isExpense } from "../../typedef";
 import TotalGraph from "./TotalGraph";
 import PieIncomeGraph from "./PieIncomeGraph";
 import PieExpenseGraph from "./PieExpenseGraph";
+import LineGraph from "./LineGraph";
 
 interface StatsPageProps { transactions: (Income | Expense)[], timeRange: number }
 export default function StatsPage ({ transactions, timeRange }: StatsPageProps) {
@@ -35,6 +36,11 @@ export default function StatsPage ({ transactions, timeRange }: StatsPageProps) 
     return modifedTransactions.filter(t => !isExpense(t)).reduce((acc, t) => acc + t.amount, 0);
   }, [modifedTransactions]);
 
+
+
+  const [categoryPieTypeIncome, setCatPieTypeIncome] = useState(true);
+
+
   return (
     <div className='stats-main'>
       <div className='stats-main-row'>
@@ -44,8 +50,8 @@ export default function StatsPage ({ transactions, timeRange }: StatsPageProps) 
           </h3>
           <i>Since { minDate.toDateString() }</i>
           <div className='stats-main-info'>
-            <p>Total expenses: -${ expenseTotal / 100 } ({ numExpenses })</p>
-            <p>Total income: +${ incomeTotal / 100 } ({ numIncome })</p>
+            <p>Total expenses: -${ expenseTotal / 100 } ({ numExpenses } transactions)</p>
+            <p>Total income: +${ incomeTotal / 100 } ({ numIncome } transactions)</p>
           </div>
         </div>
       
@@ -56,11 +62,19 @@ export default function StatsPage ({ transactions, timeRange }: StatsPageProps) 
       
       <div className='stats-main-row'>
         <div className='stats-main-box'>
-          <PieIncomeGraph transactions={modifedTransactions} />
+          <div className='stats-category-radio'>
+            <input type='radio' id='radio-category-income' name='type' onChange={() => setCatPieTypeIncome(true)} defaultChecked /><label htmlFor='radio-category-income'>Income</label>
+            <input type='radio' id='radio-category-expense' name='type' onChange={() => setCatPieTypeIncome(false)} /><label htmlFor='radio-category-expense'>Expense</label>
+          </div>
+          { categoryPieTypeIncome ?
+            <PieIncomeGraph transactions={modifedTransactions} /> 
+          :
+            <PieExpenseGraph transactions={modifedTransactions} />
+          }
         </div>
       
         <div className='stats-main-box'>
-          <PieExpenseGraph transactions={modifedTransactions} />
+          <LineGraph transactions={modifedTransactions} range={timeRange} />
         </div>
       </div>
 

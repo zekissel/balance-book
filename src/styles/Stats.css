@@ -64,3 +64,15 @@ div.stats-main-info {
   border-radius: 1vw;
   padding: .2rem 1rem;
 }
+
+div.stats-category-radio {
+  font-size: 1rem;
+  font-weight: 540;
+  margin: .2rem;
+  padding: .2rem .5rem;
+  border-radius: 1vw;
+  cursor: pointer;
+  background-color: #dfe2e0;
+  border: none;
+  border-bottom: 2px solid #6b6b6b;
+}

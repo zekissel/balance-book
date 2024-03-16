@@ -198,3 +198,16 @@ export async function getAccounts(): Promise<Account[]> {
       return acc;
     })
 }
+
+export function generateRandomColor(color: string, color2: string, income: boolean) {
+  const letters = '789ABCDEF';
+  const additive = income ? 0x222222 : 0x111111;
+  color = Math.random() > .5 ? (parseInt(color, 16) + additive).toString(16) : (parseInt(color2, 16) - additive).toString(16);
+
+  for (let i = 0; i < 2; i++) {
+    color += letters[Math.floor(Math.random() * letters.length)];
+    color2 += letters[Math.floor(Math.random() * letters.length)];
+  }
+
+  return `#${Math.random() > .5 ? color : color2}`;
+}
