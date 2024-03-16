@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 import List from "../activity/List";
 import Calendar from "../activity/Calendar";
 import "../../styles/Activity.css";
+import "../../styles/Menu.css";
 import { Expense, Income, isExpense, getExpenses, getIncome, Filters } from "../../typedef";
 import EditLog from "../transaction/CreateLog";
 import Filter from "../activity/Filter";
@@ -79,17 +80,17 @@ export default function Activity () {
   return (
     <div className='activity-root'>
 
-      <menu className='activity-menu'>
-        <div className='activity-menu-main'>
+      <menu className='dynamic-menu'>
+        <div className='dynamic-menu-main'>
           <button 
-            id={ listView ? 'activity-menu-current' : undefined}
+            id={ listView ? 'dynamic-menu-current' : undefined}
             onClick={() => {setListView(true); localStorage.setItem('listView', 'true')}} 
             disabled={listView}
           >
             <img src='/list.svg' /> List
           </button>
           <button 
-            id={ !listView ? 'activity-menu-current' : undefined}
+            id={ !listView ? 'dynamic-menu-current' : undefined}
             onClick={() => {setListView(false); localStorage.setItem('listView', 'false')}} 
             disabled={!listView}
           >
@@ -97,7 +98,7 @@ export default function Activity () {
           </button>
         </div>
         
-        <div className='activity-menu-main'>
+        <div className='dynamic-menu-main'>
           <button 
             onClick={toggleAddLog}
           >

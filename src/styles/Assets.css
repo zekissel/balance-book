@@ -5,39 +5,3 @@ div#assets-root {
   padding: 0;
   margin: 0 auto;
 }
-
-menu.assets-menu {
-  background-color: #dfe2e0;
-  height: 3rem;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  border-bottom: 2px solid #739d88;
-
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-div.assets-menu-main > button {
-  font-size: 20px;
-  font-weight: 540;
-  margin: .2rem;
-  padding: .2rem .5rem;
-  border-radius: 1vw;
-  cursor: pointer;
-  background-color: #dfe2e0;
-  border: none;
-  border-bottom: 2px solid #6b6b6b;
-}
-
-div.assets-menu-main > button:hover {
-  background-color: #93ceb4;
-  color: #191919;
-}
-
-#assets-menu-current {
-  background-color: #93ceb4;
-  color: #191919;
-}

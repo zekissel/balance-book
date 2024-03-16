@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import AccountPage from '../asset/AccountPage';
 import { Account, AccountType, getAccounts } from '../../typedef';
 import '../../styles/Assets.css';
+import '../../styles/Menu.css';
 import CreateAccount from '../asset/CreateAccount';
 
 export default function Assets () {
@@ -34,23 +35,23 @@ export default function Assets () {
   return (
     <div id='assets-root'>
 
-      <menu className='assets-menu'>
-        <div className='assets-menu-main'>
+      <menu className='dynamic-menu'>
+        <div className='dynamic-menu-main'>
           <button 
-            id={ curView === AccountType.Checking ? 'assets-menu-current' : undefined} 
+            id={ curView === AccountType.Checking ? 'dynamic-menu-current' : undefined} 
             onClick={() => {setCurView(AccountType.Checking); localStorage.setItem('accView', '0')}}><img src='/card.svg'/>Checking
           </button>
           <button 
-            id={ curView === AccountType.Savings ? 'assets-menu-current' : undefined} 
+            id={ curView === AccountType.Savings ? 'dynamic-menu-current' : undefined} 
             onClick={() => {setCurView(AccountType.Savings); localStorage.setItem('accView', '1')}}><img src='/bank.svg'/>Savings
           </button>
           <button 
-            id={ curView === AccountType.Investing ? 'assets-menu-current' : undefined} 
+            id={ curView === AccountType.Investing ? 'dynamic-menu-current' : undefined} 
             onClick={() => {setCurView(AccountType.Investing); localStorage.setItem('accView', '2')}}><img src='/trend.svg'/>Investing
           </button>
         </div>
 
-        <div className='assets-menu-main'>
+        <div className='dynamic-menu-main'>
           <button onClick={toggleAddAccount}><img src='/add-account.svg'/>Add Account</button>
         </div>
       </menu>

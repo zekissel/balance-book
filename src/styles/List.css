@@ -42,7 +42,7 @@ li.list-item {
   border: 1px dashed #739d88;
 
   display: grid;
-  grid-template-columns: 1fr 1.5fr 1fr 1.5fr 2.5fr;
+  grid-template-columns: 1fr 1.4fr 1fr 1.5fr 2fr;
 }
 
 li.list-item-expense { background-color: #fce6ba65; }

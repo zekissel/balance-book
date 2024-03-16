@@ -112,9 +112,9 @@ export interface Income {
 export enum IncomeCategory {
   Salary = 'Salary',
   SideJob = 'SideJob',
-  Investment = 'InvestmentIncome',
+  InvestmentIncome = 'InvestmentIncome',
   Reimbursement = 'Reimbursement',
-  Other = 'OtherIncome',
+  OtherIncome = 'OtherIncome',
   None = '---',
 }
 
