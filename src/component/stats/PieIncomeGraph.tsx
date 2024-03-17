@@ -26,17 +26,19 @@ export default function PieIncomeGraph ({ transactions }: GraphProps) {
       orient: "vertical",
       left: "right",
       data: categories.map((c, i) => `${c} (${Math.round((totals[i] / netIncome) * 100)}%)`),
+      y: 10,
     },
     series: [
       {
         type: 'pie',
         data: totals.map((t, i) => ({ value: t, name: `${categories[i]} (${Math.round((t / netIncome) * 100)}%)`, itemStyle: { color: generateRandomColor('739d88', '93ceb4', true) }})),
-        y: 30,
+        y: 40,
         x: -60,
       }
     ],
     title: {
       text: 'Income Percentage by Category',
+      y: 10,
     }
   }; 
 

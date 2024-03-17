@@ -43,6 +43,7 @@ export default function TotalGraph ({ transactions }: GraphProps) {
       text: 'Total Amounts by Category',
     },
     width: '87%',
+    dataZoom: { type: 'inside' },
   }; 
 
   return (

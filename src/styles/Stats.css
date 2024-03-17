@@ -94,7 +94,7 @@ div.stats-main-box-shorter {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: start;
 }
 
 span#stats-main-net {

@@ -64,29 +64,29 @@ export default function StatsPage ({ transactions, timeRange, endDate }: StatsPa
       </div>
       
       <div className='stats-main-row'>
+        <div className='stats-main-box-longer'>
+          <LineGraph transactions={modifedTransactions} range={timeRange > 0 ? timeRange : Math.round(((endDate ?? new Date()).getTime() - minDate.getTime() + (2*24*60*60*1000)) / (24 * 60 * 60 * 1000))} endDate={endDate} />
+        </div>
+
         <div className='stats-main-box-shorter'>
-          <div className='stats-category-radio'>
-            <input type='radio' id='radio-category-income' name='type' onChange={() => setCatPieTypeIncome(true)} defaultChecked /><label htmlFor='radio-category-income'>Income</label>
-            <input type='radio' id='radio-category-expense' name='type' onChange={() => setCatPieTypeIncome(false)} /><label htmlFor='radio-category-expense'>Expense</label>
-          </div>
           { categoryPieTypeIncome ?
             <PieIncomeGraph transactions={modifedTransactions} /> 
           :
             <PieExpenseGraph transactions={modifedTransactions} />
           }
-        </div>
-
-        <div className='stats-main-box-longer'>
-          <LineGraph transactions={modifedTransactions} range={timeRange > 0 ? timeRange : Math.round(((endDate ?? new Date()).getTime() - minDate.getTime() + (2*24*60*60*1000)) / (24 * 60 * 60 * 1000))} endDate={endDate} />
+          <div className='stats-category-radio'>
+            <input type='radio' id='radio-category-income' name='type' onChange={() => setCatPieTypeIncome(true)} defaultChecked /><label htmlFor='radio-category-income'>Income</label>
+            <input type='radio' id='radio-category-expense' name='type' onChange={() => setCatPieTypeIncome(false)} /><label htmlFor='radio-category-expense'>Expense</label>
+          </div>
         </div>
       </div>
 
       <div className='stats-main-row'>
-        <div className='stats-main-box-short'>
+        <div className='stats-main-box-shorter'>
           graph
         </div>
       
-        <div className='stats-main-box-long'>
+        <div className='stats-main-box-longer'>
           graph
         </div>
       </div>

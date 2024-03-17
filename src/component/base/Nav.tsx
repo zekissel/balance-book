@@ -33,7 +33,7 @@ export default function Nav ({ state, setState }: NavProps) {
         { fullNav ? 'Statistics' : <img draggable={false} src='/stats.svg' alt='Statistics' />}
         </li>
         <li id={state === State.Assets ? 'nav-current' : undefined} onClick={() => setState(State.Assets)}>
-        { fullNav ? 'Assets' : <img draggable={false} src='/wallet.svg' alt='Assets' />}
+        { fullNav ? 'Accounts' : <img draggable={false} src='/wallet.svg' alt='Accounts' />}
         </li>
         <li id={state === State.Market ? 'nav-current' : undefined} onClick={() => setState(State.Market)}>
         { fullNav ? 'Market' : <img draggable={false} src='/candles.svg' alt='Market' />}

@@ -25,17 +25,19 @@ export default function PieExpenseGraph ({ transactions }: GraphProps) {
       orient: "vertical",
       left: "right",
       data: categories.map((c, i) => `${c} (${Math.round((totals[i] / netExpense) * 100)}%)`),
+      y: 10,
     },
     series: [
       {
         type: 'pie',
         data: totals.map((t, i) => ({ value: t, name: `${categories[i]} (${Math.round((t / netExpense) * 100)}%)`, itemStyle: { color: generateRandomColor('e2cb64', 'f6d6aa', false) }})),
-        y: 30,
+        y: 40,
         x: -60,
       }
     ],
     title: {
       text: 'Expense Percentage by Category',
+      y: 10,
     }
   }; 
 
