@@ -57,15 +57,15 @@ export default function Assets () {
       </menu>
 
       { curView === AccountType.Checking &&
-        <AccountPage accounts={checkingAccounts} />
+        <AccountPage accounts={checkingAccounts} updateAccounts={refreshAccounts} />
       }
 
       { curView === AccountType.Savings &&
-        <AccountPage accounts={savingsAccounts} />
+        <AccountPage accounts={savingsAccounts} updateAccounts={refreshAccounts} />
       }
 
       { curView === AccountType.Investing &&
-        <AccountPage accounts={investingAccounts} />
+        <AccountPage accounts={investingAccounts} updateAccounts={refreshAccounts} />
       }
 
       { showAddAccount &&

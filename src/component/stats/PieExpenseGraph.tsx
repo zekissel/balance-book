@@ -31,16 +31,16 @@ export default function PieExpenseGraph ({ transactions }: GraphProps) {
         type: 'pie',
         data: totals.map((t, i) => ({ value: t, name: `${categories[i]} (${Math.round((t / netExpense) * 100)}%)`, itemStyle: { color: generateRandomColor('e2cb64', 'f6d6aa', false) }})),
         y: 30,
-        x: -70,
+        x: -60,
       }
     ],
     title: {
-      text: 'Expense Total by Category',
+      text: 'Expense Percentage by Category',
     }
   }; 
 
   return (
-    <div className='stats-graph' onClick={() => console.log(option)}>
+    <div className='stats-graph'>
       <ReactECharts option={option} />
     </div>
   )

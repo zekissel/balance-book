@@ -101,7 +101,7 @@ export default function Calendar ({ logs, updateLog, showFilter }: CalendarProps
 
         <span className='calendar-menu-today' onClick={() => {calDate.current = curDate.current; initWeeks()}}>{ curDate.current.toDateString() }</span>
 
-        <span className='calendar-shift'>
+        <span className='calendar-shift' onWheel={processWheel}>
           <button onClick={() => shiftWeeks(-1)}><img src='left-arrow.svg' /></button>
 
           <select value={calDate.current.getMonth()} onChange={(e) => { calDate.current = new Date(new Date(calDate.current.setMonth(Number(e.target.value))).setDate(7)); initWeeks();}}>
@@ -116,7 +116,7 @@ export default function Calendar ({ logs, updateLog, showFilter }: CalendarProps
         </span>
       </menu>
       
-      <table onWheel={processWheel}>
+      <table>
 
         <thead>
           <tr>

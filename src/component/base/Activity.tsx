@@ -4,7 +4,7 @@ import List from "../activity/List";
 import Calendar from "../activity/Calendar";
 import "../../styles/Activity.css";
 import "../../styles/Menu.css";
-import { Expense, Income, isExpense, getExpenses, getIncome, Filters, filterTransactions } from "../../typedef";
+import { Expense, Income, getExpenses, getIncome, Filters, filterTransactions } from "../../typedef";
 import EditLog from "../transaction/CreateLog";
 import Filter from "../activity/Filter";
 

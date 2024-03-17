@@ -61,7 +61,7 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
       </li>
       <li>
         <label className='filter-menu-togglable' onClick={() => { toggleEndDate(); setFilters({...filters, endDate: null}); }}>End Date: </label>
-        { showEndDate && <input type='date' value={filters.endDate ? (addDays(filters.endDate!, 1).toISOString().substring(0, 10)) : undefined} onChange={(e) => setFilters({...filters, endDate: addDays(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')), -1)})} /> }
+        { showEndDate && <input type='date' value={filters.endDate ? (addDays(filters.endDate!, 0).toISOString().substring(0, 10)) : undefined} onChange={(e) => setFilters({...filters, endDate: addDays(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')), 0)})} /> }
         { !showEndDate && <span>None</span>}
       </li>
 

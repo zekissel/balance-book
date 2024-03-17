@@ -32,16 +32,16 @@ export default function PieIncomeGraph ({ transactions }: GraphProps) {
         type: 'pie',
         data: totals.map((t, i) => ({ value: t, name: `${categories[i]} (${Math.round((t / netIncome) * 100)}%)`, itemStyle: { color: generateRandomColor('739d88', '93ceb4', true) }})),
         y: 30,
-        x: -70,
+        x: -60,
       }
     ],
     title: {
-      text: 'Income Total by Category',
+      text: 'Income Percentage by Category',
     }
   }; 
 
   return (
-    <div className='stats-graph' onClick={() => console.log(option)}>
+    <div className='stats-graph'>
       <ReactECharts option={option} />
     </div>
   )

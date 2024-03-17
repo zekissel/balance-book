@@ -20,16 +20,14 @@ export default function TotalGraph ({ transactions, range, endDate }: GraphProps
   }, [transactions]);
 
   const xAxisInterval = useMemo(() => {
-    switch (range) {
-      case 14: return 0;
-      case 30: return 2;
-      case 90: return 10;
-      case 182: return 18;
-      case 365: return 30;
-      default: 
-        if (range > 365) return 60;
-        else return 15;
-    }
+    if (range <= 10) return 0;
+    else if (range <= 30) return 1;
+    else if (range <= 60) return 3;
+    else if (range <= 90) return 8;
+    else if (range <= 180) return 18;
+    else if (range <= 365) return 30;
+    else if (range <= 730) return 60;
+    else return 120;
   }, [range]);
 
   const option = {
@@ -37,15 +35,17 @@ export default function TotalGraph ({ transactions, range, endDate }: GraphProps
     grid: { show: true },
     xAxis: {
       type: 'category',
-      interval: 2,
-      data: timeFrameTotals.map((t) => new Object({ value: t.date.toDateString().slice(4), label: {normal: {show: true}} })),
+      interval: 0,
+      data: timeFrameTotals.map((t) => new Object({ value: t.date.toDateString().slice(4), label: {show: true} })),
       axisLabel: {
-        rotate: 35,
+        rotate: 28,
         interval: xAxisInterval,
       },
+      splitLine: { show: true, lineStyle: { color: '#ffffff', }},
     },
     yAxis: {
       type: 'value',
+      splitLine: { show: true, lineStyle: { color: '#ffffff', }},
     },
     series: [
       {
@@ -54,9 +54,11 @@ export default function TotalGraph ({ transactions, range, endDate }: GraphProps
       }
     ],
     title: {
-      text: 'Net Transactions by Day'
+      text: 'Net Balance by Day'
     },
-    //dataZoom: {  },
+    width: '87%',
+    height: '64%',
+    dataZoom: { type: 'inside' },
   };
 
   return (

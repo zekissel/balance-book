@@ -18,11 +18,12 @@ export function EditAccount ({ log, type, toggle, cancel, updateAccounts }: Edit
       'accountType': log ? log.account_type : type,
       'accountId': name,
       'balance': Math.round((Number(balance) + Number.EPSILON) * 100),
-      'date': new Date(new Date().toDateString()),
+      'date': new Date().toISOString(),
     };
 
-    if (log) await invoke("update_account", data);
-    else await invoke("add_account", data);
+    //if (log) await invoke("update_account", data);
+    //else 
+    await invoke("add_account", data);
 
     updateAccounts();
     toggle();
@@ -46,9 +47,16 @@ export function EditAccount ({ log, type, toggle, cancel, updateAccounts }: Edit
       <legend>{ log ? 'Edit' : 'New' } { type.toString() } Account</legend>
 
       <div className='new-trans-main'>
-        <li><label>Name: </label><input type='text' value={name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}/></li>
-        <li><label>Amount: </label><input type='text' value={balance} onChange={updateBalance}/></li>
+        <li><label>ID: </label><input type='text' value={name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}/></li>
+        <li><label>Balance:</label><input type='text' value={balance} onChange={updateBalance}/></li>
       </div>
+
+      { log &&
+        <div className='new-trans-main'>
+          <li><label>Created:</label><input type='text' value={log.date.toDateString()} readOnly/></li>
+          <li><label>Updated:</label><input type='text' value={new Date().toDateString()} readOnly/></li>
+        </div>
+      }
       
       <li className='new-trans-meta'>
         <button className='new-trans-submit' onClick={addAccount}>Submit</button>

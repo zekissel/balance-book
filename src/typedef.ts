@@ -193,7 +193,7 @@ export async function getAccounts(): Promise<Account[]> {
   return await invoke("load_account")
     .then(data => {
       const acc = data as Account[];
-      acc.forEach(e => e.date = new Date(new Date(e.date).toDateString()));
+      acc.forEach(e => e.date = new Date(e.date));
       acc.sort((a, b) => a.date > b.date ? -1 : 1);
       return acc;
     })

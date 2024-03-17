@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Expense, Income, isExpense } from "../../typedef";
+import { Expense, Income, isExpense, addDays } from "../../typedef";
 import TotalGraph from "./TotalGraph";
 import PieIncomeGraph from "./PieIncomeGraph";
 import PieExpenseGraph from "./PieExpenseGraph";
@@ -50,7 +50,8 @@ export default function StatsPage ({ transactions, timeRange, endDate }: StatsPa
           <h3>
             Net Balance: <span id='stats-main-net' style={netBalance > 0 ? netStyleProfit : netStyleLoss}>{ netBalance > 0 ? `+$${(netBalance / 100).toFixed(2)}` : `-$${(netBalance / -100).toFixed(2)}` }</span>
           </h3>
-          <i>Since { minDate.toDateString() }</i>
+          <i>Since { addDays(minDate, 1).toDateString() }{ endDate && ',' }</i>
+          { endDate && <i>Until { endDate.toDateString() }</i> }
           <div className='stats-main-info'>
             <p>Total expenses: -${ expenseTotal / 100 } ({ numExpenses } transactions)</p>
             <p>Total income: +${ incomeTotal / 100 } ({ numIncome } transactions)</p>
@@ -63,7 +64,7 @@ export default function StatsPage ({ transactions, timeRange, endDate }: StatsPa
       </div>
       
       <div className='stats-main-row'>
-        <div className='stats-main-box'>
+        <div className='stats-main-box-shorter'>
           <div className='stats-category-radio'>
             <input type='radio' id='radio-category-income' name='type' onChange={() => setCatPieTypeIncome(true)} defaultChecked /><label htmlFor='radio-category-income'>Income</label>
             <input type='radio' id='radio-category-expense' name='type' onChange={() => setCatPieTypeIncome(false)} /><label htmlFor='radio-category-expense'>Expense</label>
@@ -74,18 +75,18 @@ export default function StatsPage ({ transactions, timeRange, endDate }: StatsPa
             <PieExpenseGraph transactions={modifedTransactions} />
           }
         </div>
-      
-        <div className='stats-main-box'>
+
+        <div className='stats-main-box-longer'>
           <LineGraph transactions={modifedTransactions} range={timeRange > 0 ? timeRange : Math.round(((endDate ?? new Date()).getTime() - minDate.getTime() + (2*24*60*60*1000)) / (24 * 60 * 60 * 1000))} endDate={endDate} />
         </div>
       </div>
 
       <div className='stats-main-row'>
-        <div className='stats-main-box'>
+        <div className='stats-main-box-short'>
           graph
         </div>
       
-        <div className='stats-main-box'>
+        <div className='stats-main-box-long'>
           graph
         </div>
       </div>
