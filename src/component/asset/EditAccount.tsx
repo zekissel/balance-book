@@ -21,10 +21,23 @@ export function EditAccount ({ log, type, toggle, cancel, updateAccounts }: Edit
       'date': new Date().toISOString(),
     };
 
-    //if (log) await invoke("update_account", data);
-    //else 
-    await invoke("add_account", data);
-
+    if (log) {
+      await invoke("update_account", data);
+      await invoke("add_history", { 'id': log.id, 'balance': Math.round((Number(balance) + Number.EPSILON) * 100), date: new Date().toISOString() });
+    }
+    else {
+      const account: Account = await invoke("add_account", data);
+      switch (type) {
+        case AccountType.Checking:
+          if (localStorage.getItem('accountDefault') === null) localStorage.setItem('accountDefault', account.id.toString()); break;
+        case AccountType.Savings:
+          if (localStorage.getItem('accountSavings') === null) localStorage.setItem('accountSavings', account.id.toString()); break;
+        case AccountType.Investing:
+          if (localStorage.getItem('accountInvesting') === null) localStorage.setItem('accountInvesting', account.id.toString()); break;
+      }
+      await invoke("add_history", { 'id': account.id, 'balance': Math.round((Number(balance) + Number.EPSILON) * 100), date: new Date().toISOString() });
+    }
+    
     updateAccounts();
     toggle();
   }

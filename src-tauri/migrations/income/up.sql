@@ -4,5 +4,6 @@ CREATE TABLE income (
   amount INTEGER NOT NULL,
   category TEXT NOT NULL,
   desc TEXT,
-  date TEXT NOT NULL
+  date TEXT NOT NULL,
+  dest_account_id TEXT NOT NULL
 );

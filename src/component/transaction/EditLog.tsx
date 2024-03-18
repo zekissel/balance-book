@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import React, { useState } from "react";
-import { Category, Expense, Income, IncomeCategory, isExpense, UpdateLogProps, getEnumKeys } from "../../typedef";
+import React, { useState, useEffect, useMemo } from "react";
+import { Category, Expense, Income, IncomeCategory, isExpense, UpdateLogProps, getEnumKeys, Account, AccountType, getAccounts } from "../../typedef";
 
 
 interface EditLogProps { log: Expense | Income | null, toggle: () => void, cancel: () => void, isIncome: boolean, updateLog: UpdateLogProps }
@@ -13,9 +13,21 @@ export function EditLog ({ log, toggle, cancel, isIncome, updateLog }: EditLogPr
   const [desc, setDesc] = useState(log ? log.desc : '');
   const [date, setDate] = useState(log ? log.date : new Date());
 
+  const [accountId, setAccountId] = useState(log ? (isExpense(log) ? log.srcAccountId : log.destAccountId) : (localStorage.getItem('accountDefault') ?? ''));
+  const [accountId2, setAccountId2] = useState('');
+
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const refreshAccounts = async () => { setAccounts(await getAccounts()) };
+
+  useEffect(() => { refreshAccounts() }, []);
+
+  const checkingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Checking), [accounts]);
+  const savingsAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Savings), [accounts]);
+  const investingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Investing), [accounts]);
 
   async function addExpense() {
-    if (store === '' || amount === '0' || category === Category.None) return;
+    if (store === '' || amount === '0' || category === Category.None || accountId === '' || 
+      ((category === Category.Investment || category === Category.Savings) && accountId2 === '' )) return;
 
     const data = {
       'id': log ? log.id : 0,
@@ -24,17 +36,42 @@ export function EditLog ({ log, toggle, cancel, isIncome, updateLog }: EditLogPr
       'category': category,
       'desc': desc,
       'date': new Date(date.toDateString()),
+      'accountId': accountId,
     };
 
     if (log) await invoke("update_expense", data);
-    else await invoke("add_expense", data);
+    else {
+      const newBalance = accounts.find(a => a.id === Number(accountId))!.balance - Math.round((Number(amount) + Number.EPSILON) * 100);
+      await invoke("add_expense", data);
+      const acctData = {
+        'id': Number(accountId),
+        'accountType': accounts.find(a => a.id === Number(accountId))!.account_type,
+        'accountId': accounts.find(a => a.id === Number(accountId))!.account_id,
+        'balance': newBalance,
+        'date': new Date().toISOString(),
+      };
+      await invoke("update_account", acctData);
+      await invoke("add_history", { 'id': Number(accountId), 'balance': newBalance, date: new Date().toISOString() });
+      if (category === Category.Investment || category === Category.Savings) {
+        const acctData2 = {
+          'id': Number(accountId2),
+          'accountType': accounts.find(a => a.id === Number(accountId2))!.account_type,
+          'accountId': accounts.find(a => a.id === Number(accountId2))!.account_id,
+          'balance': accounts.find(a => a.id === Number(accountId2))!.balance + Math.round((Number(amount) + Number.EPSILON) * 100),
+          'date': new Date().toISOString(),
+        };
+        await invoke("update_account", acctData2);
+        await invoke("add_history", { 'id': Number(accountId), 'balance': accounts.find(a => a.id === Number(accountId2))!.balance + Math.round((Number(amount) + Number.EPSILON) * 100), date: new Date().toISOString() });
+      }
+    }
 
     updateLog.signalExp();
     toggle();
   }
 
   async function addIncome () {
-    if (store === '' || amount === '0' || incomeCategory === IncomeCategory.None) return;
+    if (store === '' || amount === '0' || incomeCategory === IncomeCategory.None || accountId === '' || 
+      ((incomeCategory === IncomeCategory.InvestmentIncome || incomeCategory === IncomeCategory.SavingsIncome) && accountId2 === '' )) return;
 
     const data = {
       'id': log ? log.id : 0,
@@ -43,10 +80,34 @@ export function EditLog ({ log, toggle, cancel, isIncome, updateLog }: EditLogPr
       'category': incomeCategory,
       'desc': desc,
       'date': new Date(date.toDateString()),
+      'accountId': accountId,
     };
 
     if (log) await invoke("update_income", data);
-    else await invoke("add_income", data);
+    else {
+      const newBalance = accounts.find(a => a.id === Number(accountId))!.balance + Math.round((Number(amount) + Number.EPSILON) * 100);
+      await invoke("add_income", data);
+      const acctData = {
+        'id': Number(accountId),
+        'accountType': accounts.find(a => a.id === Number(accountId))!.account_type,
+        'accountId': accounts.find(a => a.id === Number(accountId))!.account_id,
+        'balance': newBalance,
+        'date': new Date().toISOString(),
+      };
+      await invoke("update_account", acctData);
+      await invoke("add_history", { 'id': Number(accountId), 'balance': newBalance, date: new Date().toISOString() });
+      if (incomeCategory === IncomeCategory.InvestmentIncome || incomeCategory === IncomeCategory.SavingsIncome) {
+        const acctData2 = {
+          'id': Number(accountId2),
+          'accountType': accounts.find(a => a.id === Number(accountId2))!.account_type,
+          'accountId': accounts.find(a => a.id === Number(accountId2))!.account_id,
+          'balance': accounts.find(a => a.id === Number(accountId2))!.balance - Math.round((Number(amount) + Number.EPSILON) * 100),
+          'date': new Date().toISOString(),
+        };
+        await invoke("update_account", acctData2);
+        await invoke("add_history", { 'id': Number(accountId), 'balance': accounts.find(a => a.id === Number(accountId2))!.balance - Math.round((Number(amount) + Number.EPSILON) * 100), date: new Date().toISOString() });
+      }
+    }
     
     updateLog.signalInc();
     toggle();
@@ -102,7 +163,38 @@ export function EditLog ({ log, toggle, cancel, isIncome, updateLog }: EditLogPr
           setDate(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')));
           }} />
       </li>
-      <li className='new-trans-desc'><label>Desc: </label><textarea value={desc} onChange={(e) => setDesc(e.target.value)}></textarea></li>
+      <li><label>{ isIncome ? 'Destination' : 'Source' }: </label>
+          <select value={accountId} onChange={(e) => {setAccountId(e.target.value); setAccountId2('')}}>
+            <option value=''>Select Account</option>
+              {
+                checkingAccounts.map((a, index) => (
+                  <option key={index} value={a.id}>{a.account_type}:{a.account_id}</option>
+              ))}
+          </select>
+      </li>
+      { (isIncome && incomeCategory === IncomeCategory.InvestmentIncome || incomeCategory === IncomeCategory.SavingsIncome) &&
+        <li><label>Source: </label>
+          <select value={accountId2} onChange={(e) => setAccountId2(e.target.value)}>
+            <option value=''>Select Account</option>
+            { ( incomeCategory === IncomeCategory.InvestmentIncome ? investingAccounts : savingsAccounts).map((a, index) => (
+              <option key={index} value={a.id}>{a.account_type}:{a.account_id}</option>
+            ))}
+          </select>
+        </li>
+      }
+      { (!isIncome && category === Category.Investment || category === Category.Savings) &&
+        <li>
+          <label>Destination: </label>
+          <select value={accountId2} onChange={(e) => setAccountId2(e.target.value)}>
+            <option value=''>Select Account</option>
+            { (category === Category.Savings ? savingsAccounts : investingAccounts).map((a, index) => (
+              <option key={index} value={a.id}>{a.account_type}:{a.account_id}</option>
+            ))}
+          </select>
+        </li>
+      }
+
+      <li className='new-trans-desc'><label>Description: </label><textarea value={desc} onChange={(e) => setDesc(e.target.value)}></textarea></li>
       
       <li className='new-trans-meta'>
         <button className='new-trans-submit' onClick={isIncome ? addIncome : addExpense}>Submit</button>

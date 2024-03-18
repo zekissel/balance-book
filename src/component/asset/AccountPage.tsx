@@ -6,10 +6,11 @@ import { EditAccount } from "./EditAccount";
 interface AccountPageProps { accounts: Account[], updateAccounts: () => void }
 export default function AccountPage ({ accounts, updateAccounts }: AccountPageProps) {
 
+  /*
   const uniqueAccounts = useMemo(() => {
     const ids = Array.from(new Set(accounts.map(a => a.account_id)));
     return ids.map(id => accounts.find(a => a.account_id === id) as Account);
-  }, [accounts]);
+  }, [accounts]);*/
 
   const [showEdit, setShowEdit] = useState<number[]>([]);
   const toggleEdit = (index: number) => {
@@ -21,7 +22,7 @@ export default function AccountPage ({ accounts, updateAccounts }: AccountPagePr
     <div className='assets-main'>
 
       <ul className='assets-main-list'>
-        { uniqueAccounts.map((a, i) => {
+        { accounts.map((a, i) => {
           return (
             <li key={i}>
               <div className='assets-account-card'>

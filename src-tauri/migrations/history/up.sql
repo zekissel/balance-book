@@ -1,0 +1,5 @@
+CREATE TABLE history (
+  id INTEGER NOT NULL,
+  balance INTEGER NOT NULL,
+  date TEXT PRIMARY KEY
+);

@@ -36,6 +36,8 @@ export const getCategoryColor = (category: Category | IncomeCategory): string =>
       return '#e6e6b3';
     case Category.Office:
       return '#b3e6f7';
+    case Category.Savings:
+      return '#b3d9ff';
     case Category.Investment:
       return '#b3d9ff';
     case Category.Dog:
@@ -46,12 +48,10 @@ export const getCategoryColor = (category: Category | IncomeCategory): string =>
       return '#ffe6cc';
     case Category.Food:
       return '#d9ffcc';
-    case Category.Dessert:
+    case Category.Snacks:
       return '#ffd9d9';
-    case Category.Alcohol:
+    case Category.Drinks:
       return '#e6ccff';
-    case Category.Games:
-      return '#e6d4cc';
     case Category.Other:
       return '#ffe0f0';
     case Category.None:
@@ -77,14 +77,14 @@ export enum Category {
   Appliance = 'Appliance',
   Toilietries = 'Toilietries',
   Office = 'Office',
+  Savings = 'Savings',
   Investment = 'Investment',
   Dog = 'Dog',
   Entertainment = 'Entertainment',
   Gifts = 'Gifts',
   Food = 'Food',
-  Dessert = 'Dessert',
-  Alcohol = 'Alcohol',
-  Games = 'Games',
+  Snacks = 'Snacks',
+  Drinks = 'Drinks',
   Other = 'Other',
   None = '---'
 }
@@ -98,6 +98,7 @@ export interface Expense {
   category: Category;
   desc: string;
   date: Date;
+  srcAccountId: number;
 }
 
 export interface Income {
@@ -107,12 +108,14 @@ export interface Income {
   category: IncomeCategory;
   desc: string;
   date: Date;
+  destAccountId: number;
 }
 
 export enum IncomeCategory {
   Salary = 'Salary',
   SideJob = 'SideJob',
   InvestmentIncome = 'InvestmentIncome',
+  SavingsIncome = 'SavingsIncome',
   Reimbursement = 'Reimbursement',
   OtherIncome = 'OtherIncome',
   None = '---',
