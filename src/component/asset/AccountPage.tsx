@@ -27,7 +27,7 @@ export default function AccountPage ({ accounts, updateAccounts }: AccountPagePr
   const refreshHistory = async () => { setHistory(await getHistory()) };
 
   return (
-    <div className='assets-main'>
+    <div className='page-main'>
 
       <ul className='assets-main-list'>
         { accounts.map((a, i) => 
@@ -38,7 +38,7 @@ export default function AccountPage ({ accounts, updateAccounts }: AccountPagePr
             transactions={transactions.filter(t => t.account_id === a.id)} 
             history={history.filter(h => h.account_id === a.id)} />
         )}
-        { accounts.length === 0 && <li>No accounts found</li> }
+        { accounts.length === 0 && <div className='assets-account-card'>No accounts found</div> }
       </ul>
 
     </div>
@@ -70,7 +70,7 @@ function AccountCard ({ account, updateAccount, transactions, history }: Account
         }
       })
     })
-    console.log(history.length)
+
     return totals.sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [transactions, range, account.balance]);
 
@@ -107,27 +107,23 @@ function AccountCard ({ account, updateAccount, transactions, history }: Account
   };
 
   return (
-    <li>
-      <div className='assets-account-card'>
+    <div className="assets-account-card">
+      <div className='account-info'>
+        { showEdit && <EditAccount log={account} type={account.account_type} toggle={toggleEdit} cancel={toggleEdit} updateAccounts={updateAccount} /> }
+        { !showEdit &&
+          <>
+            <button onClick={() => toggleEdit()}><img src='/edit.svg'/></button>
+            <h4>{ account.account_name }</h4>
+            <i>{ account.account_type }</i>
+            <p>${ account.balance / 100 }</p>
+            <input type='number' value={range} onChange={(e) => setRange(Number(e.target.value))} />
+          </>
+        }
         
-
-        <div className='account-info'>
-          { showEdit && <EditAccount log={account} type={account.account_type} toggle={toggleEdit} cancel={toggleEdit} updateAccounts={updateAccount} /> }
-          { !showEdit &&
-            <>
-              <button onClick={() => toggleEdit()}><img src='/edit.svg'/></button>
-              <h4>{ account.account_name }</h4>
-              <i>{ account.account_type }</i>
-              <p>${ account.balance / 100 }</p>
-              <input type='number' value={range} onChange={(e) => setRange(Number(e.target.value))} />
-            </>
-          }
-          
-        </div>
-        <div className='stats-graph'>
-          <ReactECharts option={option} />
-        </div>
       </div>
-    </li>
+      <div className='stats-graph'>
+        <ReactECharts option={option} />
+      </div>
+    </div>
   );
 }

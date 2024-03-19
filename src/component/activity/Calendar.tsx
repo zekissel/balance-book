@@ -97,7 +97,7 @@ export default function Calendar ({ logs, updateLog, showFilter }: CalendarProps
   }
 
   return (
-    <div className={'calendar-root'} id={showFilter?'main-down-shift':undefined}>
+    <div className={showFilter ? 'main-down-shift page-main': 'page-main'}>
       <menu className="calendar-menu">
 
         <span className='calendar-menu-today' onClick={() => {calDate.current = curDate.current; initWeeks()}}>{ curDate.current.toDateString() }</span>

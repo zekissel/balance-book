@@ -21,10 +21,12 @@ div.assets-main {
 ul.assets-main-list, ul.assets-main-list > li {
   list-style: none;
   width: 96%;
+  padding: 0;
+  margin: 0;
 }
 
 div.assets-account-card {
-  width: 100%;
+  width: 96%;
   height: 18rem;
   margin: .5rem auto;
   padding: .5rem;
@@ -48,5 +50,5 @@ div.account-info {
   border: 1px dashed #739d88;
   background-color: #f1f1f1;
 
-  width: 10rem;
+  width: 15rem;
 }

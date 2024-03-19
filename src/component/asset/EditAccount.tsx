@@ -68,8 +68,7 @@ export function EditAccount ({ log, type, toggle, cancel, updateAccounts }: Edit
 
       { log &&
         <div className='new-trans-main'>
-          <li><label>Created:</label><input type='text' value={log.date.toDateString()} readOnly/></li>
-          <li><label>Updated:</label><input type='text' value={new Date().toDateString()} readOnly/></li>
+          <li><label>Last Update:</label><input type='text' value={log.date.toDateString()} readOnly/></li>
         </div>
       }
       

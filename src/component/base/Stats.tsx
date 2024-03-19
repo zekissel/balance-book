@@ -4,6 +4,7 @@ import { getExpenses, getIncome } from "../../typeassist"
 import StatsPage from "../stats/StatsPage"
 import Filter from "../activity/Filter";
 import "../../styles/Stats.css"
+import '../../styles/Page.css'
 import "../../styles/Menu.css"
 
 export default function Stats () {
@@ -59,7 +60,7 @@ export default function Stats () {
   }
 
   return (
-    <div className={filterGUI?'main-down-shift stats-root':'stats-root'}>
+    <div className='page-root'>
       <menu className='dynamic-menu'>
         <div className='dynamic-menu-main'>
           <button id={ !anyDateFilters() && rangeMultiplier > 0 ? 'dynamic-menu-current' : undefined}><input type='text' value={timeRange} onChange={updateRangeDays}/></button>
@@ -77,7 +78,7 @@ export default function Stats () {
 
       { filterGUI && <Filter toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
 
-      <StatsPage transactions={allTransactions} timeRange={anyDateFilters() ? getTimeRangeFromDate() : timeRange * rangeMultiplier} endDate={filters.endDate ?? null}/>
+      <StatsPage transactions={allTransactions} timeRange={anyDateFilters() ? getTimeRangeFromDate() : timeRange * rangeMultiplier} endDate={filters.endDate ?? null} showFilter={filterGUI}/>
 
     </div>
   )

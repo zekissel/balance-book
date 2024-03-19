@@ -1,18 +1,4 @@
 
-div.calendar-root {
-  height: calc(100% - 3rem);
-  overflow: hidden;
-  overflow-y: scroll;
-  border: 1px solid #739d88;
-
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-text-select: none;
-  -webkit-user-select: none;
-}
-
-div.main-down-shift {height: calc(100% - 6rem - 1px); }
-
 table {
   table-layout: fixed;
   margin: 0 auto;

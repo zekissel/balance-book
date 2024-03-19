@@ -6,8 +6,8 @@ import PieIncomeGraph from "./PieIncomeGraph";
 import PieExpenseGraph from "./PieExpenseGraph";
 import LineGraph from "./LineGraph";
 
-interface StatsPageProps { transactions: (Income | Expense)[], timeRange: number, endDate: Date | null }
-export default function StatsPage ({ transactions, timeRange, endDate }: StatsPageProps) {
+interface StatsPageProps { transactions: (Income | Expense)[], timeRange: number, endDate: Date | null, showFilter: boolean }
+export default function StatsPage ({ transactions, timeRange, endDate, showFilter }: StatsPageProps) {
 
   const modifedTransactions = useMemo(() => {
     if (timeRange === 0) return transactions;
@@ -45,7 +45,7 @@ export default function StatsPage ({ transactions, timeRange, endDate }: StatsPa
 
 
   return (
-    <div className='stats-main'>
+    <div className={ showFilter ? 'main-down-shift page-main' : 'page-main'}>
       <div className='stats-main-row'>
         <div className='stats-main-box-short'>
           <h3>

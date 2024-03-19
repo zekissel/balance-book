@@ -1,31 +1,8 @@
 
-div.stats-root {
-  height: 99.6vh;
+div.stats-graph {
   width: 100%;
-  padding: 0;
-  margin: 0 auto;
-
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-text-select: none;
-  -webkit-user-select: none;
+  height: 100%;
 }
-
-div.stats-main {
-  height: calc(100% - 3rem);
-  overflow: hidden;
-  overflow-y: scroll;
-  border: 1px solid #739d88;
-
-  user-select: none;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: start;
-}
-
-div.main-down-shift {height: calc(100% - 3rem - 5px); }
 
 div.stats-main-row {
   display: flex;
@@ -34,6 +11,8 @@ div.stats-main-row {
   align-items: center;
 
   width: 100%;
+  margin: 0;
+  padding: 0;
   height: fit-content;
 }
 

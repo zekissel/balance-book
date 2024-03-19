@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import AccountPage from '../asset/AccountPage';
 import { Account, AccountType } from '../../typedef';
 import { getAccounts } from '../../typeassist';
-import '../../styles/Assets.css';
+import '../../styles/Page.css';
 import '../../styles/Menu.css';
 import CreateAccount from '../asset/CreateAccount';
 
@@ -34,7 +34,7 @@ export default function Assets () {
   const toggleAddAccount = () => setShowAddAccount(!showAddAccount);
 
   return (
-    <div id='assets-root'>
+    <div className='page-root'>
 
       <menu className='dynamic-menu'>
         <div className='dynamic-menu-main'>
@@ -53,7 +53,7 @@ export default function Assets () {
         </div>
 
         <div className='dynamic-menu-main'>
-          <button onClick={toggleAddAccount}><img src='/add-account.svg'/>Add Account</button>
+          <button onClick={toggleAddAccount}><img src='/add-account.svg'/> Add Account</button>
         </div>
       </menu>
 

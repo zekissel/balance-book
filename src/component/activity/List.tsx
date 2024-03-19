@@ -40,7 +40,7 @@ export default function List ({ logs, updateLog, showFilter }: ListProps) {
   };
 
   return (
-    <div className={'list-root'} id={showFilter?'main-down-shift':undefined}>
+    <div className={showFilter ? 'main-down-shift page-main' : 'page-main'}>
 
       {
         allTransactions.map((transactionCollection, ind) => (

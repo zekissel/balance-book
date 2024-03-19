@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 
 import List from "../activity/List";
 import Calendar from "../activity/Calendar";
-import "../../styles/Activity.css";
+import "../../styles/Page.css";
 import "../../styles/Menu.css";
 import { Expense, Income, Filters, filterTransactions } from "../../typedef";
 import { getExpenses, getIncome } from "../../typeassist";
@@ -64,7 +64,7 @@ export default function Activity () {
   const filtersActiveStyle = { backgroundColor: `#a0bacb`}
 
   return (
-    <div className='activity-root'>
+    <div className='page-root'>
 
       <menu className='dynamic-menu'>
         <div className='dynamic-menu-main'>
