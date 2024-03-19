@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import { Category, IncomeCategory, Expense, Income, Account } from './typedef';
+import { Category, IncomeCategory, Expense, Income, Account, History } from './typedef';
 
 export const getCategoryColor = (category: Category | IncomeCategory): string => {
   switch (category) {
@@ -88,6 +88,16 @@ export async function getAccounts(): Promise<Account[]> {
       acc.forEach(e => e.date = new Date(e.date));
       acc.sort((a, b) => a.date > b.date ? -1 : 1);
       return acc;
+    })
+}
+
+export async function getHistory(): Promise<History[]> {
+  return await invoke("load_history")
+    .then(data => {
+      const hist = data as History[];
+      hist.forEach(e => e.date = new Date(e.date));
+      hist.sort((a, b) => a.date > b.date ? -1 : 1);
+      return hist;
     })
 }
 

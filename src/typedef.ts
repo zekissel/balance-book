@@ -102,6 +102,14 @@ export enum AccountType {
   Investing = "Investing",
 }
 
+export interface History {
+  id: number;
+  account_id: number;
+  balance: number;
+  date: Date;
+}
+export const isHistory = (x: any): x is History => (Object.keys(x).includes('balance') && !Object.keys(x).includes('account_type'));
+
 
 export interface Filters {
   type: string,

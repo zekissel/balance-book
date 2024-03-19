@@ -23,19 +23,14 @@ export function EditAccount ({ log, type, toggle, cancel, updateAccounts }: Edit
 
     if (log) {
       await invoke("update_account", data);
-      await invoke("add_history", { 'id': log.id, 'balance': Math.round((Number(balance) + Number.EPSILON) * 100), date: new Date().toISOString() });
     }
     else {
       const account: Account = await invoke("add_account", data);
       switch (type) {
-        case AccountType.Checking:
-          if (localStorage.getItem('accountDefault') === null) localStorage.setItem('accountDefault', account.id.toString()); break;
-        case AccountType.Savings:
-          if (localStorage.getItem('accountSavings') === null) localStorage.setItem('accountSavings', account.id.toString()); break;
-        case AccountType.Investing:
-          if (localStorage.getItem('accountInvesting') === null) localStorage.setItem('accountInvesting', account.id.toString()); break;
+        case AccountType.Checking: localStorage.setItem('accountDefault', account.id.toString()); break;
+        case AccountType.Savings: localStorage.setItem('accountSavings', account.id.toString()); break;
+        case AccountType.Investing: localStorage.setItem('accountInvesting', account.id.toString()); break;
       }
-      await invoke("add_history", { 'accountId': account.id, 'balance': Math.round((Number(balance) + Number.EPSILON) * 100), date: new Date().toISOString() });
     }
     
     updateAccounts();
@@ -45,7 +40,7 @@ export function EditAccount ({ log, type, toggle, cancel, updateAccounts }: Edit
   const deleteAccount = () => {
     invoke("delete_account", { 'id': log!.id });
     if ([Number(localStorage.getItem('accountDefault')), Number(localStorage.getItem('accountSavings')), Number(localStorage.getItem('accountInvesting'))].includes(log!.id)) {
-      switch (log?.account_type) {
+      switch (log!.account_type) {
         case AccountType.Checking: localStorage.removeItem('accountDefault'); break;
         case AccountType.Savings: localStorage.removeItem('accountSavings'); break;
         case AccountType.Investing: localStorage.removeItem('accountInvesting'); break;

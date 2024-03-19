@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
-import { Account, Income, Expense, isExpense } from "../../typedef";
+import { Account, Income, Expense, isExpense, History, isHistory, AccountType } from "../../typedef";
 import '../../styles/AccountPage.css';
-import { getIncome, getExpenses } from "../../typeassist";
+import { getIncome, getExpenses, getHistory } from "../../typeassist";
 import ReactECharts from "echarts-for-react";
 import { EditAccount } from "./EditAccount";
 
@@ -16,17 +16,28 @@ export default function AccountPage ({ accounts, updateAccounts }: AccountPagePr
   useEffect(() => {
     refreshExpenses();
     refreshIncome();
+    refreshHistory();
   }, [])
   const transactions = useMemo(() => {
     let transactions: (Expense | Income)[] = [];
     return transactions.concat(expenses).concat(income).sort((a, b) => a.date > b.date ? -1 : 1);
   }, [expenses, income]);
 
+  const [history, setHistory] = useState<History[]>([]);
+  const refreshHistory = async () => { setHistory(await getHistory()) };
+
   return (
     <div className='assets-main'>
 
       <ul className='assets-main-list'>
-        { accounts.map((a, i) => <AccountCard key={i} account={a} updateAccount={updateAccounts} transactions={transactions.filter(t => t.account_id === a.id)} />) }
+        { accounts.map((a, i) => 
+          <AccountCard 
+            key={i} 
+            account={a} 
+            updateAccount={updateAccounts} 
+            transactions={transactions.filter(t => t.account_id === a.id)} 
+            history={history.filter(h => h.account_id === a.id)} />
+        )}
         { accounts.length === 0 && <li>No accounts found</li> }
       </ul>
 
@@ -35,10 +46,10 @@ export default function AccountPage ({ accounts, updateAccounts }: AccountPagePr
 }
 
 
-interface AccountCardProps { account: Account, updateAccount: () => void, transactions: (Expense | Income)[] }
-function AccountCard ({ account, updateAccount, transactions }: AccountCardProps) {
+interface AccountCardProps { account: Account, updateAccount: () => void, transactions: (Expense | Income)[], history: History[] }
+function AccountCard ({ account, updateAccount, transactions, history }: AccountCardProps) {
 
-  const [range, setRange] = useState(14);
+  const [range, setRange] = useState(account.account_type === AccountType.Checking ? 14 : 60);
   const [showEdit, setShowEdit] = useState(false);
   const toggleEdit = () => setShowEdit(!showEdit);
 
@@ -46,17 +57,20 @@ function AccountCard ({ account, updateAccount, transactions }: AccountCardProps
   const timeFrameTotals = useMemo(() => {
     let totals: SeriesDay[] = Array.from({ length: range }, (_, i) => { return { date: new Date(new Date().getTime() - (i * 24 * 60 * 60 * 1000)), total: account.balance } });
     const minTime = new Date(new Date().getTime() - (range * 24 * 60 * 60 * 1000)).getTime();
-    transactions.forEach(trans => {
-      if (trans.date.getTime() >= minTime) {
-        let index = totals.findIndex((t) => t.date.toDateString() === trans.date.toDateString());
-        if (index !== -1) {
-          while (index < range - 1) {
-            index += 1;
-            totals[index].total += ((isExpense(trans) ? 1 : -1) * trans.amount);
+    [history, transactions].forEach(arr => {
+      arr.forEach(trans => {
+        if (trans.date.getTime() >= minTime) {
+          let index = totals.findIndex((t) => t.date.toDateString() === trans.date.toDateString());
+          if (index !== -1) {
+            while (index < range - 1) {
+              index += 1;
+              totals[index].total += ((isHistory(trans) || isExpense(trans) ? 1 : -1) * ( isHistory(trans) ? trans.balance : trans.amount));
+            }
           }
         }
-      }
+      })
     })
+    console.log(history.length)
     return totals.sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [transactions, range, account.balance]);
 
@@ -69,7 +83,7 @@ function AccountCard ({ account, updateAccount, transactions }: AccountCardProps
       data: timeFrameTotals.map((t) => new Object({ value: t.date.toDateString().slice(4, range >= 100 ? 15 : 10), label: {show: true} })),
       axisLabel: {
         rotate: 28,
-        interval: 0,
+        interval: range === 14 ? 0 : 2,
       },
       splitLine: { show: true, lineStyle: { color: '#ffffff', }},
     },
@@ -79,7 +93,7 @@ function AccountCard ({ account, updateAccount, transactions }: AccountCardProps
     },
     series: [
       {
-        data: timeFrameTotals.map((t, i) => new Object({value: t.total / 100, label: {show:true, position: i % 2 == 0 ? 'top' : 'bottom',formatter: '${c}'} })),
+        data: timeFrameTotals.map((t, i) => new Object({value: t.total / 100, label: {show:range==14?true:(i%3==0), position: i % 2 == 0 ? 'top' : 'bottom',formatter: '${c}'} })),
         type: 'line',
         step: 'end',
       }
