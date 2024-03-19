@@ -1,4 +1,5 @@
-import { Expense, Income, UpdateLogProps, getCategoryColor, isExpense } from "../../typedef";
+import { Expense, Income, UpdateLogProps, isExpense } from "../../typedef";
+import { getCategoryColor } from "../../typeassist";
 import Draggable from "react-draggable";
 import { useState } from "react";
 import { EditLog } from "./EditLog";

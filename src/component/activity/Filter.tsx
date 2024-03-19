@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { Filters, Category, IncomeCategory, getEnumKeys, addDays } from '../../typedef';
+import React, { useEffect, useState } from 'react';
+import { Filters, Category, IncomeCategory, getEnumKeys, Account } from '../../typedef';
+import { getAccounts } from '../../typeassist';
+import { addDays } from '../../typeassist';
 import '../../styles/Filter.css';
 
 
@@ -13,6 +15,10 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
   const toggleEndDate = () => setShowEndDate(!showEndDate);
   const [showCategory, setShowCategory] = useState(false);
   const toggleCategory = () => setShowCategory(!showCategory);
+
+  const [accountOptions, setAccountOptions] = useState<Account[]>([]);
+  const [showAccounts, setShowAccounts] = useState(false);
+  const toggleAccounts = () => setShowAccounts(!showAccounts);
 
   const handleLowAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const am = e.target.value;
@@ -36,11 +42,16 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
       source: [''],
       lowAmount: '0',
       highAmount: '0', 
+      accounts: [],
     });
     setShowStartDate(false);
     setShowEndDate(false);
     setShowCategory(false);
   };
+
+  useEffect(() => {
+    getAccounts().then((accounts) => setAccountOptions(accounts));
+  }, []);
 
   return (
     <menu className='filter-menu'>
@@ -107,6 +118,26 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
       <li>
         <label>High Amount: </label>
         <input type='text' value={filters.highAmount} onChange={handleHighAmount}/>
+      </li>
+
+      <li>
+        <span className='filter-menu-heading'><label className={filters.accounts.length === 0 ? 'filter-menu-togglable':'filter-menu-togglable-nonempty'} onClick={() => { toggleAccounts(); setFilters({...filters, accounts: []}) }}>Accounts: </label>
+          <span id='category-img' onClick={toggleAccounts}>{ showAccounts ? <img src='/close-up.svg' /> : <img src='/open-down.svg' /> }</span>
+        </span>
+        { showAccounts &&
+          <select multiple size={5} value={filters.accounts.map(a => String(a))}
+            onChange={(e) => {
+              if (filters.accounts.includes(Number(e.target.value))) setFilters({...filters, accounts: filters.accounts.filter(a => String(a) !== e.target.value)});
+              else setFilters({...filters, accounts: [...filters.accounts, Number(e.target.value)]})
+            }}>
+            {accountOptions.map((acc, index) => (
+              <option style={filters.accounts.includes(acc.id) ? { backgroundColor: `#abc` }:undefined} key={index} value={acc.id}>
+                {`${acc.account_type}:${acc.account_name}`}
+              </option>
+            ))}
+          </select>
+        }
+        { !showCategory && (filters.accounts.length > 0 ? <div id='filter-category-list'>{ accountOptions.filter((a) => filters.accounts.includes(a.id)).map(a => String(`${a.account_type.slice(0,4)}:${a.account_name} `)) }</div> : <span>None</span>)}
       </li>
 
       <li className='filter-menu-meta'>

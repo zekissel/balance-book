@@ -6,19 +6,19 @@ diesel::table! {
       category -> Text,
       desc -> Text,
       date -> Text,
-      src_account_id -> Text,
+      account_id -> Integer,
   }
 }
 
 diesel::table! {
   income (id) {
       id -> Integer,
-      source -> Text,
+      account_id -> Integer,
       amount -> Integer,
+      source -> Text,
       category -> Text,
-      desc -> Text,
       date -> Text,
-      dest_account_id -> Text,
+      desc -> Text,
   }
 }
 
@@ -26,15 +26,16 @@ diesel::table! {
   account (id) {
       id -> Integer,
       account_type -> Text,
-      account_id -> Text,
+      account_name -> Text,
       balance -> Integer,
       date -> Text,
   }
 }
 
 diesel::table! {
-  history (date) {
+  history (id) {
       id -> Integer,
+      account_id -> Integer,
       balance -> Integer,
       date -> Text,
   }

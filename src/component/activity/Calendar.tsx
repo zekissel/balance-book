@@ -1,6 +1,7 @@
 import { LogProps, UpdateLogProps } from "../../typedef";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Day, Month, Expense, Income, addDays, isExpense } from "../../typedef";
+import { Day, Month, Expense, Income, isExpense } from "../../typedef";
+import { addDays } from "../../typeassist";
 import ViewLog from "../transaction/ViewLog";
 import ViewDay from "./ViewDay";
 import '../../styles/Calendar.css';
@@ -96,7 +97,7 @@ export default function Calendar ({ logs, updateLog, showFilter }: CalendarProps
   }
 
   return (
-    <div className={showFilter?'main-down-shift calendar-root':'calendar-root'}>
+    <div className={'calendar-root'} id={showFilter?'main-down-shift':undefined}>
       <menu className="calendar-menu">
 
         <span className='calendar-menu-today' onClick={() => {calDate.current = curDate.current; initWeeks()}}>{ curDate.current.toDateString() }</span>

@@ -6,7 +6,7 @@ import { AccountType, Account } from "../../typedef";
 interface EditAccountProps { log: Account | null, type: AccountType, toggle: () => void, cancel: () => void, updateAccounts: () => void }
 export function EditAccount ({ log, type, toggle, cancel, updateAccounts }: EditAccountProps) {
 
-  const [name, setName] = useState(log ? log.account_id : '');
+  const [name, setName] = useState(log ? log.account_name : '');
   const [balance, setBalance] = useState(log ? String(log.balance / 100) : '0');
 
 
@@ -35,7 +35,7 @@ export function EditAccount ({ log, type, toggle, cancel, updateAccounts }: Edit
         case AccountType.Investing:
           if (localStorage.getItem('accountInvesting') === null) localStorage.setItem('accountInvesting', account.id.toString()); break;
       }
-      await invoke("add_history", { 'id': account.id, 'balance': Math.round((Number(balance) + Number.EPSILON) * 100), date: new Date().toISOString() });
+      await invoke("add_history", { 'accountId': account.id, 'balance': Math.round((Number(balance) + Number.EPSILON) * 100), date: new Date().toISOString() });
     }
     
     updateAccounts();
@@ -44,6 +44,13 @@ export function EditAccount ({ log, type, toggle, cancel, updateAccounts }: Edit
 
   const deleteAccount = () => {
     invoke("delete_account", { 'id': log!.id });
+    if ([Number(localStorage.getItem('accountDefault')), Number(localStorage.getItem('accountSavings')), Number(localStorage.getItem('accountInvesting'))].includes(log!.id)) {
+      switch (log?.account_type) {
+        case AccountType.Checking: localStorage.removeItem('accountDefault'); break;
+        case AccountType.Savings: localStorage.removeItem('accountSavings'); break;
+        case AccountType.Investing: localStorage.removeItem('accountInvesting'); break;
+      }
+    }
     updateAccounts();
     toggle();
   }

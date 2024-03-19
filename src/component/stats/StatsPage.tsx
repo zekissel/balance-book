@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { Expense, Income, isExpense, addDays } from "../../typedef";
+import { Expense, Income, isExpense } from "../../typedef";
+import { addDays } from "../../typeassist";
 import TotalGraph from "./TotalGraph";
 import PieIncomeGraph from "./PieIncomeGraph";
 import PieExpenseGraph from "./PieExpenseGraph";

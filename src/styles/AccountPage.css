@@ -34,5 +34,19 @@ div.assets-account-card {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: start;
+  align-items: center;
+}
+
+div.account-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: .5rem;
+  margin: .5rem;
+  border-radius: .5rem;
+  border: 1px dashed #739d88;
+  background-color: #f1f1f1;
+
+  width: 10rem;
 }

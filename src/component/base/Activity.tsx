@@ -4,7 +4,8 @@ import List from "../activity/List";
 import Calendar from "../activity/Calendar";
 import "../../styles/Activity.css";
 import "../../styles/Menu.css";
-import { Expense, Income, getExpenses, getIncome, Filters, filterTransactions } from "../../typedef";
+import { Expense, Income, Filters, filterTransactions } from "../../typedef";
+import { getExpenses, getIncome } from "../../typeassist";
 import EditLog from "../transaction/CreateLog";
 import Filter from "../activity/Filter";
 
@@ -21,9 +22,10 @@ export default function Activity () {
     source: [''],
     lowAmount: '0',
     highAmount: '0',
+    accounts: [],
   });
   const anyFiltersActive = () => {
-    return (filters.type !== `all` || filters.startDate !== null || filters.endDate !== null || filters.category.length > 0 || filters.source[0].length > 0 || Number(filters.lowAmount) !== 0 || Number(filters.highAmount) !== 0)
+    return (filters.type !== `all` || filters.startDate !== null || filters.endDate !== null || filters.category.length > 0 || filters.source[0].length > 0 || Number(filters.lowAmount) !== 0 || Number(filters.highAmount) !== 0 || filters.accounts.length > 0);
   };
 
   /* compile expenses and income from backend into Transaction[] */

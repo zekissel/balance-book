@@ -1,5 +1,6 @@
 import ReactECharts from "echarts-for-react";
-import { Income, Expense, isExpense, generateRandomColor } from "../../typedef";
+import { Income, Expense, isExpense } from "../../typedef";
+import { generateRandomColor } from "../../typeassist";
 import '../../styles/Graph.css'
 import { useMemo } from "react";
 

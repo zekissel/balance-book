@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { Income, Expense, getExpenses, getIncome, Filters, filterTransactions } from "../../typedef"
+import { Income, Expense, Filters, filterTransactions } from "../../typedef"
+import { getExpenses, getIncome } from "../../typeassist"
 import StatsPage from "../stats/StatsPage"
 import Filter from "../activity/Filter";
 import "../../styles/Stats.css"
@@ -17,6 +18,7 @@ export default function Stats () {
     source: [''],
     lowAmount: '0',
     highAmount: '0',
+    accounts: [],
   });
   const anyFiltersActive = () => {
     return (filters.type !== `all` || filters.startDate !== null || filters.endDate !== null || filters.category.length > 0 || filters.source[0].length > 0 || Number(filters.lowAmount) !== 0 || Number(filters.highAmount) !== 0)

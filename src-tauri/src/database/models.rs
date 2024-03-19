@@ -16,7 +16,7 @@ pub struct Expense {
     pub category: String,
     pub desc: String,
     pub date: String,
-    pub src_account_id: String,
+    pub account_id: i32,
 }
 
 impl Serialize for Expense {
@@ -31,7 +31,7 @@ impl Serialize for Expense {
         state.serialize_field("category", &self.category)?;
         state.serialize_field("desc", &self.desc)?;
         state.serialize_field("date", &self.date)?;
-        state.serialize_field("src_account_id", &self.src_account_id)?;
+        state.serialize_field("account_id", &self.account_id)?;
         state.end()
     }
 }
@@ -44,7 +44,7 @@ pub struct AddExpense<'a> {
     pub category: &'a str,
     pub desc: &'a str,
     pub date: &'a str,
-    pub src_account_id: &'a str,
+    pub account_id: i32,
 }
 
 
@@ -53,12 +53,12 @@ pub struct AddExpense<'a> {
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Income {
     pub id: i32,
-    pub source: String,
+    pub account_id: i32,
     pub amount: i32,
+    pub source: String,
     pub category: String,
-    pub desc: String,
     pub date: String,
-    pub dest_account_id: String,
+    pub desc: String,
 }
 
 impl Serialize for Income {
@@ -68,12 +68,12 @@ impl Serialize for Income {
     {
         let mut state = serializer.serialize_struct("Income", 7)?;
         state.serialize_field("id", &self.id)?;
-        state.serialize_field("source", &self.source)?;
+        state.serialize_field("account_id", &self.account_id)?;
         state.serialize_field("amount", &self.amount)?;
+        state.serialize_field("source", &self.source)?;
         state.serialize_field("category", &self.category)?;
-        state.serialize_field("desc", &self.desc)?;
         state.serialize_field("date", &self.date)?;
-        state.serialize_field("dest_account_id", &self.dest_account_id)?;
+        state.serialize_field("desc", &self.desc)?;
         state.end()
     }
 }
@@ -81,12 +81,12 @@ impl Serialize for Income {
 #[derive(Insertable)]
 #[diesel(table_name = income)]
 pub struct AddIncome<'a> {
-    pub source: &'a str,
+    pub account_id: i32,
     pub amount: i32,
+    pub source: &'a str,
     pub category: &'a str,
-    pub desc: &'a str,
     pub date: &'a str,
-    pub dest_account_id: &'a str,
+    pub desc: &'a str,
 }
 
 
@@ -96,7 +96,7 @@ pub struct AddIncome<'a> {
 pub struct Account {
     pub id: i32,
     pub account_type: String,
-    pub account_id: String,
+    pub account_name: String,
     pub balance: i32,
     pub date: String,
 }
@@ -109,7 +109,7 @@ impl Serialize for Account {
         let mut state = serializer.serialize_struct("Account", 5)?;
         state.serialize_field("id", &self.id)?;
         state.serialize_field("account_type", &self.account_type)?;
-        state.serialize_field("account_id", &self.account_id)?;
+        state.serialize_field("account_name", &self.account_name)?;
         state.serialize_field("balance", &self.balance)?;
         state.serialize_field("date", &self.date)?;
         state.end()
@@ -120,7 +120,7 @@ impl Serialize for Account {
 #[diesel(table_name = account)]
 pub struct AddAccount<'a> {
     pub account_type: &'a str,
-    pub account_id: &'a str,
+    pub account_name: &'a str,
     pub balance: i32,
     pub date: &'a str,
 }
@@ -130,6 +130,7 @@ pub struct AddAccount<'a> {
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct History {
     pub id: i32,
+    pub account_id: i32,
     pub balance: i32,
     pub date: String,
 }
@@ -139,8 +140,9 @@ impl Serialize for History {
     where
         S: serde::Serializer,
     {
-        let mut state = serializer.serialize_struct("History", 3)?;
+        let mut state = serializer.serialize_struct("History", 4)?;
         state.serialize_field("id", &self.id)?;
+        state.serialize_field("account_id", &self.account_id)?;
         state.serialize_field("balance", &self.balance)?;
         state.serialize_field("date", &self.date)?;
         state.end()
@@ -150,7 +152,7 @@ impl Serialize for History {
 #[derive(Insertable)]
 #[diesel(table_name = history)]
 pub struct AddHistory<'a> {
-    pub id: i32,
+    pub account_id: i32,
     pub balance: i32,
     pub date: &'a str,
 }

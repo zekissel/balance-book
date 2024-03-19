@@ -5,5 +5,5 @@ CREATE TABLE expense (
   category TEXT NOT NULL,
   desc TEXT,
   date TEXT NOT NULL,
-  src_account_id TEXT NOT NULL
+  account_id INTEGER NOT NULL
 );

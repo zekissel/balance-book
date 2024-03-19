@@ -10,7 +10,7 @@ pub mod database;
 
 
 #[tauri::command]
-fn add_expense(store: &str, amount: i32, category: &str, desc: &str, date: &str, account_id: &str) -> Expense {
+fn add_expense(store: &str, amount: i32, category: &str, desc: &str, date: &str, account_id: i32) -> Expense {
     database::api::create_expense(store, amount, category, desc, date, account_id)
 }
 
@@ -20,7 +20,7 @@ fn load_expenses() -> Vec<Expense> {
 }
 
 #[tauri::command]
-fn update_expense(id: i32, store: &str, amount: i32, category: &str, desc: &str, date: &str, account_id: &str) -> Expense {
+fn update_expense(id: i32, store: &str, amount: i32, category: &str, desc: &str, date: &str, account_id: i32) -> Expense {
     database::api::update_expense(id, store, amount, category, desc, date, account_id)
 }
 
@@ -30,8 +30,8 @@ fn delete_expense(id: i32) {
 }
 
 #[tauri::command]
-fn add_income(source: &str, amount: i32, category: &str, desc: &str, date: &str, account_id: &str) -> Income {
-    database::api::create_income(source, amount, category, desc, date, account_id)
+fn add_income(source: &str, amount: i32, category: &str, desc: &str, date: &str, account_id: i32) -> Income {
+    database::api::create_income(account_id, amount, source, category, date, desc )
 }
 
 #[tauri::command]
@@ -40,8 +40,8 @@ fn load_income() -> Vec<Income> {
 }
 
 #[tauri::command]
-fn update_income(id: i32, source: &str, amount: i32, category: &str, desc: &str, date: &str, account_id: &str) -> Income {
-    database::api::update_income(id, source, amount, category, desc, date, account_id)
+fn update_income(id: i32, source: &str, amount: i32, category: &str, desc: &str, date: &str, account_id: i32) -> Income {
+    database::api::update_income(id, account_id, amount, source, category, desc, date)
 }
 
 #[tauri::command]
@@ -70,8 +70,8 @@ fn delete_account(id: i32) {
 }
 
 #[tauri::command]
-fn add_history(id: i32, balance: i32, date: &str) -> History {
-    database::api::create_history(id, balance, date)
+fn add_history(account_id: i32, balance: i32, date: &str) -> History {
+    database::api::create_history(account_id, balance, date)
 }
 
 #[tauri::command]
@@ -80,13 +80,13 @@ fn load_history() -> Vec<History> {
 }
 
 #[tauri::command]
-fn update_history(id: i32, balance: i32, date: &str) -> History {
-    database::api::update_history(id, balance, date)
+fn update_history(id: i32, account_id: i32, balance: i32, date: &str) -> History {
+    database::api::update_history(id, account_id, balance, date)
 }
 
 #[tauri::command]
-fn delete_history(date: &str) {
-    database::api::delete_history(date);
+fn delete_history(id: i32) {
+    database::api::delete_history(id);
 }
 
 fn main() {

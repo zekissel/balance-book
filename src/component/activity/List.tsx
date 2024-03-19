@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { LogProps, Income, Expense, isExpense, getCategoryColor, addDays, UpdateLogProps } from "../../typedef";
+import { LogProps, Income, Expense, isExpense, UpdateLogProps } from "../../typedef";
+import { getCategoryColor, addDays } from "../../typeassist";
 import ViewLog from "../transaction/ViewLog";
 import '../../styles/List.css';
 
@@ -39,7 +40,7 @@ export default function List ({ logs, updateLog, showFilter }: ListProps) {
   };
 
   return (
-    <div className={showFilter?'main-down-shift list-root':'list-root'}>
+    <div className={'list-root'} id={showFilter?'main-down-shift':undefined}>
 
       {
         allTransactions.map((transactionCollection, ind) => (

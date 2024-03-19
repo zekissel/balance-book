@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import AccountPage from '../asset/AccountPage';
-import { Account, AccountType, getAccounts } from '../../typedef';
+import { Account, AccountType } from '../../typedef';
+import { getAccounts } from '../../typeassist';
 import '../../styles/Assets.css';
 import '../../styles/Menu.css';
 import CreateAccount from '../asset/CreateAccount';
