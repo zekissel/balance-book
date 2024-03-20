@@ -57,6 +57,7 @@ div.account-details > h4 {
   margin: .1rem;
   padding: .5rem;
   font-size: 25px;
+  text-align: center;
 }
 
 div.account-card-balance {
@@ -87,4 +88,11 @@ div.account-details {
   margin: .5rem;
   border-radius: .5rem;
   background-color: #e5e8e7;
+}
+
+div.account-info-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }

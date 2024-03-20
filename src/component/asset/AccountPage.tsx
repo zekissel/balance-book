@@ -83,7 +83,7 @@ function AccountCard ({ account, updateAccount, transactions, history }: Account
       data: timeFrameTotals.map((t) => new Object({ value: t.date.toDateString().slice(4, 10), label: {show: true} })),
       axisLabel: {
         rotate: 28,
-        interval: range === 14 ? 0 : 4,
+        interval: range === 14 ? 0 : (range < 180 ? 4 : 20),
       },
       splitLine: { show: true, lineStyle: { color: '#ffffff', }},
     },
@@ -93,7 +93,7 @@ function AccountCard ({ account, updateAccount, transactions, history }: Account
     },
     series: [
       {
-        data: timeFrameTotals.map((t, i) => new Object({value: t.total / 100, label: {show:range==14?true:(i%5==0), position: i % 2 == 0 ? 'top' : 'bottom',formatter: '${c}'} })),
+        data: timeFrameTotals.map((t, i) => new Object({value: t.total / 100, label: {show:range==14?true:(range < 180 ?(i%5==0):(i%20==0)), position: i % 2 == 0 ? 'top' : 'bottom',formatter: '${c}'} })),
         type: 'line',
         step: 'end',
       }
@@ -102,26 +102,34 @@ function AccountCard ({ account, updateAccount, transactions, history }: Account
       text: 'Account Balance by Day'
     },
     width: '87%',
-    height: range >= 100 ? '64%' : '70%',
+    height: '70%',
     dataZoom: { type: 'inside' },
   };
 
   return (
     <div className="assets-account-card">
-      <div className='account-info'>
-        { showEdit && <EditAccount log={account} type={account.account_type} toggle={toggleEdit} cancel={toggleEdit} updateAccounts={updateAccount} /> }
-        { !showEdit &&
-          <div className='account-details'>
-            <h4>{ account.account_name }</h4>
-            <div className='account-card-balance'>${ account.balance / 100 }</div>
-            <i>{ account.account_type }</i>
-          </div>
-        }
-        { !showEdit && 
-          <div className='edit-account'>
-            <button onClick={() => toggleEdit()}><i>Adjust</i></button>
-          </div>
-        }
+      <div className='account-info-wrapper'>
+        <div className='account-info'>
+          { showEdit && <EditAccount log={account} type={account.account_type} toggle={toggleEdit} cancel={toggleEdit} updateAccounts={updateAccount} /> }
+          { !showEdit &&
+            <div className='account-details'>
+              <h4>{ account.account_name }</h4>
+              <div className='account-card-balance'>${ account.balance / 100 }</div>
+              <i>{ account.account_type }</i>
+            </div>
+          }
+          { !showEdit && 
+            <div className='edit-account'>
+              <button onClick={() => toggleEdit()}><i>Adjust</i></button>
+            </div>
+          }
+        </div>
+        <div>
+          <label>Days: </label>
+          <button onClick={() => setRange(account.account_type === AccountType.Checking ? 14 : 91)}>{ account.account_type === AccountType.Checking ? '14' : '91' }</button>
+          <button onClick={() => setRange(account.account_type === AccountType.Checking ? 30 : 180)}>{ account.account_type === AccountType.Checking ? '30' : '180' }</button>
+          <button onClick={() => setRange(account.account_type === AccountType.Checking ? 60 : 365)}>{ account.account_type === AccountType.Checking ? '60' : '365' }</button>
+        </div>
       </div>
       <div className='stats-graph'>
         <ReactECharts option={option} />

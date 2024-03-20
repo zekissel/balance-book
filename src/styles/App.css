@@ -25,3 +25,9 @@ main {
   padding: 0;
   margin: 0 auto;
 }
+
+div.logo {
+  width: 100%;
+  margin: 0 auto;
+  background-color: #f1f1f1;
+}

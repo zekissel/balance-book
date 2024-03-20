@@ -1,5 +1,6 @@
 import '../../styles/Page.css';
 import '../../styles/Menu.css';
+import Logo from './Logo';
 
 export default function Home () {
 
@@ -18,9 +19,7 @@ export default function Home () {
       </menu>
 
       <div className='page-main'>
-        <div>
-          Week Cal/List
-        </div>
+        <Logo />
 
         <div>
           Account balances

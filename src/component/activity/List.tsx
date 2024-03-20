@@ -43,6 +43,20 @@ export default function List ({ logs, updateLog, showFilter }: ListProps) {
     else setSelectedTransactions([...selectedTransactions, transaction]);
   };
 
+  const [showIndices, setShowIndices] = useState(sessionStorage.getItem('list.indices')?.split(' ').map(i => Number(i)) ?? [0, 1, 2, 3]);
+  const handleIndexToggle = (index: number) => {
+    if (showIndices.includes(index)) {
+      const indices = showIndices.filter(i => i !== index);
+      setShowIndices(indices);
+      sessionStorage.setItem('list.indices', indices.join(' '));
+    }
+    else {
+      const indices = [...showIndices, index];
+      setShowIndices(indices);
+      sessionStorage.setItem('list.indices', indices.join(' '));
+    }
+  }
+
   return (
     <div className={showFilter ? 'main-down-shift page-main' : 'page-main'}>
 
@@ -50,15 +64,15 @@ export default function List ({ logs, updateLog, showFilter }: ListProps) {
         allTransactions.map((transactionCollection, ind) => (
           
           <ol className='list-main' key={ind}>
-            <h2>{ transactionTitles[ind] }</h2>
-            {transactionCollection.map((transaction, index) => (
+            <h2 onClick={() => handleIndexToggle(ind)}>{ transactionTitles[ind] }<img src={ showIndices.includes(ind) ? '/double-down.svg' : 'double-left.svg'}/></h2>
+            { showIndices.includes(ind) && transactionCollection.map((transaction, index) => (
               <li key={index} className={ (isExpense(transaction) ? 'list-item-expense' : 'list-item-income') + ' list-item'} onClick={() => updateSelected(transaction)}>
                 <span className='list-item-date'>{transaction.date.toDateString().split(' ').slice(0, 3).join(' ')}</span>
                 <span className='list-item-source'> { isExpense(transaction) ? transaction.store : transaction.source }</span>
                 <span className='list-item-amount'> {isExpense(transaction) ? `-$`: `+$`}{transaction.amount / 100} </span>
-                <span className='list-item-account'>{ `${accounts.find(a => a.id === transaction.account_id)?.account_type.slice(0,5)}:${accounts.find(a => a.id === transaction.account_id)?.account_name}` }</span>
                 <span className='list-item-category' style={{ backgroundColor: getCategoryColor(transaction.category) }}>{transaction.category}</span>
                 <span className='list-item-desc'> - {transaction.desc}</span>
+                <span className='list-item-account'>{ `${accounts.find(a => a.id === transaction.account_id)?.account_type.slice(0,5)}:${accounts.find(a => a.id === transaction.account_id)?.account_name}` }</span>
               </li>
             ))}
           </ol>
