@@ -12,13 +12,14 @@ div.page-root > ol {
 }
 
 ol.list-main {
-  width: 69%;
+  width: 90%;
   margin: 1rem;
   padding: .5rem 1rem;
   border: 1px dashed #739d88;
+  border-radius: 1vw;
 
   list-style: none;
-  background-color: #f1f1f1;
+  background-color: rgba(223, 226, 225, 0.695);
 }
 
 li.list-item {
@@ -29,7 +30,7 @@ li.list-item {
   border: 1px dashed #739d88;
 
   display: grid;
-  grid-template-columns: 1fr 1.4fr 1fr 1.5fr 2fr;
+  grid-template-columns: 1fr 1.2fr 1fr 1fr 1.2fr 2fr;
 }
 
 li.list-item-expense { background-color: #fce6ba65; }
@@ -65,6 +66,12 @@ span.list-item-amount {
   text-align: right;
   font-weight: 550;
   margin-right: .5rem;
+}
+
+span.list-item-account {
+  font-family:'Courier New', Courier, monospace;
+  font-size: 14px;
+  font-weight: 550;
 }
 
 span.list-item-category {

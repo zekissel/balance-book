@@ -24,14 +24,68 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
     const am = e.target.value;
     if (!am || am.match(/^\d{1,}(\.\d{0,2})?$/)) {
       setFilters({ ...filters, lowAmount: am});
+      sessionStorage.setItem('filter.low', am);
     }
   }
   const handleHighAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const am = e.target.value;
     if (!am || am.match(/^\d{1,}(\.\d{0,2})?$/)) {
       setFilters({ ...filters, highAmount: am});
+      sessionStorage.setItem('filter.high', am);
     }
   }
+
+  const handleType = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilters({...filters, type: e.target.value as string});
+    sessionStorage.setItem('filter.type', e.target.value);
+  }
+
+  const voidStartDate = () => { toggleStartDate(); setFilters({...filters, startDate: null}); sessionStorage.removeItem('filter.start'); }
+  const handleStartDate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const date = new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' '));
+    setFilters({...filters, startDate: date });
+    sessionStorage.setItem('filter.start', date.toDateString());
+  }
+  
+  const voidEndDate = () => { toggleEndDate(); setFilters({...filters, endDate: null}); sessionStorage.removeItem('filter.end'); }
+  const handleEndDate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const date = addDays(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')), 0);
+    setFilters({...filters, endDate: date });
+    sessionStorage.setItem('filter.start', date.toDateString());
+  }
+
+  const voidCategory = () => { toggleCategory(); setFilters({...filters, category: []}); sessionStorage.removeItem('filter.category'); }
+  const handleCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (filters.category.includes(e.target.value)) {
+      const newCategories = filters.category.filter(c => c !== e.target.value);
+      setFilters({ ...filters, category: newCategories });
+      sessionStorage.setItem('filter.category', newCategories.join(' '));
+    } else {
+      const newCategories = [...filters.category, e.target.value];
+      setFilters({ ...filters, category: newCategories });
+      sessionStorage.setItem('filter.category', newCategories.join(' '));
+    }
+  }
+
+  const handleSource = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const sources = e.target.value.split(',');
+    setFilters({ ...filters, source: sources })
+    sessionStorage.setItem('filter.source', sources.join(' '));
+  }
+
+  const voidAccounts = () => { toggleAccounts(); setFilters({...filters, accounts: []}); sessionStorage.removeItem('filter.accounts'); }
+  const handleAccounts = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (filters.accounts.includes(Number(e.target.value))) {
+      const newAccounts = filters.accounts.filter(a => a !== Number(e.target.value));
+      setFilters({ ...filters, accounts: newAccounts });
+      sessionStorage.setItem('filter.accounts', newAccounts.join(' '));
+    } else {
+      const newAccounts = [...filters.accounts, Number(e.target.value)];
+      setFilters({ ...filters, accounts: newAccounts });
+      sessionStorage.setItem('filter.accounts', newAccounts.join(' '));
+    }
+  }
+
 
   const resetFilters = () => {
     setFilters({ 
@@ -47,10 +101,18 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
     setShowStartDate(false);
     setShowEndDate(false);
     setShowCategory(false);
+    sessionStorage.removeItem('filter.type');
+    sessionStorage.removeItem('filter.start');
+    sessionStorage.removeItem('filter.end');
+    sessionStorage.removeItem('filter.category');
+    sessionStorage.removeItem('filter.source');
+    sessionStorage.removeItem('filter.low');
+    sessionStorage.removeItem('filter.high');
+    sessionStorage.removeItem('filter.accounts');
   };
 
   useEffect(() => {
-    getAccounts().then((accounts) => setAccountOptions(accounts));
+    getAccounts().then(accounts => setAccountOptions(accounts));
   }, []);
 
   return (
@@ -58,7 +120,7 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
 
       <li>
         <label>Type: </label>
-        <select value={filters.type} onChange={(e) => setFilters({...filters, type: e.target.value as string})} >
+        <select value={filters.type} onChange={handleType} >
           <option value={`all`}>All</option>
           <option value={`expense`}>Expense</option>
           <option value={`income`}>Income</option>
@@ -66,26 +128,23 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
       </li>
 
       <li>
-        <label className='filter-menu-togglable' onClick={() => { toggleStartDate(); setFilters({...filters, startDate: null}); }}>Start Date: </label>
-        { showStartDate && <input type='date' value={ filters.startDate ? (addDays(filters.startDate!, 1).toISOString().substring(0, 10)) : undefined } onChange={(e) => setFilters({...filters, startDate: addDays(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')), -1)})}/> }
+        <label className='filter-menu-togglable' onClick={voidStartDate}>Start Date: </label>
+        { showStartDate && <input type='date' value={ filters.startDate ? (addDays(filters.startDate!, 0).toISOString().substring(0, 10)) : undefined } onChange={handleStartDate}/> }
         { !showStartDate && <span>None</span>}
       </li>
       <li>
-        <label className='filter-menu-togglable' onClick={() => { toggleEndDate(); setFilters({...filters, endDate: null}); }}>End Date: </label>
-        { showEndDate && <input type='date' value={filters.endDate ? (addDays(filters.endDate!, 0).toISOString().substring(0, 10)) : undefined} onChange={(e) => setFilters({...filters, endDate: addDays(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')), 0)})} /> }
+        <label className='filter-menu-togglable' onClick={voidEndDate}>End Date: </label>
+        { showEndDate && <input type='date' value={filters.endDate ? (addDays(filters.endDate!, 0).toISOString().substring(0, 10)) : undefined} onChange={handleEndDate} /> }
         { !showEndDate && <span>None</span>}
       </li>
 
       <li>
-        <span className='filter-menu-heading'><label className={filters.category.length === 0 ? 'filter-menu-togglable':'filter-menu-togglable-nonempty'} onClick={() => { toggleCategory(); setFilters({...filters, category: []}) }}>Categories: </label>
+        <span className='filter-menu-heading'>
+          <label className={filters.category.length === 0 ? 'filter-menu-togglable':'filter-menu-togglable-nonempty'} onClick={voidCategory}>Categories: </label>
           <span id='category-img' onClick={toggleCategory}>{ showCategory ? <img src='/close-up.svg' /> : <img src='/open-down.svg' /> }</span>
         </span>
         { showCategory &&
-          <select multiple size={5} value={filters.category}
-            onChange={(e) => {
-              if (filters.category.includes(e.target.value)) setFilters({...filters, category: filters.category.filter(c => c !== e.target.value)});
-              else setFilters({...filters, category: [...filters.category, e.target.value]})
-            }}>
+          <select multiple size={5} value={filters.category} onChange={handleCategory}>
             {getEnumKeys(Category).map((key, index) => (
               
               <option style={filters.category.includes(Category[key]) ? { backgroundColor: `#abc` }:undefined} key={index} value={Category[key]}>
@@ -107,7 +166,7 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
         <input 
           type='text' 
           value={filters.source} 
-          onChange={(e) => setFilters({...filters, source: e.target.value.split(',')})}
+          onChange={handleSource}
         />
       </li>
 
@@ -121,15 +180,12 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
       </li>
 
       <li>
-        <span className='filter-menu-heading'><label className={filters.accounts.length === 0 ? 'filter-menu-togglable':'filter-menu-togglable-nonempty'} onClick={() => { toggleAccounts(); setFilters({...filters, accounts: []}) }}>Accounts: </label>
+        <span className='filter-menu-heading'><label className={filters.accounts.length === 0 ? 'filter-menu-togglable':'filter-menu-togglable-nonempty'} onClick={voidAccounts}>Accounts: </label>
           <span id='category-img' onClick={toggleAccounts}>{ showAccounts ? <img src='/close-up.svg' /> : <img src='/open-down.svg' /> }</span>
         </span>
         { showAccounts &&
           <select multiple size={5} value={filters.accounts.map(a => String(a))}
-            onChange={(e) => {
-              if (filters.accounts.includes(Number(e.target.value))) setFilters({...filters, accounts: filters.accounts.filter(a => String(a) !== e.target.value)});
-              else setFilters({...filters, accounts: [...filters.accounts, Number(e.target.value)]})
-            }}>
+            onChange={handleAccounts}>
             {accountOptions.map((acc, index) => (
               <option style={filters.accounts.includes(acc.id) ? { backgroundColor: `#abc` }:undefined} key={index} value={acc.id}>
                 {`${acc.account_type}:${acc.account_name}`}

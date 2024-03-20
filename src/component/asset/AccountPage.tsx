@@ -49,7 +49,7 @@ export default function AccountPage ({ accounts, updateAccounts }: AccountPagePr
 interface AccountCardProps { account: Account, updateAccount: () => void, transactions: (Expense | Income)[], history: History[] }
 function AccountCard ({ account, updateAccount, transactions, history }: AccountCardProps) {
 
-  const [range, setRange] = useState(account.account_type === AccountType.Checking ? 14 : 60);
+  const [range, setRange] = useState(account.account_type === AccountType.Checking ? 14 : 91);
   const [showEdit, setShowEdit] = useState(false);
   const toggleEdit = () => setShowEdit(!showEdit);
 
@@ -80,10 +80,10 @@ function AccountCard ({ account, updateAccount, transactions, history }: Account
     xAxis: {
       type: 'category',
       interval: 0,
-      data: timeFrameTotals.map((t) => new Object({ value: t.date.toDateString().slice(4, range >= 100 ? 15 : 10), label: {show: true} })),
+      data: timeFrameTotals.map((t) => new Object({ value: t.date.toDateString().slice(4, 10), label: {show: true} })),
       axisLabel: {
         rotate: 28,
-        interval: range === 14 ? 0 : 2,
+        interval: range === 14 ? 0 : 4,
       },
       splitLine: { show: true, lineStyle: { color: '#ffffff', }},
     },
@@ -93,7 +93,7 @@ function AccountCard ({ account, updateAccount, transactions, history }: Account
     },
     series: [
       {
-        data: timeFrameTotals.map((t, i) => new Object({value: t.total / 100, label: {show:range==14?true:(i%3==0), position: i % 2 == 0 ? 'top' : 'bottom',formatter: '${c}'} })),
+        data: timeFrameTotals.map((t, i) => new Object({value: t.total / 100, label: {show:range==14?true:(i%5==0), position: i % 2 == 0 ? 'top' : 'bottom',formatter: '${c}'} })),
         type: 'line',
         step: 'end',
       }
@@ -111,15 +111,17 @@ function AccountCard ({ account, updateAccount, transactions, history }: Account
       <div className='account-info'>
         { showEdit && <EditAccount log={account} type={account.account_type} toggle={toggleEdit} cancel={toggleEdit} updateAccounts={updateAccount} /> }
         { !showEdit &&
-          <>
-            <button onClick={() => toggleEdit()}><img src='/edit.svg'/></button>
+          <div className='account-details'>
             <h4>{ account.account_name }</h4>
+            <div className='account-card-balance'>${ account.balance / 100 }</div>
             <i>{ account.account_type }</i>
-            <p>${ account.balance / 100 }</p>
-            <input type='number' value={range} onChange={(e) => setRange(Number(e.target.value))} />
-          </>
+          </div>
         }
-        
+        { !showEdit && 
+          <div className='edit-account'>
+            <button onClick={() => toggleEdit()}><i>Adjust</i></button>
+          </div>
+        }
       </div>
       <div className='stats-graph'>
         <ReactECharts option={option} />

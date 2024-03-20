@@ -21,6 +21,7 @@ div.stats-main-box {
   width: 33rem;
   margin: .4rem;
   background-color: rgba(223, 226, 225, 0.695);
+  border: 1px dashed #739d88;
 
   display: flex;
   flex-direction: column;
@@ -33,11 +34,13 @@ div.stats-main-box-short {
   width: 24rem;
   margin: .4rem;
   background-color: rgba(223, 226, 225, 0.695);
+  border: 1px dashed #739d88;
 
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  border-radius: 1vw;
 }
 
 div.stats-main-box-long {
@@ -45,6 +48,8 @@ div.stats-main-box-long {
   width: 42rem;
   margin: .4rem;
   background-color: rgba(223, 226, 225, 0.695);
+  border: 1px dashed #739d88;
+  border-radius: 1vw;
 
   display: flex;
   flex-direction: column;
@@ -53,10 +58,12 @@ div.stats-main-box-long {
 }
 
 div.stats-main-box-longer {
-  height: 18rem;
+  height: 17.8rem;
   width: 37rem;
   margin: .4rem;
   background-color: rgba(223, 226, 225, 0.695);
+  border: 1px dashed #739d88;
+  border-radius: 1vw;
 
   display: flex;
   flex-direction: column;
@@ -65,10 +72,12 @@ div.stats-main-box-longer {
 }
 
 div.stats-main-box-shorter {
-  height: 18rem;
+  height: 17.8rem;
   width: 29rem;
   margin: .4rem;
   background-color: rgba(223, 226, 225, 0.695);
+  border: 1px dashed #739d88;
+  border-radius: 1vw;
 
   display: flex;
   flex-direction: column;

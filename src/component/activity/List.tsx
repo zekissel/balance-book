@@ -1,11 +1,15 @@
-import { useMemo, useState } from "react";
-import { LogProps, Income, Expense, isExpense, UpdateLogProps } from "../../typedef";
-import { getCategoryColor, addDays } from "../../typeassist";
+import { useMemo, useState, useEffect } from "react";
+import { LogProps, Income, Expense, isExpense, UpdateLogProps, Account } from "../../typedef";
+import { getCategoryColor, addDays, getAccounts } from "../../typeassist";
 import ViewLog from "../transaction/ViewLog";
 import '../../styles/List.css';
 
 interface ListProps { logs: LogProps, updateLog: UpdateLogProps, showFilter: boolean }
 export default function List ({ logs, updateLog, showFilter }: ListProps) {
+
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const refreshAccounts = async () => { setAccounts(await getAccounts()) };
+  useEffect(() => { refreshAccounts() }, []);
 
 
   const pastWeekTransactions = useMemo(() => {
@@ -52,6 +56,7 @@ export default function List ({ logs, updateLog, showFilter }: ListProps) {
                 <span className='list-item-date'>{transaction.date.toDateString().split(' ').slice(0, 3).join(' ')}</span>
                 <span className='list-item-source'> { isExpense(transaction) ? transaction.store : transaction.source }</span>
                 <span className='list-item-amount'> {isExpense(transaction) ? `-$`: `+$`}{transaction.amount / 100} </span>
+                <span className='list-item-account'>{ `${accounts.find(a => a.id === transaction.account_id)?.account_type.slice(0,5)}:${accounts.find(a => a.id === transaction.account_id)?.account_name}` }</span>
                 <span className='list-item-category' style={{ backgroundColor: getCategoryColor(transaction.category) }}>{transaction.category}</span>
                 <span className='list-item-desc'> - {transaction.desc}</span>
               </li>

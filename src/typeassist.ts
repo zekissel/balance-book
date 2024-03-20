@@ -102,19 +102,12 @@ export async function getHistory(): Promise<History[]> {
 }
 
 
-export function generateChartColor() {
-
-}
-
-export function generateRandomColor(color: string, color2: string, income: boolean) {
-  const letters = '789ABCDEF';
-  const additive = income ? 0x222222 : 0x111111;
-  color = Math.random() > .5 ? (parseInt(color, 16) + additive).toString(16) : (parseInt(color2, 16) - additive).toString(16);
-
-  for (let i = 0; i < 2; i++) {
-    color += letters[Math.floor(Math.random() * letters.length)];
-    color2 += letters[Math.floor(Math.random() * letters.length)];
-  }
-
-  return `#${Math.random() > .5 ? color : color2}`;
+export function generateChartColor(index: number, isIncome: boolean) {
+  const incomeColors = [
+    '#739d88', '#86C4A5', '#9CFACB', '#BADACA', '#50A47A', '#42C483'
+  ];
+  const expenseColors = [
+    '#f6d6aa', '#D8AA69', '#AB8755', '#E8AD5A', '#DAC25F', '#FADC65'
+  ];
+  return isIncome ? incomeColors[index % incomeColors.length] : expenseColors[index % expenseColors.length];
 }

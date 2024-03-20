@@ -20,19 +20,19 @@ div.assets-main {
 
 ul.assets-main-list, ul.assets-main-list > li {
   list-style: none;
-  width: 96%;
+  width: 95%;
   padding: 0;
-  margin: 0;
+  margin: 0 auto;
 }
 
 div.assets-account-card {
   width: 96%;
   height: 18rem;
-  margin: .5rem auto;
+  margin: 1rem auto;
   padding: .5rem;
   border-radius: .5rem;
   border: 1px dashed #739d88;
-  background-color: #f1f1f1;
+  background-color: rgba(223, 226, 225, 0.695);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -50,5 +50,41 @@ div.account-info {
   border: 1px dashed #739d88;
   background-color: #f1f1f1;
 
-  width: 15rem;
+  width: 18rem;
+}
+
+div.account-details > h4 {
+  margin: .1rem;
+  padding: .5rem;
+  font-size: 25px;
+}
+
+div.account-card-balance {
+  font-family:'Courier New', Courier, monospace;
+  background-color: #fff;
+  border-radius: .5rem;
+  width: 6rem;
+  min-width: fit-content;
+  max-height: 2rem;
+  padding: .3rem 0;
+  justify-self: center;
+  text-align: center;
+  font-weight: 550;
+  font-size: 24px;
+  margin-bottom: .5rem;
+}
+
+div.edit-account {
+  margin-top: 2rem;
+}
+
+div.account-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 1.5rem .5rem 1.5rem;
+  margin: .5rem;
+  border-radius: .5rem;
+  background-color: #e5e8e7;
 }

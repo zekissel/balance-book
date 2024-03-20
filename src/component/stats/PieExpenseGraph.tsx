@@ -1,6 +1,6 @@
 import ReactECharts from "echarts-for-react";
 import { Income, Expense, isExpense } from "../../typedef";
-import { generateRandomColor } from "../../typeassist";
+import { generateChartColor } from "../../typeassist";
 import { useMemo } from "react";
 
 interface GraphProps { transactions: (Income | Expense)[] }
@@ -30,7 +30,7 @@ export default function PieExpenseGraph ({ transactions }: GraphProps) {
     series: [
       {
         type: 'pie',
-        data: totals.map((t, i) => ({ value: t, name: `${categories[i]} (${Math.round((t / netExpense) * 100)}%)`, itemStyle: { color: generateRandomColor('e2cb64', 'f6d6aa', false) }})),
+        data: totals.map((t, i) => ({ value: t, name: `${categories[i]} (${Math.round((t / netExpense) * 100)}%)`, itemStyle: { color: generateChartColor(i, false) }})),
         y: 40,
         x: -60,
       }

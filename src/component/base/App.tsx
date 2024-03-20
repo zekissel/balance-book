@@ -10,8 +10,6 @@ import Assets from "./Assets";
 function App() {
   const [UIState, setUIState] = useState(State.Home);
 
-  
-
   return (
     <div className='app'>
       <Nav state={UIState} setState={setUIState}/>

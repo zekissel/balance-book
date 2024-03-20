@@ -12,14 +12,14 @@ export default function Stats () {
   const [filterGUI, setFilterGUI] = useState(false);
   const toggleFilter = () => setFilterGUI(!filterGUI);
   const [filters, setFilters] = useState<Filters>({
-    type: `all`,
-    startDate: null,
-    endDate: null,
-    category: [],
-    source: [''],
-    lowAmount: '0',
-    highAmount: '0',
-    accounts: [],
+    type: sessionStorage.getItem('filter.type') ?? `all`,
+    startDate: sessionStorage.getItem('filter.start') ? new Date(sessionStorage.getItem('filter.start')!) : null,
+    endDate: sessionStorage.getItem('filter.end') ? new Date(sessionStorage.getItem('filter.end')!) : null,
+    category: sessionStorage.getItem('filter.category')?.split(' ') ?? [],
+    source: sessionStorage.getItem('filter.source')?.split(' ') ?? [''],
+    lowAmount: sessionStorage.getItem('filter.low') ?? '0',
+    highAmount: sessionStorage.getItem('filter.high') ?? '0',
+    accounts: sessionStorage.getItem('filter.accounts')?.split(' ').map(a => Number(a)) ?? [],
   });
   const anyFiltersActive = () => {
     return (filters.type !== `all` || filters.startDate !== null || filters.endDate !== null || filters.category.length > 0 || filters.source[0].length > 0 || Number(filters.lowAmount) !== 0 || Number(filters.highAmount) !== 0)

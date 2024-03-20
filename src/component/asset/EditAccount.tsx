@@ -62,18 +62,18 @@ export function EditAccount ({ log, type, toggle, cancel, updateAccounts }: Edit
       <legend>{ log ? 'Edit' : 'New' } { type.toString() } Account</legend>
 
       <div className='new-trans-main'>
-        <li><label>ID: </label><input type='text' value={name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}/></li>
+        <li><label>Name: </label><input type='text' value={name} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}/></li>
         <li><label>Balance:</label><input type='text' value={balance} onChange={updateBalance}/></li>
       </div>
 
       { log &&
         <div className='new-trans-main'>
-          <li><label>Last Update:</label><input type='text' value={log.date.toDateString()} readOnly/></li>
+          <li><label>Last Update:</label><input type='text' value={log.date.toDateString()} disabled/></li>
         </div>
       }
       
       <li className='new-trans-meta'>
-        <button className='new-trans-submit' onClick={addAccount}>Submit</button>
+        <button className='new-trans-submit' onClick={addAccount}>Save</button>
         <button onClick={cancel}>Cancel</button>
         { log && <button className='delete-trans' onClick={deleteAccount}>Delete</button> }
       </li>

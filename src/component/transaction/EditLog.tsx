@@ -15,7 +15,8 @@ export function EditLog ({ log, toggle, cancel, isIncome, updateLog }: EditLogPr
   const [date, setDate] = useState(log ? log.date : new Date());
 
   const [accountId, setAccountId] = useState(log !== null ? (String(log.account_id)) : (localStorage.getItem('accountDefault') ?? ''));
-  const [accountId2, setAccountId2] = useState('');
+  // instead of guessing that the old transactions secondary account is the default (in localStorage), we could get the History table and find the accountId of the history entry with the same date and amount
+  const [accountId2, setAccountId2] = useState((log && [Category.Savings, IncomeCategory.SavingsIncome, Category.Investment, IncomeCategory.InvestmentIncome].includes(log.category)) ? ([Category.Savings, IncomeCategory.SavingsIncome].includes(log.category) ? (localStorage.getItem('accountSavings') ?? '') : (localStorage.getItem('accountInvesting') ?? '') ) : '');
 
   const [accounts, setAccounts] = useState<Account[]>([]);
   const refreshAccounts = async () => { setAccounts(await getAccounts()) };
