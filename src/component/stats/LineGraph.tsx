@@ -31,6 +31,11 @@ export default function TotalGraph ({ transactions, range, endDate }: GraphProps
   const option = {
     color: ['#739d88'],
     grid: { show: true },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'line' },
+      formatter: '${c}'
+    },
     xAxis: {
       type: 'category',
       interval: 0,
