@@ -1,11 +1,11 @@
-import { Expense, Income, UpdateLogProps, isExpense } from "../../typedef";
+import { Transaction } from "../../typedef";
 import { getCategoryColor } from "../../typeassist";
 import Draggable from "react-draggable";
 import { useState } from "react";
 import { EditLog } from "./EditLog";
 import '../../styles/Log.css';
 
-interface ViewLogProps { transaction: Expense | Income, toggle: () => void, updateLog: UpdateLogProps}
+interface ViewLogProps { transaction: Transaction, toggle: () => void, updateLog: () => void }
 export default function ViewLog ({ transaction, toggle, updateLog }: ViewLogProps) {
 
   const [editsActive, setEditsActive] = useState(false);
@@ -24,13 +24,13 @@ export default function ViewLog ({ transaction, toggle, updateLog }: ViewLogProp
           </li>
 
           { editsActive ? 
-            <EditLog log={transaction} toggle={toggle} cancel={toggleEdits} updateLog={updateLog} isIncome={!isExpense(transaction)} />
+            <EditLog log={transaction} toggle={toggle} cancel={toggleEdits} updateLog={updateLog} isIncome={transaction.amount > 0} />
           :
             <fieldset className='view-log-static'>
               <legend>{ transaction.date.toDateString().split(' ').slice(1).join(' ') }</legend>
               <li className='view-log-main'>
-                <span className={isExpense(transaction) ? 'view-log-expense' : 'view-log-income'}>{ isExpense(transaction) ? `- ` : `+ ` }{ `$${transaction.amount / 100}` }</span>
-                <span className='view-log-source'>{ isExpense(transaction) ? transaction.store : transaction.source }</span>
+                <span className={transaction.amount < 0 ? 'view-log-expense' : 'view-log-income'}>{ transaction.amount < 0 ? `- ` : `+ ` }{ `$${Math.abs(transaction.amount / 100)}` }</span>
+                <span className='view-log-source'>{ transaction.company }</span>
               </li>
               <li className='view-log-category'>
                 <span style={{ backgroundColor: getCategoryColor(transaction.category) }}>{ transaction.category }</span>

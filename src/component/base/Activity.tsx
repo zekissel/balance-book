@@ -4,10 +4,10 @@ import List from "../activity/List";
 import Calendar from "../activity/Calendar";
 import "../../styles/Page.css";
 import "../../styles/Menu.css";
-import { Expense, Income, Filters, filterTransactions } from "../../typedef";
-import { getExpenses, getIncome } from "../../typeassist";
+import { Transaction, Filters, filterTransactions } from "../../typedef";
+import { getTransactions } from "../../typeassist";
 import EditLog from "../transaction/CreateLog";
-import Filter from "../activity/Filter";
+import Filter from "../template/Filter";
 
 export default function Activity () {
 
@@ -28,31 +28,19 @@ export default function Activity () {
     return (filters.type !== `all` || filters.startDate !== null || filters.endDate !== null || filters.category.length > 0 || filters.source[0].length > 0 || Number(filters.lowAmount) !== 0 || Number(filters.highAmount) !== 0 || filters.accounts.length > 0);
   };
 
-  /* compile expenses and income from backend into Transaction[] */
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [signalExp, setSignalExp] = useState(false);
-  const signalNewExpense = () => setSignalExp(!signalExp);
 
-  const [income, setIncome] = useState<Income[]>([]);
-  const [signalInc, setSignalInc] = useState(false);
-  const signalNewIncome = () => setSignalInc(!signalInc);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [signalTransUpdate, setSignalTransUpdate] = useState(false);
+  const signalRefresh = () => setSignalTransUpdate(!signalTransUpdate);
+  const refreshTransactions = async () => { setTransactions(await getTransactions()) };
 
-  const updateLog = { signalExp: signalNewExpense, signalInc: signalNewIncome };
-
-  const transactions = useMemo(() => {
-    return filterTransactions({ expenses, income, filters });
-  }, [expenses, income, filters]);
-
-  const refreshExpenses = async () => { setExpenses(await getExpenses()) };
-  const refreshIncome = async () => { setIncome(await getIncome()) };
+  const filteredTransactions = useMemo(() => {
+    return filterTransactions({ transactions, filters });
+  }, [transactions, filters]);
 
   useEffect(() => {
-    refreshExpenses();
-  }, [signalExp])
-
-  useEffect(() => {
-    refreshIncome();
-  }, [signalInc])
+    refreshTransactions();
+  }, [signalTransUpdate])
 
 
   /* toggle between list and calendar view, toggle GUI for adding a new transaction */
@@ -90,7 +78,7 @@ export default function Activity () {
           >
             <img src='/log.svg' /> Add Log
           </button>
-          { addLogGUI && <EditLog toggle={toggleAddLog} updateLog={updateLog} />}
+          { addLogGUI && <EditLog toggle={toggleAddLog} updateLog={signalRefresh} />}
           <button 
             onClick={toggleFilter}
             style={anyFiltersActive() ? filtersActiveStyle : undefined}
@@ -103,9 +91,9 @@ export default function Activity () {
       { filterGUI && <Filter toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
 
       { listView ?
-        <List logs={transactions} updateLog={updateLog} showFilter={filterGUI} />
+        <List logs={filteredTransactions} updateLog={signalRefresh} showFilter={filterGUI} />
         :
-        <Calendar logs={transactions} updateLog={updateLog} showFilter={filterGUI} /> 
+        <Calendar logs={filteredTransactions} updateLog={signalRefresh} showFilter={filterGUI} /> 
       }
       
     </div>

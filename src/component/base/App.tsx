@@ -1,11 +1,11 @@
 import { useState } from "react";
-import Nav from "./Nav";
 import { State } from "../../typedef";
-import "../../styles/App.css";
+import Nav from "./Nav";
 import Home from "./Home";
 import Activity from "./Activity";
 import Stats from "./Stats";
 import Assets from "./Assets";
+import "../../styles/App.css";
 
 function App() {
   const [UIState, setUIState] = useState(State.Home);

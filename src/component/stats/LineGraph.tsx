@@ -1,8 +1,8 @@
 import ReactECharts from "echarts-for-react";
-import { Income, Expense, isExpense } from "../../typedef";
+import { Transaction } from "../../typedef";
 import { useMemo } from "react";
 
-interface GraphProps { transactions: (Income | Expense)[], range: number, endDate: Date | null}
+interface GraphProps { transactions: Transaction[], range: number, endDate: Date | null}
 export default function TotalGraph ({ transactions, range, endDate }: GraphProps) {
   interface SeriesDay { date: Date, total: number }
 
@@ -10,8 +10,10 @@ export default function TotalGraph ({ transactions, range, endDate }: GraphProps
     let totals: SeriesDay[] = Array.from({ length: range }, (_, i) => { return { date: new Date((endDate ?? new Date()).getTime() - (i * 24 * 60 * 60 * 1000)), total: 0 } });
     transactions.forEach(t => {
       const index = Math.floor(((endDate ?? new Date()).getTime() - t.date.getTime()) / (24 * 60 * 60 * 1000));
-      if (range === 0 || index < range) {
-        totals[index].total += Math.round((isExpense(t) ? -1 : 1) * (t.amount / 100));
+      // future transactions will have an index < 0
+      // if range is 0, include all transactions
+      if (index > 0 && (range === 0 || (index < range))) {
+        totals[index].total += Math.round(t.amount / 100);
       }
     })
     return totals.sort((a, b) => a.date.getTime() - b.date.getTime());

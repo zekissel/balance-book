@@ -1,16 +1,15 @@
 import ReactECharts from "echarts-for-react";
-import { Income, Expense, isExpense } from "../../typedef";
+import { Transaction } from "../../typedef";
 import { useMemo } from "react";
 
-interface GraphProps { transactions: (Income | Expense)[] }
+interface GraphProps { transactions: Transaction[] }
 export default function TotalGraph ({ transactions }: GraphProps) {
 
   const categoryTotals = useMemo(() => {
     let totals: { [key: string]: number } = {};
     transactions.forEach(t => {
       if (totals[t.category] === undefined) totals[t.category] = 0;
-      if (isExpense(t)) totals[t.category] -= Math.round(t.amount / 100);
-      else totals[t.category] += Math.round(t.amount / 100);
+      totals[t.category] += Math.round(t.amount / 100);
     });
     totals
     return totals;

@@ -1,49 +1,52 @@
 import { useMemo, useState, useEffect } from "react";
-import { LogProps, Income, Expense, isExpense, UpdateLogProps, Account } from "../../typedef";
+import { Transaction, Account } from "../../typedef";
 import { getCategoryColor, addDays, getAccounts } from "../../typeassist";
 import ViewLog from "../transaction/ViewLog";
 import '../../styles/List.css';
 
-interface ListProps { logs: LogProps, updateLog: UpdateLogProps, showFilter: boolean }
+interface ListProps { logs: Transaction[], updateLog: () => void, showFilter: boolean }
 export default function List ({ logs, updateLog, showFilter }: ListProps) {
 
   const [accounts, setAccounts] = useState<Account[]>([]);
   const refreshAccounts = async () => { setAccounts(await getAccounts()) };
   useEffect(() => { refreshAccounts() }, []);
 
+  const futureTransactions = useMemo(() => {
+    return logs.filter(t => t.date.getTime() > new Date().getTime());
+  }, [logs]);
 
   const pastWeekTransactions = useMemo(() => {
     const weekAgo = addDays(new Date(), -7);
-    return logs.filter(t => t.date.getTime() >= weekAgo.getTime());
-  }, [logs]);
+    return logs.filter(t => t.date.getTime() >= weekAgo.getTime() && !futureTransactions.includes(t));
+  }, [logs, futureTransactions]);
 
   const pastMonthTransactions = useMemo(() => {
     const monthAgo = addDays(new Date(), -30);
-    return logs.filter(t => (t.date.getTime() >= monthAgo.getTime()) && !pastWeekTransactions.includes(t));
-  }, [logs]);
+    return logs.filter(t => (t.date.getTime() >= monthAgo.getTime()) && !futureTransactions.includes(t) && !pastWeekTransactions.includes(t));
+  }, [logs, futureTransactions, pastWeekTransactions]);
 
   const past90DTransactions = useMemo(() => {
     const yearAgo = addDays(new Date(), -90);
-    return logs.filter(t => (t.date.getTime() >= yearAgo.getTime()) && !pastMonthTransactions.includes(t) && !pastWeekTransactions.includes(t));
-  }, [logs]);
+    return logs.filter(t => (t.date.getTime() >= yearAgo.getTime()) && !futureTransactions.includes(t) && !pastMonthTransactions.includes(t) && !pastWeekTransactions.includes(t));
+  }, [logs, futureTransactions, pastWeekTransactions, pastMonthTransactions]);
 
   const otherTransactions = useMemo(() => {
-    return logs.filter(t => !pastMonthTransactions.includes(t) && !pastWeekTransactions.includes(t) && !past90DTransactions.includes(t));
-  }, [pastWeekTransactions, logs]);
+    return logs.filter(t => !pastMonthTransactions.includes(t) && !futureTransactions.includes(t) && !pastWeekTransactions.includes(t) && !past90DTransactions.includes(t));
+  }, [logs, futureTransactions, pastWeekTransactions, pastMonthTransactions, past90DTransactions]);
 
 
   const allTransactions = useMemo(() => [
-    pastWeekTransactions, pastMonthTransactions, past90DTransactions, otherTransactions
-  ], [pastWeekTransactions, pastMonthTransactions, past90DTransactions, otherTransactions]);
+    futureTransactions, pastWeekTransactions, pastMonthTransactions, past90DTransactions, otherTransactions
+  ], [futureTransactions, pastWeekTransactions, pastMonthTransactions, past90DTransactions, otherTransactions]);
 
-  const transactionTitles = ['7 Days', '30 Days', '90 Days', 'Previous'];
-  const [selectedTransactions, setSelectedTransactions] = useState<(Expense | Income)[]>([]);
-  const updateSelected = (transaction: Expense | Income) => {
+  const transactionTitles = ['Upcoming', '7 Days', '30 Days', '90 Days', 'Previous'];
+  const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([]);
+  const updateSelected = (transaction: Transaction) => {
     if (selectedTransactions.includes(transaction)) setSelectedTransactions(selectedTransactions.filter(t => JSON.stringify(t) !== JSON.stringify(transaction)));
     else setSelectedTransactions([...selectedTransactions, transaction]);
   };
 
-  const [showIndices, setShowIndices] = useState(sessionStorage.getItem('list.indices')?.split(' ').map(i => Number(i)) ?? [0, 1, 2, 3]);
+  const [showIndices, setShowIndices] = useState(sessionStorage.getItem('list.indices')?.split(' ').map(i => Number(i)) ?? [0, 1, 2, 3, 4]);
   const handleIndexToggle = (index: number) => {
     if (showIndices.includes(index)) {
       const indices = showIndices.filter(i => i !== index);
@@ -66,10 +69,10 @@ export default function List ({ logs, updateLog, showFilter }: ListProps) {
           <ol className='list-main' key={ind}>
             <h2 onClick={() => handleIndexToggle(ind)}>{ transactionTitles[ind] }<img src={ showIndices.includes(ind) ? '/double-down.svg' : 'double-left.svg'}/></h2>
             { showIndices.includes(ind) && transactionCollection.map((transaction, index) => (
-              <li key={index} className={ (isExpense(transaction) ? 'list-item-expense' : 'list-item-income') + ' list-item'} onClick={() => updateSelected(transaction)}>
+              <li key={index} className={ (transaction.amount < 0 ? 'list-item-expense' : 'list-item-income') + ' list-item'} onClick={() => updateSelected(transaction)}>
                 <span className='list-item-date'>{transaction.date.toDateString().split(' ').slice(0, 3).join(' ')}</span>
-                <span className='list-item-source'> { isExpense(transaction) ? transaction.store : transaction.source }</span>
-                <span className='list-item-amount'> {isExpense(transaction) ? `-$`: `+$`}{transaction.amount / 100} </span>
+                <span className='list-item-source'> { transaction.company }</span>
+                <span className='list-item-amount'> { transaction.amount < 0 ? `-$`: `+$`}{Math.abs(transaction.amount / 100).toFixed(2)} </span>
                 <span className='list-item-category' style={{ backgroundColor: getCategoryColor(transaction.category) }}>{transaction.category}</span>
                 <span className='list-item-desc'> - {transaction.desc}</span>
                 <span className='list-item-account'>{ `${accounts.find(a => a.id === transaction.account_id)?.account_type.slice(0,5)}:${accounts.find(a => a.id === transaction.account_id)?.account_name}` }</span>

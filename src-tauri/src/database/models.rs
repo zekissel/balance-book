@@ -1,93 +1,55 @@
 use diesel::prelude::*;
 use serde::Serialize;
 use serde::ser::SerializeStruct;
-use super::schema::expense;
-use super::schema::income;
+
+use super::schema::transaction;
 use super::schema::account;
-use super::schema::history;
+
 
 #[derive(Queryable, Selectable)]
-#[diesel(table_name = crate::database::schema::expense)]
+#[diesel(table_name = crate::database::schema::transaction)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
-pub struct Expense {
+pub struct Transaction {
     pub id: i32,
-    pub store: String,
+    pub company: String,
     pub amount: i32,
     pub category: String,
-    pub desc: String,
     pub date: String,
+    pub desc: String,
     pub account_id: i32,
+    pub secondary_id: Option<i32>,
 }
 
-impl Serialize for Expense {
+#[derive(Insertable)]
+#[diesel(table_name = transaction)]
+pub struct AddTransaction<'a> {
+    pub company: &'a str,
+    pub amount: i32,
+    pub category: &'a str,
+    pub date: &'a str,
+    pub desc: &'a str,
+    pub account_id: i32,
+    pub secondary_id: Option<i32>,
+}
+
+impl Serialize for Transaction {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
     {
-        let mut state = serializer.serialize_struct("Expense", 7)?;
+        let mut state = serializer.serialize_struct("Transaction", 8)?;
         state.serialize_field("id", &self.id)?;
-        state.serialize_field("store", &self.store)?;
+        state.serialize_field("company", &self.company)?;
         state.serialize_field("amount", &self.amount)?;
         state.serialize_field("category", &self.category)?;
-        state.serialize_field("desc", &self.desc)?;
         state.serialize_field("date", &self.date)?;
+        state.serialize_field("desc", &self.desc)?;
         state.serialize_field("account_id", &self.account_id)?;
+        state.serialize_field("secondary_id", &self.secondary_id)?;
         state.end()
     }
 }
 
-#[derive(Insertable)]
-#[diesel(table_name = expense)]
-pub struct AddExpense<'a> {
-    pub store: &'a str,
-    pub amount: i32,
-    pub category: &'a str,
-    pub desc: &'a str,
-    pub date: &'a str,
-    pub account_id: i32,
-}
-
-
-#[derive(Queryable, Selectable)]
-#[diesel(table_name = crate::database::schema::income)]
-#[diesel(check_for_backend(diesel::sqlite::Sqlite))]
-pub struct Income {
-    pub id: i32,
-    pub account_id: i32,
-    pub amount: i32,
-    pub source: String,
-    pub category: String,
-    pub date: String,
-    pub desc: String,
-}
-
-impl Serialize for Income {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let mut state = serializer.serialize_struct("Income", 7)?;
-        state.serialize_field("id", &self.id)?;
-        state.serialize_field("account_id", &self.account_id)?;
-        state.serialize_field("amount", &self.amount)?;
-        state.serialize_field("source", &self.source)?;
-        state.serialize_field("category", &self.category)?;
-        state.serialize_field("date", &self.date)?;
-        state.serialize_field("desc", &self.desc)?;
-        state.end()
-    }
-}
-
-#[derive(Insertable)]
-#[diesel(table_name = income)]
-pub struct AddIncome<'a> {
-    pub account_id: i32,
-    pub amount: i32,
-    pub source: &'a str,
-    pub category: &'a str,
-    pub date: &'a str,
-    pub desc: &'a str,
-}
 
 
 #[derive(Queryable, Selectable)]
@@ -99,6 +61,15 @@ pub struct Account {
     pub account_name: String,
     pub balance: i32,
     pub date: String,
+}
+
+#[derive(Insertable)]
+#[diesel(table_name = account)]
+pub struct AddAccount<'a> {
+    pub account_type: &'a str,
+    pub account_name: &'a str,
+    pub balance: i32,
+    pub date: &'a str,
 }
 
 impl Serialize for Account {
@@ -116,43 +87,3 @@ impl Serialize for Account {
     }
 }
 
-#[derive(Insertable)]
-#[diesel(table_name = account)]
-pub struct AddAccount<'a> {
-    pub account_type: &'a str,
-    pub account_name: &'a str,
-    pub balance: i32,
-    pub date: &'a str,
-}
-
-#[derive(Queryable, Selectable)]
-#[diesel(table_name = crate::database::schema::history)]
-#[diesel(check_for_backend(diesel::sqlite::Sqlite))]
-pub struct History {
-    pub id: i32,
-    pub account_id: i32,
-    pub balance: i32,
-    pub date: String,
-}
-
-impl Serialize for History {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let mut state = serializer.serialize_struct("History", 4)?;
-        state.serialize_field("id", &self.id)?;
-        state.serialize_field("account_id", &self.account_id)?;
-        state.serialize_field("balance", &self.balance)?;
-        state.serialize_field("date", &self.date)?;
-        state.end()
-    }
-}
-
-#[derive(Insertable)]
-#[diesel(table_name = history)]
-pub struct AddHistory<'a> {
-    pub account_id: i32,
-    pub balance: i32,
-    pub date: &'a str,
-}

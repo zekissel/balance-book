@@ -1,22 +1,30 @@
 import { useMemo, useState } from "react";
-import { Expense, Income, isExpense } from "../../typedef";
+import { Transaction } from "../../typedef";
 import { addDays } from "../../typeassist";
 import TotalGraph from "./TotalGraph";
-import PieIncomeGraph from "./PieIncomeGraph";
-import PieExpenseGraph from "./PieExpenseGraph";
+import PieGraph from "./PieGraph";
 import LineGraph from "./LineGraph";
 
-interface StatsPageProps { transactions: (Income | Expense)[], timeRange: number, endDate: Date | null, showFilter: boolean }
+interface StatsPageProps { transactions: Transaction[], timeRange: number, endDate: Date | null, showFilter: boolean }
 export default function StatsPage ({ transactions, timeRange, endDate, showFilter }: StatsPageProps) {
 
   const modifedTransactions = useMemo(() => {
     if (timeRange === 0) return transactions;
     const end = new Date((endDate ?? new Date()).toDateString()).getTime();
-    return transactions.filter(t => (end - t.date.getTime()) < (timeRange * 24 * 60 * 60 * 1000));
+    const range = timeRange * 24 * 60 * 60 * 1000;
+    return transactions.filter(t => (end - t.date.getTime() < range) && (end - t.date.getTime() >= 0));
   }, [transactions, timeRange]);
 
+  const upcomingTransactions = useMemo(() => {
+    const end = new Date((endDate ?? new Date()).toDateString()).getTime();
+    return transactions.filter(t => (end - t.date.getTime()) < 0);
+  }, [transactions]);
+  const upcomingTotal = useMemo(() => {
+    return upcomingTransactions.reduce((acc, t) => acc + (t.amount / 100), 0)
+  }, [upcomingTransactions]);
+
   const netBalance = useMemo(() => {
-    return modifedTransactions.reduce((acc, t) => acc + (t.amount * (isExpense(t) ? -1 : 1)), 0);
+    return modifedTransactions.reduce((acc, t) => acc + t.amount, 0);
   }, [modifedTransactions]);
 
   const minDate = useMemo(() => {
@@ -26,17 +34,17 @@ export default function StatsPage ({ transactions, timeRange, endDate, showFilte
   }, [timeRange, modifedTransactions]);
 
   const numExpenses = useMemo(() => {
-    return modifedTransactions.filter(t => isExpense(t)).length;
+    return modifedTransactions.filter(t => t.amount < 0).length;
   }, [modifedTransactions]);
   const expenseTotal = useMemo(() => {
-    return modifedTransactions.filter(t => isExpense(t)).reduce((acc, t) => acc + t.amount, 0);
+    return modifedTransactions.filter(t => t.amount < 0).reduce((acc, t) => acc - t.amount, 0);
   }, [modifedTransactions]);
 
   const numIncome = useMemo(() => {
-    return modifedTransactions.filter(t => !isExpense(t)).length;
+    return modifedTransactions.filter(t => t.amount > 0).length;
   }, [modifedTransactions]);
   const incomeTotal = useMemo(() => {
-    return modifedTransactions.filter(t => !isExpense(t)).reduce((acc, t) => acc + t.amount, 0);
+    return modifedTransactions.filter(t => t.amount > 0).reduce((acc, t) => acc + t.amount, 0);
   }, [modifedTransactions]);
 
 
@@ -57,6 +65,7 @@ export default function StatsPage ({ transactions, timeRange, endDate, showFilte
             <p>Total expenses: -${ expenseTotal / 100 } ({ numExpenses } transactions)</p>
             <p>Total income: +${ incomeTotal / 100 } ({ numIncome } transactions)</p>
           </div>
+          { upcomingTransactions.length > 0 && <span>Upcoming: { upcomingTotal > 0 ? '+$' : '-$'}{ Math.abs(upcomingTotal) } ({upcomingTransactions.length})</span>}
         </div>
       
         <div className='stats-main-box-long'>
@@ -70,11 +79,9 @@ export default function StatsPage ({ transactions, timeRange, endDate, showFilte
         </div>
 
         <div className='stats-main-box-shorter'>
-          { categoryPieTypeIncome ?
-            <PieIncomeGraph transactions={modifedTransactions} /> 
-          :
-            <PieExpenseGraph transactions={modifedTransactions} />
-          }
+          
+          <PieGraph transactions={modifedTransactions} isIncome={categoryPieTypeIncome} />
+
           <div className='stats-category-radio'>
             <input type='radio' id='radio-category-income' name='type' onChange={() => setCatPieTypeIncome(true)} defaultChecked /><label htmlFor='radio-category-income'>Income</label>
             <input type='radio' id='radio-category-expense' name='type' onChange={() => setCatPieTypeIncome(false)} /><label htmlFor='radio-category-expense'>Expense</label>

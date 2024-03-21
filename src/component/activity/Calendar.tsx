@@ -1,13 +1,12 @@
-import { LogProps, UpdateLogProps } from "../../typedef";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Day, Month, Expense, Income, isExpense } from "../../typedef";
+import { Day, Month, Transaction } from "../../typedef";
 import { addDays } from "../../typeassist";
 import ViewLog from "../transaction/ViewLog";
 import ViewDay from "./ViewDay";
 import '../../styles/Calendar.css';
 
 
-interface CalendarProps { logs: LogProps, updateLog: UpdateLogProps, showFilter: boolean }
+interface CalendarProps { logs: Transaction[], updateLog: () => void, showFilter: boolean }
 export default function Calendar ({ logs, updateLog, showFilter }: CalendarProps) {
 
   const curDate = useRef(new Date());
@@ -79,9 +78,9 @@ export default function Calendar ({ logs, updateLog, showFilter }: CalendarProps
     
   }, [logs, curDate.current]);
 
-  const [selectedTransactions, setSelectedTransactions] = useState<(Expense | Income)[]>([]);
+  const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([]);
   const [selectedDay, setSelectedDay] = useState<Day[]>([]);
-  const updateSelectedTransactions = (transaction: Expense | Income) => {
+  const updateSelectedTransactions = (transaction: Transaction) => {
     if (selectedTransactions.includes(transaction)) {
       setSelectedTransactions(selectedTransactions.filter(t => JSON.stringify(t) !== JSON.stringify(transaction)));
     } else {
@@ -138,10 +137,10 @@ export default function Calendar ({ logs, updateLog, showFilter }: CalendarProps
                     <div className='day-items'>
                       { day.transactions.map((trans, index) => 
                         <span 
-                          className={ isExpense(trans) ? 'cal-exp' : 'cal-inc'}
+                          className={ trans.amount < 0 ? 'cal-exp' : 'cal-inc'}
                           key={index} 
                           onClick={(e) => {updateSelectedTransactions(trans); e.stopPropagation();}}
-                          > {isExpense(trans)?'-':'+'} ${trans.amount / 100} { isExpense(trans) ? trans.store : trans.source}</span>
+                          > {trans.amount < 0 ?'-':'+'} ${Math.abs(trans.amount / 100)} { trans.company }</span>
                       )}
                     </div>
                   </div>

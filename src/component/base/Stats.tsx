@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-import { Income, Expense, Filters, filterTransactions } from "../../typedef"
-import { getExpenses, getIncome } from "../../typeassist"
+import { Transaction, Filters, filterTransactions } from "../../typedef"
+import { getTransactions } from "../../typeassist"
 import StatsPage from "../stats/StatsPage"
-import Filter from "../activity/Filter";
+import Filter from "../template/Filter";
 import "../../styles/Stats.css"
 import '../../styles/Page.css'
 import "../../styles/Menu.css"
@@ -30,23 +30,17 @@ export default function Stats () {
   const getTimeRangeFromDate = () => {
     if (filters.startDate === null) return 0;
     const end = filters.endDate?.getTime() ?? new Date().getTime();
-    return Math.floor((end - filters.startDate.getTime()) / (1000 * 60 * 60 * 24));
+    return Math.floor((end - filters.startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
   }
 
 
-  const [income, setIncome] = useState<Income[]>([]);
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const refreshExpenses = async () => { setExpenses(await getExpenses()) };
-  const refreshIncome = async () => { setIncome(await getIncome()) };
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const refreshTransactions = async () => { setTransactions(await getTransactions()) };
+  useEffect(() => { refreshTransactions() }, [])
 
-  useEffect(() => {
-    refreshExpenses();
-    refreshIncome();
-  }, [])
-
-  const allTransactions = useMemo(() => {
-    return filterTransactions({ expenses, income, filters });
-  }, [income, expenses, filters])
+  const filteredTransactions = useMemo(() => {
+    return filterTransactions({ transactions, filters });
+  }, [transactions, filters])
 
 
   const [timeRange, setTimeRange] = useState(2);
@@ -78,7 +72,7 @@ export default function Stats () {
 
       { filterGUI && <Filter toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
 
-      <StatsPage transactions={allTransactions} timeRange={anyDateFilters() ? getTimeRangeFromDate() : timeRange * rangeMultiplier} endDate={filters.endDate ?? null} showFilter={filterGUI}/>
+      <StatsPage transactions={filteredTransactions} timeRange={anyDateFilters() ? getTimeRangeFromDate() : timeRange * rangeMultiplier} endDate={filters.endDate ?? null} showFilter={filterGUI}/>
 
     </div>
   )

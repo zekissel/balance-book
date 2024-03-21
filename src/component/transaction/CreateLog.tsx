@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { UpdateLogProps } from '../../typedef';
 import { EditLog } from './EditLog';
 import '../../styles/Log.css';
 
 
-interface CreateLogProps { toggle: () => void, updateLog: UpdateLogProps}
+interface CreateLogProps { toggle: () => void, updateLog: () => void}
 export default function CreateLog ({ toggle, updateLog }: CreateLogProps) {
 
   const [addIncome, setAddIncome] = useState(false);

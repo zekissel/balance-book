@@ -22,10 +22,10 @@ export function EditAccount ({ log, type, toggle, cancel, updateAccounts }: Edit
     };
 
     if (log) {
-      await invoke("update_account", data);
+      await invoke("fix_account", data);
     }
     else {
-      const account: Account = await invoke("add_account", data);
+      const account: Account = await invoke("new_account", data);
       switch (type) {
         case AccountType.Checking: localStorage.setItem('accountDefault', account.id.toString()); break;
         case AccountType.Savings: localStorage.setItem('accountSavings', account.id.toString()); break;
@@ -38,8 +38,8 @@ export function EditAccount ({ log, type, toggle, cancel, updateAccounts }: Edit
   }
 
   const deleteAccount = () => {
-    invoke("delete_account", { 'id': log!.id });
-    if ([Number(localStorage.getItem('accountDefault')), Number(localStorage.getItem('accountSavings')), Number(localStorage.getItem('accountInvesting'))].includes(log!.id)) {
+    invoke("remove_account", { 'id': log!.id });
+    if ([localStorage.getItem('accountDefault'), localStorage.getItem('accountSavings'), localStorage.getItem('accountInvesting')].includes(String(log!.id))) {
       switch (log!.account_type) {
         case AccountType.Checking: localStorage.removeItem('accountDefault'); break;
         case AccountType.Savings: localStorage.removeItem('accountSavings'); break;

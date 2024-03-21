@@ -1,13 +1,13 @@
 import Draggable from "react-draggable";
 import { useMemo } from "react";
-import { Day, isExpense } from "../../typedef";
+import { Day } from "../../typedef";
 import '../../styles/ViewDay.css';
 
 interface ViewDayProps { day: Day, toggle: () => void}
 export default function ViewDay ({ day, toggle }: ViewDayProps) {
 
   const netTransaction = useMemo(() => {
-    return day.transactions.reduce((acc, t) => acc + (isExpense(t) ? -t.amount : t.amount), 0);
+    return day.transactions.reduce((acc, t) => acc + t.amount, 0);
   }, [day.transactions]);
 
   return (
@@ -21,8 +21,8 @@ export default function ViewDay ({ day, toggle }: ViewDayProps) {
         <ol className='view-day-list'>
           { day.transactions.map((t, i) => 
             <li key={i} className='view-day-item'>
-              <span className='view-day-source'>{isExpense(t) ? t.store : t.source}</span>
-              <span className='view-day-amount'>{isExpense(t) ? `-$` : `+$`}{t.amount / 100}</span>
+              <span className='view-day-source'>{ t.company }</span>
+              <span className='view-day-amount'>{t.amount < 0 ? `-$` : `+$`}{Math.abs(t.amount / 100)}</span>
               <span className='view-day-desc'>{t.desc}</span>
             </li>
           )}

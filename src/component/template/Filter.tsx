@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Filters, Category, IncomeCategory, getEnumKeys, Account } from '../../typedef';
+import { Filters, ExpenseCat, IncomeCat, getEnumKeys, Account } from '../../typedef';
 import { getAccounts } from '../../typeassist';
 import { addDays } from '../../typeassist';
 import '../../styles/Filter.css';
@@ -42,7 +42,7 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
 
   const voidStartDate = () => { toggleStartDate(); setFilters({...filters, startDate: null}); sessionStorage.removeItem('filter.start'); }
   const handleStartDate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const date = new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' '));
+    const date = addDays(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')), 0);
     setFilters({...filters, startDate: date });
     sessionStorage.setItem('filter.start', date.toDateString());
   }
@@ -51,7 +51,7 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
   const handleEndDate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const date = addDays(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')), 0);
     setFilters({...filters, endDate: date });
-    sessionStorage.setItem('filter.start', date.toDateString());
+    sessionStorage.setItem('filter.end', date.toDateString());
   }
 
   const voidCategory = () => { toggleCategory(); setFilters({...filters, category: []}); sessionStorage.removeItem('filter.category'); }
@@ -129,12 +129,12 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
 
       <li>
         <label className='filter-menu-togglable' onClick={voidStartDate}>Start Date: </label>
-        { showStartDate && <input type='date' value={ filters.startDate ? (addDays(filters.startDate!, 0).toISOString().substring(0, 10)) : undefined } onChange={handleStartDate}/> }
+        { showStartDate && <input type='date' value={filters.startDate ? (addDays(filters.startDate!, 0).toISOString().substring(0, 10)) : undefined } onChange={handleStartDate}/> }
         { !showStartDate && <span>None</span>}
       </li>
       <li>
         <label className='filter-menu-togglable' onClick={voidEndDate}>End Date: </label>
-        { showEndDate && <input type='date' value={filters.endDate ? (addDays(filters.endDate!, 0).toISOString().substring(0, 10)) : undefined} onChange={handleEndDate} /> }
+        { showEndDate && <input type='date' value={filters.endDate ? filters.endDate.toISOString().substring(0, 10) : undefined} onChange={handleEndDate} /> }
         { !showEndDate && <span>None</span>}
       </li>
 
@@ -145,15 +145,15 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
         </span>
         { showCategory &&
           <select multiple size={5} value={filters.category} onChange={handleCategory}>
-            {getEnumKeys(Category).map((key, index) => (
+            {getEnumKeys(ExpenseCat).map((key, index) => (
               
-              <option style={filters.category.includes(Category[key]) ? { backgroundColor: `#abc` }:undefined} key={index} value={Category[key]}>
-                {Category[key]}
+              <option style={filters.category.includes(ExpenseCat[key]) ? { backgroundColor: `#abc` }:undefined} key={index} value={ExpenseCat[key]}>
+                {ExpenseCat[key]}
               </option>
             ))}
-            {getEnumKeys(IncomeCategory).map((key, index) => (
-              <option style={filters.category.includes(IncomeCategory[key]) ? { backgroundColor: `#abc` }:undefined} key={index} value={IncomeCategory[key]}>
-                {IncomeCategory[key]}
+            {getEnumKeys(IncomeCat).map((key, index) => (
+              <option style={filters.category.includes(IncomeCat[key]) ? { backgroundColor: `#abc` }:undefined} key={index} value={IncomeCat[key]}>
+                {IncomeCat[key]}
               </option>
             ))}
           </select>

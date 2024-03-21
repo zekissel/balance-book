@@ -5,7 +5,7 @@ use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 
-use super::models::{AddExpense, Expense, AddIncome, Income, AddAccount, Account, AddHistory, History};
+use super::models::{AddTransaction, Transaction, AddAccount, Account };
 
 
 /* ----- initialize database connection and migrations */
@@ -58,127 +58,62 @@ fn get_db_path() -> String {
 }
 
 /* --------- Interacting with database --------- */
-pub fn create_expense(
-  store: &str, 
+/* CRUD for Transactions (negative amount for expense, positive for income) */
+pub fn create_transaction(
+  company: &str, 
   amount: i32,
   category: &str,
-  desc: &str,
   date: &str,
-  account_id: i32
-) -> Expense {
-  use super::schema::expense;
-  let connection = &mut establish_connection();
-
-  let new_expense = AddExpense { store, amount, category, desc, date, account_id };
-
-  diesel::insert_into(expense::table)
-    .values(&new_expense)
-    .returning(Expense::as_returning())
-    .get_result(connection)
-    .expect("Error saving new expense")
-}
-
-pub fn get_expenses() -> Vec<Expense> {
-  use super::schema::expense::dsl::*;
-
-  expense
-    .load::<Expense>(&mut establish_connection())
-    .expect("Error loading expenses")
-}
-
-
-pub fn update_expense(
-  id_i: i32,
-  store_i: &str, 
-  amount_i: i32,
-  category_i: &str,
-  desc_i: &str,
-  date_i: &str,
-  account_id_i: i32
-) -> Expense {
-  use super::schema::expense::dsl::*;
-
-  let connection = &mut establish_connection();
-
-  diesel::update(expense.find(id_i))
-    .set((store.eq(store_i), amount.eq(amount_i), category.eq(category_i), desc.eq(desc_i), date.eq(date_i), account_id.eq(account_id_i)))
-    .returning(Expense::as_returning())
-    .get_result(connection)
-    .expect("Error updating expense")
-}
-
-pub fn delete_expense(id_i: i32) {
-  use super::schema::expense::dsl::*;
-
-  let connection = &mut establish_connection();
-
-  diesel::delete(expense.find(id_i))
-    .execute(connection)
-    .expect("Error deleting expense");
-}
-
-
-
-pub fn create_income(
+  desc: &str,
   account_id: i32,
-  amount: i32,
-  source: &str, 
-  category: &str,
-  date: &str,
-  desc: &str,
-) -> Income {
-  use super::schema::income;
-  let connection = &mut establish_connection();
+  secondary_id: Option<i32>
+) -> Transaction {
+  use super::schema::transaction;
+  let new_transaction = AddTransaction { company, amount, category, date, desc, account_id, secondary_id };
 
-  let new_income = AddIncome { account_id, amount, source, category, date, desc };
-
-  diesel::insert_into(income::table)
-    .values(&new_income)
-    .returning(Income::as_returning())
-    .get_result(connection)
-    .expect("Error saving new income")
+  diesel::insert_into(transaction::table)
+    .values(&new_transaction)
+    .returning(Transaction::as_returning())
+    .get_result(&mut establish_connection())
+    .expect("Error saving new transaction")
 }
 
-pub fn get_income() -> Vec<Income> {
-  use super::schema::income::dsl::*;
+pub fn read_transaction() -> Vec<Transaction> {
+  use super::schema::transaction::dsl::*;
 
-  income
-    .load::<Income>(&mut establish_connection())
-    .expect("Error loading income")
+  transaction
+    .load::<Transaction>(&mut establish_connection())
+    .expect("Error loading transactions")
 }
 
-
-pub fn update_income(
+pub fn update_transaction(
   id_i: i32,
-  account_id_i: i32,
+  company_i: &str, 
   amount_i: i32,
-  source_i: &str, 
   category_i: &str,
   date_i: &str,
-  desc_i: &str
-) -> Income {
-  use super::schema::income::dsl::*;
+  desc_i: &str,
+  account_id_i: i32,
+  secondary_id_i: Option<i32>
+) -> Transaction {
+  use super::schema::transaction::dsl::*;
 
-  let connection = &mut establish_connection();
-
-  diesel::update(income.find(id_i))
-    .set((account_id.eq(account_id_i), amount.eq(amount_i), source.eq(source_i), category.eq(category_i), date.eq(date_i), desc.eq(desc_i)))
-    .returning(Income::as_returning())
-    .get_result(connection)
-    .expect("Error updating income")
+  diesel::update(transaction.find(id_i))
+    .set((company.eq(company_i), amount.eq(amount_i), category.eq(category_i), date.eq(date_i), desc.eq(desc_i), account_id.eq(account_id_i), secondary_id.eq(secondary_id_i)))
+    .returning(Transaction::as_returning())
+    .get_result(&mut establish_connection())
+    .expect("Error updating transaction")
 }
 
-pub fn delete_income(id_i: i32) {
-  use super::schema::income::dsl::*;
+pub fn delete_transaction(id_i: i32) {
+  use super::schema::transaction::dsl::*;
 
-  let connection = &mut establish_connection();
-
-  diesel::delete(income.find(id_i))
-    .execute(connection)
-    .expect("Error deleting income");
+  diesel::delete(transaction.find(id_i))
+    .execute(&mut establish_connection())
+    .expect("Error deleting transaction");
 }
 
-
+/* CRUD for Accounts */
 pub fn create_account(
   account_type: &str, 
   account_name: &str, 
@@ -186,18 +121,16 @@ pub fn create_account(
   date: &str
 ) -> Account {
   use super::schema::account;
-  let connection = &mut establish_connection();
-
   let new_account = AddAccount { account_type, account_name, balance, date };
 
   diesel::insert_into(account::table)
     .values(&new_account)
     .returning(Account::as_returning())
-    .get_result(connection)
+    .get_result(&mut establish_connection())
     .expect("Error saving new account")
 }
 
-pub fn get_account() -> Vec<Account> {
+pub fn read_account() -> Vec<Account> {
   use super::schema::account::dsl::*;
 
   account
@@ -214,76 +147,17 @@ pub fn update_account(
 ) -> Account {
   use super::schema::account::dsl::*;
 
-  let connection = &mut establish_connection();
-
   diesel::update(account.find(id_i))
     .set((account_type.eq(account_type_i), account_name.eq(account_name_i), balance.eq(balance_i), date.eq(date_i)))
     .returning(Account::as_returning())
-    .get_result(connection)
+    .get_result(&mut establish_connection())
     .expect("Error updating account")
 }
 
 pub fn delete_account(id_i: i32) {
   use super::schema::account::dsl::*;
 
-  let connection = &mut establish_connection();
-
   diesel::delete(account.find(id_i))
-    .execute(connection)
+    .execute(&mut establish_connection())
     .expect("Error deleting account");
 }
-
-
-
-pub fn create_history(
-  account_id: i32,
-  balance: i32,
-  date: &str
-) -> History {
-  use super::schema::history;
-  let connection = &mut establish_connection();
-
-  let new_history = AddHistory { account_id, balance, date };
-
-  diesel::insert_into(history::table)
-    .values(&new_history)
-    .returning(History::as_returning())
-    .get_result(connection)
-    .expect("Error saving new history")
-}
-
-pub fn get_history() -> Vec<History> {
-  use super::schema::history::dsl::*;
-
-  history
-    .load::<History>(&mut establish_connection())
-    .expect("Error loading history")
-}
-
-pub fn update_history(
-  id_i: i32,
-  account_id_i: i32,
-  balance_i: i32,
-  date_i: &str
-) -> History {
-  use super::schema::history::dsl::*;
-
-  let connection = &mut establish_connection();
-
-  diesel::update(history.find(id_i))
-    .set((balance.eq(balance_i), account_id.eq(account_id_i), date.eq(date_i)))
-    .returning(History::as_returning())
-    .get_result(connection)
-    .expect("Error updating history")
-}
-
-pub fn delete_history(id_i: i32) {
-  use super::schema::history::dsl::*;
-
-  let connection = &mut establish_connection();
-
-  diesel::delete(history.find(id_i))
-    .execute(connection)
-    .expect("Error deleting history");
-}
-

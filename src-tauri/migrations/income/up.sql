@@ -1,9 +1,0 @@
-CREATE TABLE income (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  account_id INTEGER NOT NULL,
-  amount INTEGER NOT NULL,
-  source TEXT NOT NULL,
-  category TEXT NOT NULL,
-  date TEXT NOT NULL,
-  desc TEXT NOT NULL
-);
