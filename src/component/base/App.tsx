@@ -14,18 +14,19 @@ function App() {
 
   const [user, setUser] = useState<User | null>(null);
 
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
-
-  const [signalTrans, setSignalTrans] = useState(false);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  
   const [signalAcct, setSignalAcct] = useState(false);
-
-  const signalRefreshTrans = () => setSignalTrans(!signalTrans);
-  const refreshTransactions = async () => { setTransactions(await getTransactions(accounts.map(a => a.id))) };
+  const [signalTrans, setSignalTrans] = useState(false);
+  
   const signalRefreshAcct = () => setSignalAcct(!signalAcct);
+  const signalRefreshTrans = () => setSignalTrans(!signalTrans);
   const refreshAccounts = async () => { if (user) setAccounts(await getAccounts(user.id)) };
-  useEffect(() => { refreshTransactions() }, [signalRefreshTrans, accounts])
+  const refreshTransactions = async () => { setTransactions(await getTransactions(accounts.map(a => a.id))) };
   useEffect(() => { refreshAccounts() }, [signalRefreshAcct, user]);
+  useEffect(() => { refreshTransactions() }, [signalRefreshTrans, accounts])
+  
 
 
   
@@ -38,36 +39,38 @@ function App() {
 
       { UIState === State.Auth && <Auth verify={verify} logout={logout} /> }
 
-      <main>
-        { UIState === State.Home &&
-          <Home />
-        }
+      { user !== null && 
+        <main>
+          { UIState === State.Home &&
+            <Home user={user} accounts={accounts} transactions={transactions} />
+          }
 
-        { UIState === State.Activity &&
-          <Activity transactions={transactions} accounts={accounts} signalRefresh={signalRefreshTrans} />
-        }
+          { UIState === State.Activity &&
+            <Activity transactions={transactions} accounts={accounts} signalRefresh={signalRefreshTrans} />
+          }
 
-        { UIState === State.Stats &&
-          <Stats transactions={transactions} />
-        }
+          { UIState === State.Stats &&
+            <Stats transactions={transactions} />
+          }
 
-        { UIState === State.Assets &&
-          <Assets user={user ?? { 'id': 0, 'name': '', email: '' }} accounts={accounts} transactions={transactions} signalRefresh={signalRefreshAcct} />
-        }
+          { UIState === State.Assets &&
+            <Assets user={user} accounts={accounts} transactions={transactions} signalRefresh={signalRefreshAcct} />
+          }
 
-        { UIState === State.Market &&
-          <>not made</>
-        }
+          { UIState === State.Market &&
+            <>work in progress</>
+          }
 
-        { UIState === State.Profile &&
-          <Profile logout={logout} />
-        }
+          { UIState === State.Profile &&
+            <Profile user={user} setUser={setUser} logout={logout} />
+          }
 
-        { UIState === State.Settings &&
-          <>not made</>
-        }
+          { UIState === State.Settings &&
+            <>work in progress</>
+          }
 
-      </main>
+        </main>
+      }
     </div>
   );
 }

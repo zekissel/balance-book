@@ -1,11 +1,23 @@
-import { useState } from "react"
+import React, { useState } from "react";
+import { User } from "../../typedef";
+import '../../styles/Profile.css';
+import { invoke } from "@tauri-apps/api";
 
-interface ProfileProps { logout: () => void }
-export default function Profile ({ logout }: ProfileProps) {
+interface ProfileProps { user: User, setUser: React.Dispatch<React.SetStateAction<User | null>>, logout: () => void }
+export default function Profile ({ user, setUser, logout }: ProfileProps) {
 
+  const [email, setEmail] = useState(user.email ?? '');
+  const [password, setPassword] = useState('');
+  const [pass2, setPass2] = useState('');
 
-
-
+  const updateUser = async () => {
+    if (password !== pass2) { console.error('Passwords do not match'); return; }
+    
+    const data = { 'id': user.id, 'email': email, 'password': password.length > 0 ? password : undefined }
+    await invoke('fix_user', data)
+      .then(data => {if (data !== null) setUser(data as User)})
+      .catch(err => console.error(err));
+  }
 
   const [stateFinancial, setStateFinancial] = useState(true)
 
@@ -27,13 +39,18 @@ export default function Profile ({ logout }: ProfileProps) {
 
         { stateFinancial ?
           <div className='profile-financial'>
-            <p>connect bank account with link</p>
+            <p>work in progress; connect bank account with plaid/link</p>
           </div>
           :
           <div className='profile-personal'>
-            <input type='text' placeholder='Name' />
-            <input type='text' placeholder='Email' />
+            <menu>
+              <input type='text' placeholder='Name' value={user.name} readOnly/>
+              <input type='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} />
+              <input type='text' placeholder='New password' value={password} onChange={(e) => setPassword(e.target.value)} />
+              <input type='text' placeholder='Confirm new password' value={pass2} onChange={(e) => setPass2(e.target.value)} />
 
+              <button onClick={updateUser}>Save</button>
+            </menu>
           </div>
         }
         

@@ -216,6 +216,15 @@ pub fn read_user_by_name(name_i: &str) -> Option<User> {
     .ok()
 }
 
+pub fn read_user_by_id(id_i: i32) -> Option<User> {
+  use super::schema::user::dsl::*;
+
+  user
+    .filter(id.eq(id_i))
+    .first::<User>(&mut establish_connection())
+    .ok()
+}
+
 pub fn read_user() -> Vec<User> {
   use super::schema::user::dsl::*;
 
@@ -224,16 +233,32 @@ pub fn read_user() -> Vec<User> {
     .expect("Error loading user")
 }
 
-pub fn update_user(
+pub fn update_user_password(
   id_i: i32,
-  name_i: &str,
   password_i: &str,
+) -> User {
+  use super::schema::user::dsl::*;
+
+  let pwsalt_i = SaltString::generate(&mut OsRng);
+  let password_hash = Argon2::default().hash_password(password_i.as_bytes(), &pwsalt_i).unwrap().to_string();
+  let pwhash_i = PasswordHash::new(&password_hash).unwrap();
+  assert!(Argon2::default().verify_password(password_i.as_bytes(), &pwhash_i).is_ok());
+
+  diesel::update(user.find(id_i))
+    .set((pwhash.eq(pwhash_i.to_string()), pwsalt.eq(pwsalt_i.to_string())))
+    .returning(User::as_returning())
+    .get_result(&mut establish_connection())
+    .expect("Error updating user")
+}
+
+pub fn update_user_email(
+  id_i: i32,
   email_i: &str,
 ) -> User {
   use super::schema::user::dsl::*;
 
   diesel::update(user.find(id_i))
-    .set((name.eq(name_i), pwhash.eq(password_i), email.eq(email_i)))
+    .set(email.eq(email_i))
     .returning(User::as_returning())
     .get_result(&mut establish_connection())
     .expect("Error updating user")

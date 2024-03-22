@@ -1,15 +1,17 @@
 import '../../styles/Page.css';
 import '../../styles/Menu.css';
 import Logo from './Logo';
+import { User, Account, Transaction } from '../../typedef';
 
-export default function Home () {
+interface HomeProps { user: User, accounts: Account[], transactions: Transaction[] }
+export default function Home ({ user, accounts, transactions }: HomeProps) {
 
   return (
     <div className='page-root'>
       <menu className='dynamic-menu'>
         <div className='dynamic-menu-main'>
           <button>{ new Date().toDateString() }</button>
-          <button>Welcome, User!</button>
+          <button>Welcome, { user.name }!</button>
         </div>
 
         <div className='dynamic-menu-main'>

@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use database::api::read_user_by_id;
 use database::models::Account;
 use database::models::Transaction;
 use database::models::User;
@@ -58,6 +59,18 @@ fn login(name: &str, password: &str) -> Option<User> {
     database::api::verify_user(name, password)
 }
 
+#[tauri::command]
+fn fix_user(id: i32, password: Option<&str>, email: Option<&str>) -> Option<User> {
+    let user_o = match password {
+        Some(password) => database::api::update_user_password(id, password),
+        None => read_user_by_id(id).unwrap(),
+    };
+    match email {
+        Some(email) => Some(database::api::update_user_email(id, email)),
+        None => Some(user_o),
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|_app| {
@@ -66,7 +79,7 @@ fn main() {
 
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![new_transaction, get_transactions, fix_transaction, remove_transaction, new_account, get_accounts, fix_account, remove_account, login, register])
+        .invoke_handler(tauri::generate_handler![new_transaction, get_transactions, fix_transaction, remove_transaction, new_account, get_accounts, fix_account, remove_account, login, register, fix_user])
         .run(tauri::generate_context!())
         .expect("Error while running tauri application");
 }
