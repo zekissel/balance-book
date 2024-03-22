@@ -44,7 +44,7 @@ export default function TotalGraph ({ transactions, range, endDate }: GraphProps
     tooltip: {
       trigger: 'axis',
       axisPointer: { type: 'line' },
-      formatter: '{b}<br/>${c}'
+      formatter: '<b>{b}</b><br/>${c}'
     },
     xAxis: {
       type: 'category',

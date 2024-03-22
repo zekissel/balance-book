@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { State, Transaction } from "../../typedef";
-import { getTransactions } from "../../typeassist";
+import { State, Transaction, Account } from "../../typedef";
+import { getTransactions, getAccounts } from "../../typeassist";
 import Nav from "./Nav";
 import Home from "./Home";
 import Activity from "./Activity";
@@ -11,10 +11,18 @@ import "../../styles/App.css";
 function App() {
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [signal, setSignal] = useState(false);
-  const signalRefresh = () => setSignal(!signal);
+  const [signalTrans, setSignalTrans] = useState(false);
+  const signalRefreshTrans = () => setSignalTrans(!signalTrans);
   const refreshTransactions = async () => { setTransactions(await getTransactions()) };
-  useEffect(() => { refreshTransactions() }, [signal])
+  useEffect(() => { refreshTransactions() }, [signalRefreshTrans])
+
+
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [signalAcct, setSignalAcct] = useState(false);
+  const signalRefreshAcct = () => setSignalAcct(!signalAcct);
+  const refreshAccounts = async () => { setAccounts(await getAccounts()) };
+  useEffect(() => { refreshAccounts() }, [signalRefreshAcct]);
+
 
   const [UIState, setUIState] = useState(State.Home);
   return (
@@ -27,7 +35,7 @@ function App() {
         }
 
         { UIState === State.Activity &&
-          <Activity transactions={transactions} signalRefresh={signalRefresh} />
+          <Activity transactions={transactions} signalRefresh={signalRefreshTrans} />
         }
 
         { UIState === State.Stats &&
@@ -35,7 +43,7 @@ function App() {
         }
 
         { UIState === State.Assets &&
-          <Assets />
+          <Assets accounts={accounts} transactions={transactions} signalRefresh={signalRefreshAcct} />
         }
 
         { UIState === State.Market &&

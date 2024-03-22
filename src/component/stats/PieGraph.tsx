@@ -43,7 +43,7 @@ export default function PieGraph ({ transactions, isIncome }: GraphProps) {
     },
     tooltip: {
       trigger: 'item',
-      formatter: 'Category<br/>{b} : ${c} ({d}%)',
+      formatter: '{b}: <b>{d}%</b> (<em>${c}</em>)',
     },
   }; 
 

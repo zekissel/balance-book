@@ -1,29 +1,23 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import AccountPage from '../asset/AccountPage';
-import { Account, AccountType } from '../../typedef';
-import { getAccounts } from '../../typeassist';
+import { Account, AccountType, Transaction } from '../../typedef';
 import '../../styles/Page.css';
 import '../../styles/Menu.css';
 import CreateAccount from '../asset/CreateAccount';
 
-export default function Assets () {
+interface AssetsProps { accounts: Account[], transactions: Transaction[], signalRefresh: () => void }
+export default function Assets ({ accounts, transactions, signalRefresh }: AssetsProps) {
 
-  const matchView = (view: number) => {
+  const [curView, setCurView] = useState<AccountType>(matchView(localStorage.getItem('accView')));
+  function matchView (view: string | null) {
     switch (view) {
-      case 0: return AccountType.Checking;
-      case 1: return AccountType.Savings;
-      case 2: return AccountType.Investing;
+      case '0': return AccountType.Checking;
+      case '1': return AccountType.Savings;
+      case '2': return AccountType.Investing;
+      default: return AccountType.Checking;
     }
   }
-  const [curView, setCurView] = useState<AccountType>(matchView(Number(localStorage.getItem('accView'))) ?? AccountType.Checking);
   
-  
-  const [signalAccountUpdate, setSignalAccountUpdate] = useState(false);
-  const signalUpdate = () => setSignalAccountUpdate(!signalAccountUpdate);
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const refreshAccounts = async () => { setAccounts(await getAccounts()) };
-
-  useEffect(() => { refreshAccounts() }, [signalAccountUpdate]);
 
   const checkingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Checking), [accounts]);
   const savingsAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Savings), [accounts]);
@@ -58,19 +52,19 @@ export default function Assets () {
       </menu>
 
       { curView === AccountType.Checking &&
-        <AccountPage accounts={checkingAccounts} updateAccounts={refreshAccounts} />
+        <AccountPage accounts={checkingAccounts} updateAccounts={signalRefresh} transactions={transactions} />
       }
 
       { curView === AccountType.Savings &&
-        <AccountPage accounts={savingsAccounts} updateAccounts={refreshAccounts} />
+        <AccountPage accounts={savingsAccounts} updateAccounts={signalRefresh} transactions={transactions} />
       }
 
       { curView === AccountType.Investing &&
-        <AccountPage accounts={investingAccounts} updateAccounts={refreshAccounts} />
+        <AccountPage accounts={investingAccounts} updateAccounts={signalRefresh} transactions={transactions} />
       }
 
       { showAddAccount &&
-        <CreateAccount toggle={toggleAddAccount} update={signalUpdate} />
+        <CreateAccount toggle={toggleAddAccount} update={signalRefresh} />
       }
       
     </div>

@@ -1,17 +1,13 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Account, Transaction, AccountType } from "../../typedef";
+import { addDays } from "../../typeassist";
 import '../../styles/AccountPage.css';
-import { getTransactions } from "../../typeassist";
 import ReactECharts from "echarts-for-react";
 import { EditAccount } from "./EditAccount";
 
 
-interface AccountPageProps { accounts: Account[], updateAccounts: () => void }
-export default function AccountPage ({ accounts, updateAccounts }: AccountPageProps) {
-
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const refreshTransactions = async () => { setTransactions(await getTransactions()) };
-  useEffect(() => { refreshTransactions() }, []);
+interface AccountPageProps { accounts: Account[], transactions: Transaction[], updateAccounts: () => void }
+export default function AccountPage ({ accounts, transactions, updateAccounts }: AccountPageProps) {
 
   return (
     <div className='page-main'>
@@ -41,22 +37,21 @@ function AccountCard ({ account, updateAccount, transactions }: AccountCardProps
 
   interface SeriesDay { date: Date, total: number }
   const timeFrameTotals = useMemo(() => {
-
-    let totals: SeriesDay[] = Array.from({ length: range }, (_, i) => { return { date: new Date(new Date().getTime() - (i * 24 * 60 * 60 * 1000)), total: account.balance } });
-    const minTime = new Date(new Date().getTime() - (range * 24 * 60 * 60 * 1000)).getTime();
-    const now = new Date().getTime();
+    const today = new Date(new Date().toDateString());
+    let totals: SeriesDay[] = Array.from({ length: range+1 }, (_, i) => { return { date: addDays(today, -i), total: account.balance } });
+    const minTime = addDays(today, -range).getTime();
     
     transactions.forEach(trans => {
       if (trans.date.getTime() >= minTime) {
         let index = totals.findIndex((t) => t.date.toDateString() === trans.date.toDateString());
         if (index !== -1) {
-          while (index < range - 1) {
+          while (index < range) {
             index += 1;
             totals[index].total += ((trans.account_id === account.id ? -1 : 1) * trans.amount);
           }
         }
-        else if (trans.date.getTime() > now) {
-          index = range - 1;
+        else if (trans.date.getTime() > today.getTime()) {
+          index = range;
           while (index > -1) {
             totals[index].total += ((trans.account_id === account.id ? -1 : 1) * trans.amount);
             index -= 1;
@@ -78,7 +73,7 @@ function AccountCard ({ account, updateAccount, transactions }: AccountCardProps
     tooltip: {
       trigger: 'axis',
       axisPointer: { type: 'line' },
-      formatter: '${c}'
+      formatter: '<b>{b}</b><br/>${c}'
     },
     grid: { show: true },
     xAxis: {

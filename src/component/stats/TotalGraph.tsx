@@ -42,6 +42,10 @@ export default function TotalGraph ({ transactions }: GraphProps) {
     },
     width: '87%',
     dataZoom: { type: 'inside' },
+    tooltip: {
+      trigger: 'item',
+      formatter: '<b>{b}</b>: ${c}',
+    },
   }; 
 
   return (
