@@ -99,7 +99,8 @@ impl Serialize for Account {
 pub struct User {
     pub id: i32,
     pub name: String,
-    pub password: String,
+    pub pwhash: String,
+    pub pwsalt: String,
     pub email: Option<String>,
 }
 
@@ -107,7 +108,8 @@ pub struct User {
 #[diesel(table_name = user)]
 pub struct AddUser<'a> {
     pub name: &'a str,
-    pub password: &'a str,
+    pub pwhash: &'a str,
+    pub pwsalt: &'a str,
     pub email: Option<&'a str>,
 }
 

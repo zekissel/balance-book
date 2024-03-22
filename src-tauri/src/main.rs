@@ -49,7 +49,7 @@ fn remove_transaction(id: i32) {
 }
 
 #[tauri::command]
-fn register(name: &str, password: &str, email: Option<&str>) -> User {
+fn register(name: &str, password: &str, email: Option<&str>) -> Option<User> {
     database::api::create_user(name, password, email)
 }
 

@@ -17,6 +17,7 @@ serde_json = "1"
 diesel = { version = "*", default-features = false, features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 diesel_migrations = "2.1.0"
 homedir = "0.2.1"
+argon2 = "0.5.3"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

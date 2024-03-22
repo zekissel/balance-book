@@ -26,7 +26,8 @@ diesel::table! {
   user (id) {
     id -> Integer,
     name -> Text,
-    password -> Text,
+    pwhash -> Text,
+    pwsalt -> Text,
     email -> Nullable<Text>,
   }
 }

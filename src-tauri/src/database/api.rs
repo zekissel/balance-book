@@ -7,6 +7,14 @@ use diesel_migrations::{ embed_migrations, EmbeddedMigrations, MigrationHarness 
 
 use super::models::{ Account, AddAccount, AddTransaction, AddUser, Transaction, User };
 
+use argon2::{
+  password_hash::{
+      rand_core::OsRng,
+      PasswordHash, PasswordHasher, PasswordVerifier, SaltString
+  },
+  Argon2
+};
+
 
 /* ----- initialize database connection and migrations */
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
@@ -176,15 +184,36 @@ pub fn create_user(
   name: &str, 
   password: &str,
   email: Option<&str>,
-) -> User {
+) -> Option<User> {
   use super::schema::user;
-  let new_user = AddUser { name, password, email };
+  // if user name exists, return
+  match read_user_by_name(name) {
+    Some(_) => return None,
+    None => (),
+  };
 
-  diesel::insert_into(user::table)
+  let pwsalt = SaltString::generate(&mut OsRng);
+  let argon2 = Argon2::default();
+  // Hash password to PHC string ($argon2id$v=19$...)
+  let password_hash = argon2.hash_password(password.as_bytes(), &pwsalt).unwrap().to_string();
+  let pwhash = PasswordHash::new(&password_hash).unwrap();
+  assert!(Argon2::default().verify_password(password.as_bytes(), &pwhash).is_ok());
+
+  let new_user = AddUser { name, pwhash: &pwhash.to_string(), pwsalt: &pwsalt.to_string(), email };
+  Some(diesel::insert_into(user::table)
     .values(&new_user)
     .returning(User::as_returning())
     .get_result(&mut establish_connection())
-    .expect("Error saving new user")
+    .expect("Error saving new user"))
+}
+
+pub fn read_user_by_name(name_i: &str) -> Option<User> {
+  use super::schema::user::dsl::*;
+
+  user
+    .filter(name.eq(name_i))
+    .first::<User>(&mut establish_connection())
+    .ok()
 }
 
 pub fn read_user() -> Vec<User> {
@@ -204,7 +233,7 @@ pub fn update_user(
   use super::schema::user::dsl::*;
 
   diesel::update(user.find(id_i))
-    .set((name.eq(name_i), password.eq(password_i), email.eq(email_i)))
+    .set((name.eq(name_i), pwhash.eq(password_i), email.eq(email_i)))
     .returning(User::as_returning())
     .get_result(&mut establish_connection())
     .expect("Error updating user")
@@ -222,9 +251,20 @@ pub fn delete_user(id_i: i32) {
 pub fn verify_user (name_i: &str, password_i: &str) -> Option<User> {
   use super::schema::user::dsl::*;
 
+  let user_data = match read_user_by_name(name_i) {
+    Some(_) => Some(read_user_by_name(name_i).unwrap()).unwrap(),
+    None => return None,
+  };
+
+  let pwsalt_i = SaltString::from_b64(&user_data.pwsalt).unwrap();
+  // Hash password to PHC string ($argon2id$v=19$...)
+  let password_hash = Argon2::default().hash_password(password_i.as_bytes(), &pwsalt_i).unwrap().to_string();
+  let pwhash_i = PasswordHash::new(&password_hash).unwrap();
+  assert!(Argon2::default().verify_password(password_i.as_bytes(), &pwhash_i).is_ok());
+
   let user_o = user
     .filter(name.eq(name_i))
-    .filter(password.eq(password_i))
+    .filter(pwhash.eq(pwhash_i.to_string()))
     .first::<User>(&mut establish_connection())
     .ok();
 
