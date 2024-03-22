@@ -16,17 +16,17 @@ export default function List ({ logs, updateLog, showFilter }: ListProps) {
   }, [logs]);
 
   const pastWeekTransactions = useMemo(() => {
-    const weekAgo = addDays(new Date(), -7);
+    const weekAgo = addDays(new Date(), -6);
     return logs.filter(t => t.date.getTime() >= weekAgo.getTime() && !futureTransactions.includes(t));
   }, [logs, futureTransactions]);
 
   const pastMonthTransactions = useMemo(() => {
-    const monthAgo = addDays(new Date(), -30);
+    const monthAgo = addDays(new Date(), -29);
     return logs.filter(t => (t.date.getTime() >= monthAgo.getTime()) && !futureTransactions.includes(t) && !pastWeekTransactions.includes(t));
   }, [logs, futureTransactions, pastWeekTransactions]);
 
   const past90DTransactions = useMemo(() => {
-    const yearAgo = addDays(new Date(), -90);
+    const yearAgo = addDays(new Date(), -89);
     return logs.filter(t => (t.date.getTime() >= yearAgo.getTime()) && !futureTransactions.includes(t) && !pastMonthTransactions.includes(t) && !pastWeekTransactions.includes(t));
   }, [logs, futureTransactions, pastWeekTransactions, pastMonthTransactions]);
 

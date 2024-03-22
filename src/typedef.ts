@@ -86,7 +86,7 @@ export enum AccountType {
 
 
 
-export interface Filters {
+export interface Filter {
   type: string,
   startDate: Date | null,
   endDate: Date | null,
@@ -97,7 +97,11 @@ export interface Filters {
   accounts: number[],
 }
 
-export function filterTransactions ({ transactions, filters }: { transactions: Transaction[], filters: Filters }): Transaction[] {
+export function anyFiltersActive (filter: Filter): boolean {
+  return (filter.type !== `all` || filter.startDate !== null || filter.endDate !== null || filter.category.length > 0 || filter.source[0].length > 0 || Number(filter.lowAmount) !== 0 || Number(filter.highAmount) !== 0 || filter.accounts.length > 0);
+};
+
+export function filterTransactions ({ transactions, filters }: { transactions: Transaction[], filters: Filter }): Transaction[] {
   let ret: Transaction[] = [];
 
   if (filters.type === `expense` || filters.type === `all`) ret = ret.concat(transactions.filter(t => t.amount < 0));
@@ -110,8 +114,8 @@ export function filterTransactions ({ transactions, filters }: { transactions: T
 
   if (filters.source[0].length > 0) ret = ret.filter(t => {
     // match partial names
-    const sources = filters.source.map(s => s.toUpperCase().trim())
-    return sources.some(s => t.company.toUpperCase().includes(s));
+    const sources = filters.source.map((s: string) => s.toUpperCase().trim())
+    return sources.some((s: string) => t.company.toUpperCase().includes(s));
   });
 
   if (Number(filters.lowAmount) > 0) ret = ret.filter(t => (t.amount - ((Number(filters.lowAmount)) * 100)) >= 0 );

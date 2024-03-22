@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { State } from "../../typedef";
+import { useState, useEffect } from "react";
+import { State, Transaction } from "../../typedef";
+import { getTransactions } from "../../typeassist";
 import Nav from "./Nav";
 import Home from "./Home";
 import Activity from "./Activity";
@@ -8,8 +9,14 @@ import Assets from "./Assets";
 import "../../styles/App.css";
 
 function App() {
-  const [UIState, setUIState] = useState(State.Home);
 
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [signal, setSignal] = useState(false);
+  const signalRefresh = () => setSignal(!signal);
+  const refreshTransactions = async () => { setTransactions(await getTransactions()) };
+  useEffect(() => { refreshTransactions() }, [signal])
+
+  const [UIState, setUIState] = useState(State.Home);
   return (
     <div className='app'>
       <Nav state={UIState} setState={setUIState}/>
@@ -20,11 +27,11 @@ function App() {
         }
 
         { UIState === State.Activity &&
-          <Activity />
+          <Activity transactions={transactions} signalRefresh={signalRefresh} />
         }
 
         { UIState === State.Stats &&
-          <Stats />
+          <Stats transactions={transactions} />
         }
 
         { UIState === State.Assets &&

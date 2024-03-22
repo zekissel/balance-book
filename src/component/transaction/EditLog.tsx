@@ -10,7 +10,7 @@ export function EditLog ({ log, updateLog, isIncome, toggle, cancel }: EditLogPr
   const [company, setCompany] = useState(log ? log.company : '');
   const [amount, setAmount] = useState(log ? String(log.amount / 100) : '0');
   const [category, setCategory] = useState(log ? log.category : ( isIncome ? IncomeCat.None : ExpenseCat.None));
-  const [date, setDate] = useState(log ? log.date : new Date());
+  const [date, setDate] = useState(log ? log.date : new Date(new Date().toDateString()));
   const [desc, setDesc] = useState(log ? log.desc : '');
 
   const [accountId, setAccountId] = useState(log ? (String(log.account_id)) : (localStorage.getItem('accountDefault') ?? ''));

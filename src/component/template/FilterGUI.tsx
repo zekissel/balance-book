@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Filters, ExpenseCat, IncomeCat, getEnumKeys, Account } from '../../typedef';
+import { Filter, ExpenseCat, IncomeCat, getEnumKeys, Account } from '../../typedef';
 import { getAccounts } from '../../typeassist';
 import { addDays } from '../../typeassist';
 import '../../styles/Filter.css';
 
 
-interface FilterProps { toggle: () => void, filters: Filters, setFilters: React.Dispatch<React.SetStateAction<Filters>> }
-export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
+interface FilterProps { toggle: () => void, filters: Filter, setFilters: React.Dispatch<React.SetStateAction<Filter>> }
+export default function FilterGUI ({ toggle, filters, setFilters }: FilterProps) {
 
 
   const [showStartDate, setShowStartDate] = useState(filters.startDate !== null);
@@ -193,7 +193,7 @@ export default function Filter ({ toggle, filters, setFilters }: FilterProps) {
             ))}
           </select>
         }
-        { !showCategory && (filters.accounts.length > 0 ? <div id='filter-category-list'>{ accountOptions.filter((a) => filters.accounts.includes(a.id)).map(a => String(`${a.account_type.slice(0,4)}:${a.account_name} `)) }</div> : <span>None</span>)}
+        { !showAccounts && (filters.accounts.length > 0 ? <div id='filter-category-list'>{ accountOptions.filter((a) => filters.accounts.includes(a.id)).map(a => String(`${a.account_type.slice(0,4)}:${a.account_name} `)) }</div> : <span>None</span>)}
       </li>
 
       <li className='filter-menu-meta'>

@@ -1,20 +1,20 @@
-import { useState, useMemo, useEffect } from "react";
-
+import { useState, useMemo } from "react";
 import List from "../activity/List";
 import Calendar from "../activity/Calendar";
 import "../../styles/Page.css";
 import "../../styles/Menu.css";
-import { Transaction, Filters, filterTransactions } from "../../typedef";
-import { getTransactions } from "../../typeassist";
+import { Transaction, Filter, filterTransactions, anyFiltersActive } from "../../typedef";
 import EditLog from "../transaction/CreateLog";
-import Filter from "../template/Filter";
+import FilterGUI from "../template/FilterGUI";
 
-export default function Activity () {
 
-  /* filter transactions by object state */
+interface ActivityProps { transactions: Transaction[], signalRefresh: () => void }
+export default function Activity ({ transactions, signalRefresh }: ActivityProps) {
+
+  /* filter transactions by object state (filter function declared in typedef) */
   const [filterGUI, setFilterGUI] = useState(false);
   const toggleFilter = () => setFilterGUI(!filterGUI);
-  const [filters, setFilters] = useState<Filters>({
+  const [filters, setFilters] = useState<Filter>({
     type: sessionStorage.getItem('filter.type') ?? `all`,
     startDate: sessionStorage.getItem('filter.start') ? new Date(sessionStorage.getItem('filter.start')!) : null,
     endDate: sessionStorage.getItem('filter.end') ? new Date(sessionStorage.getItem('filter.end')!) : null,
@@ -24,32 +24,16 @@ export default function Activity () {
     highAmount: sessionStorage.getItem('filter.high') ?? '0',
     accounts: sessionStorage.getItem('filter.accounts')?.split(' ').map(a => Number(a)) ?? [],
   });
-  const anyFiltersActive = () => {
-    return (filters.type !== `all` || filters.startDate !== null || filters.endDate !== null || filters.category.length > 0 || filters.source[0].length > 0 || Number(filters.lowAmount) !== 0 || Number(filters.highAmount) !== 0 || filters.accounts.length > 0);
-  };
-
-
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [signalTransUpdate, setSignalTransUpdate] = useState(false);
-  const signalRefresh = () => setSignalTransUpdate(!signalTransUpdate);
-  const refreshTransactions = async () => { setTransactions(await getTransactions()) };
 
   const filteredTransactions = useMemo(() => {
     return filterTransactions({ transactions, filters });
   }, [transactions, filters]);
-
-  useEffect(() => {
-    refreshTransactions();
-  }, [signalTransUpdate])
 
 
   /* toggle between list and calendar view, toggle GUI for adding a new transaction */
   const [listView, setListView] = useState(localStorage.getItem('listView') === 'true' ? true : false);
   const [addLogGUI, setAddLogGUI] = useState(false);
   const toggleAddLog = () => setAddLogGUI(!addLogGUI);
-  
-
-  const filtersActiveStyle = { backgroundColor: `#a0bacb`}
 
   return (
     <div className='page-root'>
@@ -81,14 +65,14 @@ export default function Activity () {
           { addLogGUI && <EditLog toggle={toggleAddLog} updateLog={signalRefresh} />}
           <button 
             onClick={toggleFilter}
-            style={anyFiltersActive() ? filtersActiveStyle : undefined}
+            style={ anyFiltersActive(filters) ? filtersActiveStyle : undefined}
             >
               <img src='/filter.svg'/> Filter
           </button>
         </div>
       </menu>
 
-      { filterGUI && <Filter toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
+      { filterGUI && <FilterGUI toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
 
       { listView ?
         <List logs={filteredTransactions} updateLog={signalRefresh} showFilter={filterGUI} />
@@ -99,3 +83,4 @@ export default function Activity () {
     </div>
   );
 }
+const filtersActiveStyle = { backgroundColor: `#a0bacb`}

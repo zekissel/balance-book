@@ -2,7 +2,21 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { ExpenseCat, IncomeCat, Transaction, Account } from './typedef';
 
 export const getCategoryColor = (category: ExpenseCat | IncomeCat): string => {
-  return category.length > 10 ? '#cba' : '#abc';
+  switch (category) {
+    case ExpenseCat.Other: case IncomeCat.OtherIncome: return '#F5E890';
+    case ExpenseCat.Savings: case IncomeCat.SavingsIncome: return '#C2F3FA';
+    case ExpenseCat.Investment: case IncomeCat.InvestmentIncome: return '#F9C9C9';
+    case ExpenseCat.Groceries: return '#E6C9F9'; case ExpenseCat.Food: return '#F9C9ED';
+    case ExpenseCat.Rent: return '#B0CCF0'; case ExpenseCat.Utilities: return '#C9F9E6';
+    case ExpenseCat.Transportation: return '#F9E6C9'; case ExpenseCat.Entertainment: return '#F9F0C9';
+    case ExpenseCat.Home: return '#A6F5F4'; case ExpenseCat.Office: return '#F5C0DB';
+    case ExpenseCat.Services: return '#BAF5DB'; case ExpenseCat.Gifts: return '#E0ABFC';
+    case ExpenseCat.Textile: return '#F0A2B2'; case ExpenseCat.Toilietries: return '#CFBAF9';
+    case ExpenseCat.Drinks: return '#F9C9B6'; case ExpenseCat.Snacks: return '#ECF9BA';
+    case IncomeCat.Salary: return '#C9F9E6'; case IncomeCat.SideJob: return '#F8CDF9';
+    case IncomeCat.Reimbursement: return '#C9CBC7'; case ExpenseCat.Pet: return '#FAD49F';
+    default: return '#fff';
+  }
 }
 
 export function addDays(date: Date, days: number) {
@@ -18,7 +32,7 @@ export async function getTransactions(): Promise<Transaction[]> {
   return await invoke("get_transactions")
     .then(data => {
       const trans = data as Transaction[];
-      trans.forEach(t => t.date = new Date(t.date));
+      trans.forEach(t => t.date = addDays(new Date(new Date(t.date).toUTCString().split(' ').slice(0, 4).join(' ')), 0));
       return trans.sort((a, b) => a.date > b.date ? -1 : 1);
     })
 }

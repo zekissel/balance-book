@@ -1,17 +1,20 @@
-import { useState, useEffect, useMemo } from "react";
-import { Transaction, Filters, filterTransactions } from "../../typedef"
-import { getTransactions } from "../../typeassist"
+import { useState, useMemo } from "react";
+import { Transaction, Filter, filterTransactions, anyFiltersActive } from "../../typedef"
+import { addDays } from "../../typeassist";
 import StatsPage from "../stats/StatsPage"
-import Filter from "../template/Filter";
+import FilterGUI from "../template/FilterGUI";
 import "../../styles/Stats.css"
 import '../../styles/Page.css'
 import "../../styles/Menu.css"
 
-export default function Stats () {
-
-  const [filterGUI, setFilterGUI] = useState(false);
-  const toggleFilter = () => setFilterGUI(!filterGUI);
-  const [filters, setFilters] = useState<Filters>({
+interface StatsProps { transactions: Transaction[] }
+export default function Stats ({ transactions }: StatsProps) {
+  
+  /* filter transactions before being sent to page */
+  const anyDateFilters = () => (filters.startDate !== null || filters.endDate !== null)
+  const [showFilter, setFilterGUI] = useState(false);
+  const toggleFilter = () => setFilterGUI(!showFilter);
+  const [filters, setFilters] = useState<Filter>({
     type: sessionStorage.getItem('filter.type') ?? `all`,
     startDate: sessionStorage.getItem('filter.start') ? new Date(sessionStorage.getItem('filter.start')!) : null,
     endDate: sessionStorage.getItem('filter.end') ? new Date(sessionStorage.getItem('filter.end')!) : null,
@@ -21,36 +24,47 @@ export default function Stats () {
     highAmount: sessionStorage.getItem('filter.high') ?? '0',
     accounts: sessionStorage.getItem('filter.accounts')?.split(' ').map(a => Number(a)) ?? [],
   });
-  const anyFiltersActive = () => {
-    return (filters.type !== `all` || filters.startDate !== null || filters.endDate !== null || filters.category.length > 0 || filters.source[0].length > 0 || Number(filters.lowAmount) !== 0 || Number(filters.highAmount) !== 0)
-  };
-  const anyDateFilters = () => {
-    return (filters.startDate !== null || filters.endDate !== null)
-  }
-  const getTimeRangeFromDate = () => {
-    if (filters.startDate === null) return 0;
-    const end = filters.endDate?.getTime() ?? new Date().getTime();
-    return Math.floor((end - filters.startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
-  }
-
-
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const refreshTransactions = async () => { setTransactions(await getTransactions()) };
-  useEffect(() => { refreshTransactions() }, [])
-
-  const filteredTransactions = useMemo(() => {
-    return filterTransactions({ transactions, filters });
-  }, [transactions, filters])
-
 
   const [timeRange, setTimeRange] = useState(2);
   const [rangeMultiplier, setRangeMultiplier] = useState(7);
 
+  /* filters get superior say on date specification (if only one is set then the other side has no limit); otherwise listen to stats menu bar */
+  const endDate = useMemo(() => {
+    if (filters.endDate !== null) return filters.endDate;
+    else if (filters.startDate !== null && filters.endDate === null) {
+      return addDays(transactions.reduce((max, p) => p.date > max ? p.date : max, new Date()), 1);
+    }
+    else return addDays(new Date(), 0);
+  }, [filters.endDate, filters.startDate, transactions]);
+  const startDate = useMemo(() => {
+    if (filters.startDate !== null) return filters.startDate;
+    else if (filters.endDate !== null && filters.startDate === null) {
+      return addDays(transactions.reduce((min, p) => p.date < min ? p.date : min, new Date()), -1);
+    }
+    else return new Date((new Date(endDate.getTime() - (((timeRange * rangeMultiplier) - 1) * 24 * 60 * 60 * 1000))).toDateString())
+  }, [filters.startDate, filters.endDate, endDate, timeRange, rangeMultiplier, transactions]);
+  
+  /* transactions after filters are applied */
+  const filteredTransactions = useMemo(() => {
+    return filterTransactions({ transactions, filters });
+  }, [transactions, filters])
+
+  /* transactions within timeframe set by stats menu bar (void if filter dates are set) */
+  const timeFrameTransactions = useMemo(() => {
+    if (anyDateFilters()) return filteredTransactions;
+    return filteredTransactions.filter(t => ((t.date.getTime() - startDate.getTime() >= 0) && (endDate.getTime() - t.date.getTime() >= 0)));
+  }, [filteredTransactions, startDate, endDate]);
+
+  /* future transactions, after endDate (whether set by filters or automatically) */
+  const upcomingTransactions = useMemo(() => {
+    return filteredTransactions.filter(t => t.date.getTime() > endDate.getTime());
+  }, [filteredTransactions, endDate]);
+
+  
+
   const updateRangeDays = (e: React.ChangeEvent<HTMLInputElement>) => {
     const am = e.target.value;
-    if (!am || am.match(/^\d{1,}?$/)) {
-      setTimeRange(Number(am));
-    }
+    if (!am || am.match(/^\d{1,}?$/)) setTimeRange(Number(am));
   }
 
   return (
@@ -66,13 +80,13 @@ export default function Stats () {
 
         <div className='dynamic-menu-main'>
           <button onClick={toggleFilter}
-            style={anyFiltersActive() ? filtersActiveStyle : undefined}><img src='/filter.svg'/> Filter</button>
+            style={ anyFiltersActive(filters) ? filtersActiveStyle : undefined}><img src='/filter.svg'/> Filter</button>
         </div>
       </menu>
 
-      { filterGUI && <Filter toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
+      { showFilter && <FilterGUI toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
 
-      <StatsPage transactions={filteredTransactions} timeRange={anyDateFilters() ? getTimeRangeFromDate() : timeRange * rangeMultiplier} endDate={filters.endDate ?? null} showFilter={filterGUI}/>
+      <StatsPage transactions={timeFrameTransactions} upcoming={upcomingTransactions} startDate={startDate} endDate={endDate} showFilter={showFilter}/>
 
     </div>
   )

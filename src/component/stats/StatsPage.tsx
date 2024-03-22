@@ -1,53 +1,30 @@
 import { useMemo, useState } from "react";
 import { Transaction } from "../../typedef";
-import { addDays } from "../../typeassist";
 import TotalGraph from "./TotalGraph";
 import PieGraph from "./PieGraph";
 import LineGraph from "./LineGraph";
 
-interface StatsPageProps { transactions: Transaction[], timeRange: number, endDate: Date | null, showFilter: boolean }
-export default function StatsPage ({ transactions, timeRange, endDate, showFilter }: StatsPageProps) {
+interface StatsPageProps { transactions: Transaction[], upcoming: Transaction[], startDate: Date, endDate: Date, showFilter: boolean }
+export default function StatsPage ({ transactions, upcoming, startDate, endDate, showFilter }: StatsPageProps) {
 
-  const modifedTransactions = useMemo(() => {
-    if (timeRange === 0) return transactions;
-    const end = new Date((endDate ?? new Date()).toDateString()).getTime();
-    const range = timeRange * 24 * 60 * 60 * 1000;
-    return transactions.filter(t => (end - t.date.getTime() < range) && (end - t.date.getTime() >= 0));
-  }, [transactions, timeRange]);
-
-  const upcomingTransactions = useMemo(() => {
-    const end = new Date((endDate ?? new Date()).toDateString()).getTime();
-    return transactions.filter(t => (end - t.date.getTime()) < 0);
-  }, [transactions]);
-  const upcomingTotal = useMemo(() => {
-    return upcomingTransactions.reduce((acc, t) => acc + (t.amount / 100), 0)
-  }, [upcomingTransactions]);
-
-  const netBalance = useMemo(() => {
-    return modifedTransactions.reduce((acc, t) => acc + t.amount, 0);
-  }, [modifedTransactions]);
-
-  const minDate = useMemo(() => {
-    if (timeRange === 0) return new Date(Math.min(...modifedTransactions.map(t => t.date.getTime())));
-    const stop = ( endDate ?? new Date());
-    return new Date(new Date(stop.getTime() - (timeRange * 24 * 60 * 60 * 1000)).toDateString());
-  }, [timeRange, modifedTransactions]);
+  const netBalance = useMemo(() =>  transactions.reduce((acc, t) => acc + t.amount, 0), [transactions]);
+  const upcomingTotal = useMemo(() => upcoming.reduce((acc, t) => acc + (t.amount / 100), 0), [upcoming]);
 
   const numExpenses = useMemo(() => {
-    return modifedTransactions.filter(t => t.amount < 0).length;
-  }, [modifedTransactions]);
+    return transactions.filter(t => t.amount < 0).length;
+  }, [transactions]);
   const expenseTotal = useMemo(() => {
-    return modifedTransactions.filter(t => t.amount < 0).reduce((acc, t) => acc - t.amount, 0);
-  }, [modifedTransactions]);
+    return transactions.filter(t => t.amount < 0).reduce((acc, t) => acc - t.amount, 0);
+  }, [transactions]);
 
   const numIncome = useMemo(() => {
-    return modifedTransactions.filter(t => t.amount > 0).length;
-  }, [modifedTransactions]);
+    return transactions.filter(t => t.amount > 0).length;
+  }, [transactions]);
   const incomeTotal = useMemo(() => {
-    return modifedTransactions.filter(t => t.amount > 0).reduce((acc, t) => acc + t.amount, 0);
-  }, [modifedTransactions]);
+    return transactions.filter(t => t.amount > 0).reduce((acc, t) => acc + t.amount, 0);
+  }, [transactions]);
 
-
+  
 
   const [categoryPieTypeIncome, setCatPieTypeIncome] = useState(true);
 
@@ -59,28 +36,28 @@ export default function StatsPage ({ transactions, timeRange, endDate, showFilte
           <h3>
             Net Balance: <span id='stats-main-net' style={netBalance > 0 ? netStyleProfit : netStyleLoss}>{ netBalance > 0 ? `+$${(netBalance / 100).toFixed(2)}` : `-$${(netBalance / -100).toFixed(2)}` }</span>
           </h3>
-          <i>Since { addDays(minDate, 1).toDateString() }{ endDate && ',' }</i>
+          <i>Since { startDate.toDateString() }{ endDate && ',' }</i>
           { endDate && <i>Until { endDate.toDateString() }</i> }
           <div className='stats-main-info'>
             <p>Total expenses: -${ expenseTotal / 100 } ({ numExpenses } transactions)</p>
             <p>Total income: +${ incomeTotal / 100 } ({ numIncome } transactions)</p>
           </div>
-          { upcomingTransactions.length > 0 && <span>Upcoming: { upcomingTotal > 0 ? '+$' : '-$'}{ Math.abs(upcomingTotal) } ({upcomingTransactions.length})</span>}
+          { upcoming.length > 0 && <span>Upcoming: { upcomingTotal > 0 ? '+$' : '-$'}{ Math.abs(upcomingTotal) } ({upcoming.length})</span>}
         </div>
       
         <div className='stats-main-box-long'>
-          <TotalGraph transactions={modifedTransactions} />
+          <TotalGraph transactions={transactions} />
         </div>
       </div>
       
       <div className='stats-main-row'>
         <div className='stats-main-box-longer'>
-          <LineGraph transactions={modifedTransactions} range={timeRange > 0 ? timeRange : Math.round(((endDate ?? new Date()).getTime() - minDate.getTime() + (2*24*60*60*1000)) / (24 * 60 * 60 * 1000))} endDate={endDate} />
+          <LineGraph transactions={transactions} range={Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))} endDate={endDate} />
         </div>
 
         <div className='stats-main-box-shorter'>
           
-          <PieGraph transactions={modifedTransactions} isIncome={categoryPieTypeIncome} />
+          <PieGraph transactions={transactions} isIncome={categoryPieTypeIncome} />
 
           <div className='stats-category-radio'>
             <input type='radio' id='radio-category-income' name='type' onChange={() => setCatPieTypeIncome(true)} defaultChecked /><label htmlFor='radio-category-income'>Income</label>
