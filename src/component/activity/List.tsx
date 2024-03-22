@@ -1,15 +1,11 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { Transaction, Account } from "../../typedef";
-import { getCategoryColor, addDays, getAccounts } from "../../typeassist";
+import { getCategoryColor, addDays } from "../../typeassist";
 import ViewLog from "../transaction/ViewLog";
 import '../../styles/List.css';
 
-interface ListProps { logs: Transaction[], updateLog: () => void, showFilter: boolean }
-export default function List ({ logs, updateLog, showFilter }: ListProps) {
-
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const refreshAccounts = async () => { setAccounts(await getAccounts()) };
-  useEffect(() => { refreshAccounts() }, []);
+interface ListProps { logs: Transaction[], accounts: Account[], updateLog: () => void, showFilter: boolean }
+export default function List ({ logs, accounts, updateLog, showFilter }: ListProps) {
 
   const futureTransactions = useMemo(() => {
     return logs.filter(t => t.date.getTime() > new Date().getTime());

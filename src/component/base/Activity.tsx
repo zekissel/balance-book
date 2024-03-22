@@ -3,13 +3,13 @@ import List from "../activity/List";
 import Calendar from "../activity/Calendar";
 import "../../styles/Page.css";
 import "../../styles/Menu.css";
-import { Transaction, Filter, filterTransactions, anyFiltersActive } from "../../typedef";
+import { Transaction, Filter, filterTransactions, anyFiltersActive, Account } from "../../typedef";
 import EditLog from "../transaction/CreateLog";
 import FilterGUI from "../template/FilterGUI";
 
 
-interface ActivityProps { transactions: Transaction[], signalRefresh: () => void }
-export default function Activity ({ transactions, signalRefresh }: ActivityProps) {
+interface ActivityProps { transactions: Transaction[], accounts: Account[], signalRefresh: () => void }
+export default function Activity ({ transactions, accounts, signalRefresh }: ActivityProps) {
 
   /* filter transactions by object state (filter function declared in typedef) */
   const [filterGUI, setFilterGUI] = useState(false);
@@ -62,7 +62,7 @@ export default function Activity ({ transactions, signalRefresh }: ActivityProps
           >
             <img src='/log.svg' /> Add Log
           </button>
-          { addLogGUI && <EditLog toggle={toggleAddLog} updateLog={signalRefresh} />}
+          { addLogGUI && <EditLog accounts={accounts} toggle={toggleAddLog} updateLog={signalRefresh} />}
           <button 
             onClick={toggleFilter}
             style={ anyFiltersActive(filters) ? filtersActiveStyle : undefined}
@@ -75,7 +75,7 @@ export default function Activity ({ transactions, signalRefresh }: ActivityProps
       { filterGUI && <FilterGUI toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
 
       { listView ?
-        <List logs={filteredTransactions} updateLog={signalRefresh} showFilter={filterGUI} />
+        <List logs={filteredTransactions} accounts={accounts} updateLog={signalRefresh} showFilter={filterGUI} />
         :
         <Calendar logs={filteredTransactions} updateLog={signalRefresh} showFilter={filterGUI} /> 
       }

@@ -28,8 +28,8 @@ export function addDays(date: Date, days: number) {
   );
 }
 
-export async function getTransactions(): Promise<Transaction[]> {
-  return await invoke("get_transactions")
+export async function getTransactions(account_ids: number[]): Promise<Transaction[]> {
+  return await invoke("get_transactions", { 'accountId': account_ids })
     .then(data => {
       const trans = data as Transaction[];
       trans.forEach(t => t.date = addDays(new Date(new Date(t.date).toUTCString().split(' ').slice(0, 4).join(' ')), 0));
@@ -38,8 +38,8 @@ export async function getTransactions(): Promise<Transaction[]> {
 }
 
 
-export async function getAccounts(): Promise<Account[]> {
-  return await invoke("get_accounts")
+export async function getAccounts(user_id: number): Promise<Account[]> {
+  return await invoke("get_accounts", { 'userId': user_id })
     .then(data => {
       const acc = data as Account[];
       acc.forEach(e => e.date = new Date(e.date));

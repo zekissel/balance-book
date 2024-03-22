@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { EditLog } from './EditLog';
+import { Account } from '../../typedef';
 import '../../styles/Log.css';
 
 
-interface CreateLogProps { toggle: () => void, updateLog: () => void}
-export default function CreateLog ({ toggle, updateLog }: CreateLogProps) {
+interface CreateLogProps { accounts: Account[], toggle: () => void, updateLog: () => void}
+export default function CreateLog ({ accounts, toggle, updateLog }: CreateLogProps) {
 
   const [addIncome, setAddIncome] = useState(false);
 
@@ -21,6 +22,7 @@ export default function CreateLog ({ toggle, updateLog }: CreateLogProps) {
 
       <EditLog 
         log={null}
+        accounts={accounts}
         toggle={toggle} 
         cancel={toggle}
         updateLog={updateLog} 

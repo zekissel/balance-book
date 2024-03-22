@@ -1,6 +1,6 @@
 import ReactECharts from "echarts-for-react";
 import { Transaction } from "../../typedef";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { addDays } from "../../typeassist";
 
 interface GraphProps { transactions: Transaction[], range: number, endDate: Date}
@@ -10,8 +10,6 @@ export default function TotalGraph ({ transactions, range, endDate }: GraphProps
   const timeFrameTotals = useMemo(() => {
     const today = new Date(endDate.toDateString());
     let totals: SeriesDay[] = Array.from({ length: range+1 }, (_, i) => { return { date: addDays(today, -i), total: 0 } });
-    console.log('totals')
-    console.log(totals)
     transactions.forEach(t => {
       const index = Math.ceil((endDate.getTime() - t.date.getTime()) / (24 * 60 * 60 * 1000));
       if (index <= range) {
@@ -22,10 +20,6 @@ export default function TotalGraph ({ transactions, range, endDate }: GraphProps
     return totals.sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [transactions, range, endDate]);
 
-  useEffect(() => {
-    console.log(timeFrameTotals)
-    console.log(endDate)
-  }, [timeFrameTotals, endDate]);
 
   const xAxisInterval = useMemo(() => {
     if (range <= 14) return 0;

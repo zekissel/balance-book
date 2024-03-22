@@ -3,9 +3,9 @@ use std::path::Path;
 
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
-use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
+use diesel_migrations::{ embed_migrations, EmbeddedMigrations, MigrationHarness };
 
-use super::models::{AddTransaction, Transaction, AddAccount, Account };
+use super::models::{ Account, AddAccount, AddTransaction, AddUser, Transaction, User };
 
 
 /* ----- initialize database connection and migrations */
@@ -78,12 +78,18 @@ pub fn create_transaction(
     .expect("Error saving new transaction")
 }
 
-pub fn read_transaction() -> Vec<Transaction> {
+pub fn read_transaction(account_id_i: Vec<i32>) -> Vec<Transaction> {
   use super::schema::transaction::dsl::*;
 
-  transaction
-    .load::<Transaction>(&mut establish_connection())
-    .expect("Error loading transactions")
+  let mut ret = Vec::new();
+  for a_id in account_id_i {
+    let trans = transaction
+      .filter(account_id.eq(a_id))
+      .load::<Transaction>(&mut establish_connection())
+      .expect("Error loading transactions");
+    for t in trans { ret.push(t); }
+  }
+  ret
 }
 
 pub fn update_transaction(
@@ -115,13 +121,14 @@ pub fn delete_transaction(id_i: i32) {
 
 /* CRUD for Accounts */
 pub fn create_account(
+  user_id: i32,
   account_type: &str, 
   account_name: &str, 
   balance: i32,
   date: &str
 ) -> Account {
   use super::schema::account;
-  let new_account = AddAccount { account_type, account_name, balance, date };
+  let new_account = AddAccount { user_id, account_type, account_name, balance, date };
 
   diesel::insert_into(account::table)
     .values(&new_account)
@@ -130,12 +137,13 @@ pub fn create_account(
     .expect("Error saving new account")
 }
 
-pub fn read_account() -> Vec<Account> {
+pub fn read_account(user_id_i: i32) -> Vec<Account> {
   use super::schema::account::dsl::*;
 
   account
+    .filter(user_id.eq(user_id_i))
     .load::<Account>(&mut establish_connection())
-    .expect("Error loading account")
+    .expect("Error loading accounts")
 }
 
 pub fn update_account(
@@ -160,4 +168,65 @@ pub fn delete_account(id_i: i32) {
   diesel::delete(account.find(id_i))
     .execute(&mut establish_connection())
     .expect("Error deleting account");
+}
+
+
+/* CRUD for Users */
+pub fn create_user(
+  name: &str, 
+  password: &str,
+  email: Option<&str>,
+) -> User {
+  use super::schema::user;
+  let new_user = AddUser { name, password, email };
+
+  diesel::insert_into(user::table)
+    .values(&new_user)
+    .returning(User::as_returning())
+    .get_result(&mut establish_connection())
+    .expect("Error saving new user")
+}
+
+pub fn read_user() -> Vec<User> {
+  use super::schema::user::dsl::*;
+
+  user
+    .load::<User>(&mut establish_connection())
+    .expect("Error loading user")
+}
+
+pub fn update_user(
+  id_i: i32,
+  name_i: &str,
+  password_i: &str,
+  email_i: &str,
+) -> User {
+  use super::schema::user::dsl::*;
+
+  diesel::update(user.find(id_i))
+    .set((name.eq(name_i), password.eq(password_i), email.eq(email_i)))
+    .returning(User::as_returning())
+    .get_result(&mut establish_connection())
+    .expect("Error updating user")
+}
+
+pub fn delete_user(id_i: i32) {
+  use super::schema::user::dsl::*;
+
+  diesel::delete(user.find(id_i))
+    .execute(&mut establish_connection())
+    .expect("Error deleting user");
+}
+
+
+pub fn verify_user (name_i: &str, password_i: &str) -> Option<User> {
+  use super::schema::user::dsl::*;
+
+  let user_o = user
+    .filter(name.eq(name_i))
+    .filter(password.eq(password_i))
+    .first::<User>(&mut establish_connection())
+    .ok();
+
+  user_o
 }

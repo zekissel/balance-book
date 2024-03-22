@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react';
 import AccountPage from '../asset/AccountPage';
-import { Account, AccountType, Transaction } from '../../typedef';
+import { Account, AccountType, Transaction, User } from '../../typedef';
 import '../../styles/Page.css';
 import '../../styles/Menu.css';
 import CreateAccount from '../asset/CreateAccount';
 
-interface AssetsProps { accounts: Account[], transactions: Transaction[], signalRefresh: () => void }
-export default function Assets ({ accounts, transactions, signalRefresh }: AssetsProps) {
+interface AssetsProps { user: User, accounts: Account[], transactions: Transaction[], signalRefresh: () => void }
+export default function Assets ({ user, accounts, transactions, signalRefresh }: AssetsProps) {
 
   const [curView, setCurView] = useState<AccountType>(matchView(localStorage.getItem('accView')));
   function matchView (view: string | null) {
@@ -64,7 +64,7 @@ export default function Assets ({ accounts, transactions, signalRefresh }: Asset
       }
 
       { showAddAccount &&
-        <CreateAccount toggle={toggleAddAccount} update={signalRefresh} />
+        <CreateAccount user={user} toggle={toggleAddAccount} update={signalRefresh} />
       }
       
     </div>

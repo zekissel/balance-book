@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { AccountType } from '../../typedef';
+import { AccountType, User } from '../../typedef';
 import '../../styles/Log.css';
 import { EditAccount } from './EditAccount';
 
 
-interface CreateAccountProps { toggle: () => void, update: () => void }
-export default function CreateAccount ({ toggle, update }: CreateAccountProps) {
+interface CreateAccountProps { user: User, toggle: () => void, update: () => void }
+export default function CreateAccount ({ user, toggle, update }: CreateAccountProps) {
 
   const [accountType, setAccountType] = useState(AccountType.Checking);
 
@@ -25,6 +25,7 @@ export default function CreateAccount ({ toggle, update }: CreateAccountProps) {
 
       <EditAccount 
         log={null}
+        user={user}
         type={accountType}
         toggle={toggle} 
         cancel={toggle}

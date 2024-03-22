@@ -1,11 +1,10 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Transaction, IncomeCat, ExpenseCat, getEnumKeys, Account, AccountType } from "../../typedef";
-import { getAccounts } from "../../typeassist";
 
 
-interface EditLogProps { log: Transaction | null, toggle: () => void, cancel: () => void, isIncome: boolean, updateLog: () => void }
-export function EditLog ({ log, updateLog, isIncome, toggle, cancel }: EditLogProps) {
+interface EditLogProps { log: Transaction | null, accounts: Account[], toggle: () => void, cancel: () => void, isIncome: boolean, updateLog: () => void }
+export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }: EditLogProps) {
 
   const [company, setCompany] = useState(log ? log.company : '');
   const [amount, setAmount] = useState(log ? String(log.amount / 100) : '0');
@@ -16,9 +15,6 @@ export function EditLog ({ log, updateLog, isIncome, toggle, cancel }: EditLogPr
   const [accountId, setAccountId] = useState(log ? (String(log.account_id)) : (localStorage.getItem('accountDefault') ?? ''));
   const [accountId2, setAccountId2] = useState(log ? (String(log.secondary_id)) : '');
 
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const refreshAccounts = async () => { setAccounts(await getAccounts()) };
-  useEffect(() => { refreshAccounts() }, []);
 
   const checkingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Checking), [accounts]);
   const savingsAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Savings), [accounts]);
@@ -49,6 +45,7 @@ export function EditLog ({ log, updateLog, isIncome, toggle, cancel }: EditLogPr
       invoke('new_transaction', transactionData);
       const accountData = {
         'id': Number(accountId),
+        'userId': accounts.find(a => a.id === Number(accountId))!.user_id,
         'accountType': accounts.find(a => a.id === Number(accountId))!.account_type,
         'accountId': accounts.find(a => a.id === Number(accountId))!.account_name,
         'balance': accounts.find(a => a.id === Number(accountId))!.balance + (( isIncome ? 1 : -1) * Math.round((Number(amount) + Number.EPSILON) * 100)),
@@ -58,6 +55,7 @@ export function EditLog ({ log, updateLog, isIncome, toggle, cancel }: EditLogPr
       if (accountId2 !== '') {
         const accountData2 = {
           'id': Number(accountId2),
+          'userId': accounts.find(a => a.id === Number(accountId2))!.user_id,
           'accountType': accounts.find(a => a.id === Number(accountId2))!.account_type,
           'accountId': accounts.find(a => a.id === Number(accountId2))!.account_name,
           'balance': accounts.find(a => a.id === Number(accountId2))!.balance + (( isIncome ? -1 : 1) * Math.round((Number(amount) + Number.EPSILON) * 100)),

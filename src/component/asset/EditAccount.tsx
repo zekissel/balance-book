@@ -1,20 +1,21 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import React, { useState } from "react";
-import { AccountType, Account } from "../../typedef";
+import { AccountType, Account, User } from "../../typedef";
 
 
-interface EditAccountProps { log: Account | null, type: AccountType, toggle: () => void, cancel: () => void, updateAccounts: () => void }
-export function EditAccount ({ log, type, toggle, cancel, updateAccounts }: EditAccountProps) {
+interface EditAccountProps { log: Account | null, user: User, type: AccountType, toggle: () => void, cancel: () => void, updateAccounts: () => void }
+export function EditAccount ({ log, user, type, toggle, cancel, updateAccounts }: EditAccountProps) {
 
   const [name, setName] = useState(log ? log.account_name : '');
   const [balance, setBalance] = useState(log ? String(log.balance / 100) : '0');
 
 
   async function addAccount() {
-    if (name === '') return;
+    if (name === '' || user.id === 0) return;
 
     const data = {
       'id': log ? log.id : undefined,
+      'userId': user.id,
       'accountType': log ? log.account_type : type,
       'accountId': name,
       'balance': Math.round((Number(balance) + Number.EPSILON) * 100),

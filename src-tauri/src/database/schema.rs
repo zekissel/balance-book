@@ -14,9 +14,19 @@ diesel::table! {
 diesel::table! {
   account (id) {
     id -> Integer,
+    user_id -> Integer,
     account_type -> Text,
     account_name -> Text,
     balance -> Integer,
     date -> Text,
+  }
+}
+
+diesel::table! {
+  user (id) {
+    id -> Integer,
+    name -> Text,
+    password -> Text,
+    email -> Nullable<Text>,
   }
 }

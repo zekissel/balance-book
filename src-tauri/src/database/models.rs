@@ -4,6 +4,7 @@ use serde::ser::SerializeStruct;
 
 use super::schema::transaction;
 use super::schema::account;
+use super::schema::user;
 
 
 #[derive(Queryable, Selectable)]
@@ -57,6 +58,7 @@ impl Serialize for Transaction {
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Account {
     pub id: i32,
+    pub user_id: i32,
     pub account_type: String,
     pub account_name: String,
     pub balance: i32,
@@ -66,6 +68,7 @@ pub struct Account {
 #[derive(Insertable)]
 #[diesel(table_name = account)]
 pub struct AddAccount<'a> {
+    pub user_id: i32,
     pub account_type: &'a str,
     pub account_name: &'a str,
     pub balance: i32,
@@ -77,12 +80,46 @@ impl Serialize for Account {
     where
         S: serde::Serializer,
     {
-        let mut state = serializer.serialize_struct("Account", 5)?;
+        let mut state = serializer.serialize_struct("Account", 6)?;
         state.serialize_field("id", &self.id)?;
+        state.serialize_field("user_id", &self.user_id)?;
         state.serialize_field("account_type", &self.account_type)?;
         state.serialize_field("account_name", &self.account_name)?;
         state.serialize_field("balance", &self.balance)?;
         state.serialize_field("date", &self.date)?;
+        state.end()
+    }
+}
+
+
+
+#[derive(Queryable, Selectable)]
+#[diesel(table_name = crate::database::schema::user)]
+#[diesel(check_for_backend(diesel::sqlite::Sqlite))]
+pub struct User {
+    pub id: i32,
+    pub name: String,
+    pub password: String,
+    pub email: Option<String>,
+}
+
+#[derive(Insertable)]
+#[diesel(table_name = user)]
+pub struct AddUser<'a> {
+    pub name: &'a str,
+    pub password: &'a str,
+    pub email: Option<&'a str>,
+}
+
+impl Serialize for User {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut state = serializer.serialize_struct("User", 3)?;
+        state.serialize_field("id", &self.id)?;
+        state.serialize_field("name", &self.name)?;
+        state.serialize_field("email", &self.email)?;
         state.end()
     }
 }

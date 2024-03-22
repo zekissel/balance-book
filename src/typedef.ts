@@ -1,5 +1,13 @@
 
+export interface User {
+  id: number;
+  name: string;
+  email: string | null;
+}
+
+
 export enum State {
+  Auth,
   Home,
   Activity,
   Stats,
@@ -72,6 +80,7 @@ export const Month = [
 
 export interface Account {
   id: number;
+  user_id: number;
   account_type: AccountType;
   account_name: string;
   balance: number;

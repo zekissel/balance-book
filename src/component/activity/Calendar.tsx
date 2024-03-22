@@ -125,8 +125,8 @@ export default function Calendar ({ logs, updateLog, showFilter }: CalendarProps
         </thead>
 
         <tbody>
-          { weeks.map((week) => (
-            <tr>
+          { weeks.map((week, i) => (
+            <tr key={i}>
               {week.map((day, index) => (
                 <td key={index} onClick={() => updateSelectedDays(day)}>
 
