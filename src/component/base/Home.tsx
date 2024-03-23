@@ -11,7 +11,7 @@ export default function Home ({ user, accounts, transactions }: HomeProps) {
       <menu className='dynamic-menu'>
         <div className='dynamic-menu-main'>
           <button>{ new Date().toDateString() }</button>
-          <button>Welcome, { user.fname != '' ? user.fname : user.uname }!</button>
+          <button>Welcome, { user.fname !== null ? user.fname : user.uname }!</button>
         </div>
 
         <div className='dynamic-menu-main'>

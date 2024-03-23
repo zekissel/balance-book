@@ -13,7 +13,7 @@
     "allowlist": {
       "all": false,
       "shell": {
-        "all": false,
+        "all": true,
         "open": true
       }
     },
@@ -22,7 +22,9 @@
         "title": "Balance Book",
         "width": 1360,
         "height": 1020,
-        "resizable": true
+        "resizable": false,
+        "maximizable": true,
+        "minimizable": true
       }
     ],
     "security": {

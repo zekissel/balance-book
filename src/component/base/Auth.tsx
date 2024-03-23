@@ -65,6 +65,7 @@ export default function Auth ({ verify, logout }: AuthProps) {
         { showRegister && <button onClick={() => setShowRegister(!showRegister)} disabled={dataState === DataState.Loading}>Cancel</button> }
         { dataState === DataState.Loading && <p>Loading...</p> }
         { error !== '' && <p>{error}</p> }
+        { dataState === DataState.Error && <p>Something went wrong</p> }
       </div>
     </div>
   )
