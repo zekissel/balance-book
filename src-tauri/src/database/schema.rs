@@ -25,9 +25,12 @@ diesel::table! {
 diesel::table! {
   user (id) {
     id -> Integer,
-    name -> Text,
+    uname -> Text,  /* unique */
     pwhash -> Text,
     pwsalt -> Text,
-    email -> Nullable<Text>,
+    email -> Nullable<Text>,  /* unique */
+    fname -> Nullable<Text>,
+    lname -> Nullable<Text>,
+    dob -> Nullable<Text>,
   }
 }

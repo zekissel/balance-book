@@ -98,19 +98,25 @@ impl Serialize for Account {
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct User {
     pub id: i32,
-    pub name: String,
+    pub uname: String,
     pub pwhash: String,
     pub pwsalt: String,
     pub email: Option<String>,
+    pub fname: Option<String>,
+    pub lname: Option<String>,
+    pub dob: Option<String>,
 }
 
 #[derive(Insertable)]
 #[diesel(table_name = user)]
 pub struct AddUser<'a> {
-    pub name: &'a str,
+    pub uname: &'a str,
     pub pwhash: &'a str,
     pub pwsalt: &'a str,
     pub email: Option<&'a str>,
+    pub fname: Option<&'a str>,
+    pub lname: Option<&'a str>,
+    pub dob: Option<&'a str>,
 }
 
 impl Serialize for User {
@@ -118,10 +124,13 @@ impl Serialize for User {
     where
         S: serde::Serializer,
     {
-        let mut state = serializer.serialize_struct("User", 3)?;
+        let mut state = serializer.serialize_struct("User", 6)?;
         state.serialize_field("id", &self.id)?;
-        state.serialize_field("name", &self.name)?;
+        state.serialize_field("uname", &self.uname)?;
         state.serialize_field("email", &self.email)?;
+        state.serialize_field("fname", &self.fname)?;
+        state.serialize_field("lname", &self.lname)?;
+        state.serialize_field("dob", &self.dob)?;
         state.end()
     }
 }

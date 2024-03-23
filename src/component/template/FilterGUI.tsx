@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Filter, ExpenseCat, IncomeCat, getEnumKeys, Account } from '../../typedef';
-import { getAccounts } from '../../typeassist';
 import { addDays } from '../../typeassist';
 import '../../styles/Filter.css';
 
 
-interface FilterProps { toggle: () => void, filters: Filter, setFilters: React.Dispatch<React.SetStateAction<Filter>> }
-export default function FilterGUI ({ toggle, filters, setFilters }: FilterProps) {
+interface FilterProps { accounts: Account[], toggle: () => void, filters: Filter, setFilters: React.Dispatch<React.SetStateAction<Filter>> }
+export default function FilterGUI ({ accounts, toggle, filters, setFilters }: FilterProps) {
 
 
   const [showStartDate, setShowStartDate] = useState(filters.startDate !== null);
@@ -16,7 +15,6 @@ export default function FilterGUI ({ toggle, filters, setFilters }: FilterProps)
   const [showCategory, setShowCategory] = useState(false);
   const toggleCategory = () => setShowCategory(!showCategory);
 
-  const [accountOptions, setAccountOptions] = useState<Account[]>([]);
   const [showAccounts, setShowAccounts] = useState(false);
   const toggleAccounts = () => setShowAccounts(!showAccounts);
 
@@ -111,9 +109,6 @@ export default function FilterGUI ({ toggle, filters, setFilters }: FilterProps)
     sessionStorage.removeItem('filter.accounts');
   };
 
-  useEffect(() => {
-    getAccounts().then(accounts => setAccountOptions(accounts));
-  }, []);
 
   return (
     <menu className='filter-menu'>
@@ -186,14 +181,14 @@ export default function FilterGUI ({ toggle, filters, setFilters }: FilterProps)
         { showAccounts &&
           <select multiple size={5} value={filters.accounts.map(a => String(a))}
             onChange={handleAccounts}>
-            {accountOptions.map((acc, index) => (
+            {accounts.map((acc, index) => (
               <option style={filters.accounts.includes(acc.id) ? { backgroundColor: `#abc` }:undefined} key={index} value={acc.id}>
                 {`${acc.account_type}:${acc.account_name}`}
               </option>
             ))}
           </select>
         }
-        { !showAccounts && (filters.accounts.length > 0 ? <div id='filter-category-list'>{ accountOptions.filter((a) => filters.accounts.includes(a.id)).map(a => String(`${a.account_type.slice(0,4)}:${a.account_name} `)) }</div> : <span>None</span>)}
+        { !showAccounts && (filters.accounts.length > 0 ? <div id='filter-category-list'>{ accounts.filter((a) => filters.accounts.includes(a.id)).map(a => String(`${a.account_type.slice(0,4)}:${a.account_name} `)) }</div> : <span>None</span>)}
       </li>
 
       <li className='filter-menu-meta'>

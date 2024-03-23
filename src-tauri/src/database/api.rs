@@ -181,13 +181,12 @@ pub fn delete_account(id_i: i32) {
 
 /* CRUD for Users */
 pub fn create_user(
-  name: &str, 
+  uname: &str, 
   password: &str,
-  email: Option<&str>,
 ) -> Option<User> {
   use super::schema::user;
   // if user name exists, return
-  match read_user_by_name(name) {
+  match read_user_by_uname(uname) {
     Some(_) => return None,
     None => (),
   };
@@ -199,7 +198,7 @@ pub fn create_user(
   let pwhash = PasswordHash::new(&password_hash).unwrap();
   assert!(Argon2::default().verify_password(password.as_bytes(), &pwhash).is_ok());
 
-  let new_user = AddUser { name, pwhash: &pwhash.to_string(), pwsalt: &pwsalt.to_string(), email };
+  let new_user = AddUser { uname, pwhash: &pwhash.to_string(), pwsalt: &pwsalt.to_string(), email: None, fname: None, lname: None, dob: None };
   Some(diesel::insert_into(user::table)
     .values(&new_user)
     .returning(User::as_returning())
@@ -207,11 +206,20 @@ pub fn create_user(
     .expect("Error saving new user"))
 }
 
-pub fn read_user_by_name(name_i: &str) -> Option<User> {
+pub fn read_user_by_uname(name_i: &str) -> Option<User> {
   use super::schema::user::dsl::*;
 
   user
-    .filter(name.eq(name_i))
+    .filter(uname.eq(name_i))
+    .first::<User>(&mut establish_connection())
+    .ok()
+}
+
+pub fn read_user_by_email(email_i: &str) -> Option<User> {
+  use super::schema::user::dsl::*;
+
+  user
+    .filter(email.eq(email_i))
     .first::<User>(&mut establish_connection())
     .ok()
 }
@@ -225,18 +233,7 @@ pub fn read_user_by_id(id_i: i32) -> Option<User> {
     .ok()
 }
 
-pub fn read_user() -> Vec<User> {
-  use super::schema::user::dsl::*;
-
-  user
-    .load::<User>(&mut establish_connection())
-    .expect("Error loading user")
-}
-
-pub fn update_user_password(
-  id_i: i32,
-  password_i: &str,
-) -> User {
+pub fn update_user_password(id_i: i32, password_i: &str) -> User {
   use super::schema::user::dsl::*;
 
   let pwsalt_i = SaltString::generate(&mut OsRng);
@@ -248,20 +245,37 @@ pub fn update_user_password(
     .set((pwhash.eq(pwhash_i.to_string()), pwsalt.eq(pwsalt_i.to_string())))
     .returning(User::as_returning())
     .get_result(&mut establish_connection())
-    .expect("Error updating user")
+    .expect("Error updating user password")
 }
 
-pub fn update_user_email(
-  id_i: i32,
-  email_i: &str,
-) -> User {
+pub fn update_user_email(id_i: i32, email_i: &str) -> User {
   use super::schema::user::dsl::*;
 
   diesel::update(user.find(id_i))
     .set(email.eq(email_i))
     .returning(User::as_returning())
     .get_result(&mut establish_connection())
-    .expect("Error updating user")
+    .expect("Error updating user email")
+}
+
+pub fn update_user_fullname(id_i: i32, fname_i: &str, lname_i: &str) -> User {
+  use super::schema::user::dsl::*;
+
+  diesel::update(user.find(id_i))
+    .set((fname.eq(fname_i), lname.eq(lname_i)))
+    .returning(User::as_returning())
+    .get_result(&mut establish_connection())
+    .expect("Error updating user full name")
+}
+
+pub fn update_user_dob(id_i: i32, dob_i: &str) -> User {
+  use super::schema::user::dsl::*;
+
+  diesel::update(user.find(id_i))
+    .set(dob.eq(dob_i))
+    .returning(User::as_returning())
+    .get_result(&mut establish_connection())
+    .expect("Error updating user email")
 }
 
 pub fn delete_user(id_i: i32) {
@@ -273,11 +287,11 @@ pub fn delete_user(id_i: i32) {
 }
 
 
-pub fn verify_user (name_i: &str, password_i: &str) -> Option<User> {
+pub fn verify_user(name_i: &str, password_i: &str) -> Option<User> {
   use super::schema::user::dsl::*;
 
-  let user_data = match read_user_by_name(name_i) {
-    Some(_) => Some(read_user_by_name(name_i).unwrap()).unwrap(),
+  let user_data = match read_user_by_uname(name_i) {
+    Some(_) => Some(read_user_by_uname(name_i).unwrap()).unwrap(),
     None => return None,
   };
 
@@ -288,7 +302,7 @@ pub fn verify_user (name_i: &str, password_i: &str) -> Option<User> {
   assert!(Argon2::default().verify_password(password_i.as_bytes(), &pwhash_i).is_ok());
 
   let user_o = user
-    .filter(name.eq(name_i))
+    .filter(uname.eq(name_i))
     .filter(pwhash.eq(pwhash_i.to_string()))
     .first::<User>(&mut establish_connection())
     .ok();

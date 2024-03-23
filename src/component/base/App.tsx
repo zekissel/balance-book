@@ -31,7 +31,7 @@ function App() {
 
   
   const [UIState, setUIState] = useState(State.Auth);
-  const verify = (user: User) => { setUser(user); setUIState(State.Home); localStorage.setItem('user', user.name); }
+  const verify = (user: User) => { setUser(user); setUIState(State.Home); localStorage.setItem('user', user.uname); }
   const logout = () => { setUser(null); setUIState(State.Auth); }
   return (
     <div className='app'>
@@ -50,7 +50,7 @@ function App() {
           }
 
           { UIState === State.Stats &&
-            <Stats transactions={transactions} />
+            <Stats transactions={transactions} accounts={accounts} />
           }
 
           { UIState === State.Assets &&

@@ -72,7 +72,7 @@ export default function Activity ({ transactions, accounts, signalRefresh }: Act
         </div>
       </menu>
 
-      { filterGUI && <FilterGUI toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
+      { filterGUI && <FilterGUI accounts={accounts} toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
 
       { listView ?
         <List logs={filteredTransactions} accounts={accounts} updateLog={signalRefresh} showFilter={filterGUI} />

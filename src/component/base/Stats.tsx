@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Transaction, Filter, filterTransactions, anyFiltersActive } from "../../typedef"
+import { Transaction, Filter, filterTransactions, anyFiltersActive, Account } from "../../typedef"
 import { addDays } from "../../typeassist";
 import StatsPage from "../stats/StatsPage"
 import FilterGUI from "../template/FilterGUI";
@@ -7,8 +7,8 @@ import "../../styles/Stats.css"
 import '../../styles/Page.css'
 import "../../styles/Menu.css"
 
-interface StatsProps { transactions: Transaction[] }
-export default function Stats ({ transactions }: StatsProps) {
+interface StatsProps { transactions: Transaction[], accounts: Account[] }
+export default function Stats ({ transactions, accounts }: StatsProps) {
   
   /* filter transactions before being sent to page */
   const anyDateFilters = () => (filters.startDate !== null || filters.endDate !== null)
@@ -84,7 +84,7 @@ export default function Stats ({ transactions }: StatsProps) {
         </div>
       </menu>
 
-      { showFilter && <FilterGUI toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
+      { showFilter && <FilterGUI accounts={accounts} toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
 
       <StatsPage transactions={timeFrameTransactions} upcoming={upcomingTransactions} startDate={startDate} endDate={endDate} showFilter={showFilter}/>
 

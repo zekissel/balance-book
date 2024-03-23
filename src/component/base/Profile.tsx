@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { User } from "../../typedef";
+import { addDays } from "../../typeassist";
 import '../../styles/Profile.css';
 import { invoke } from "@tauri-apps/api";
 
@@ -9,11 +10,21 @@ export default function Profile ({ user, setUser, logout }: ProfileProps) {
   const [email, setEmail] = useState(user.email ?? '');
   const [password, setPassword] = useState('');
   const [pass2, setPass2] = useState('');
+  const [fname, setFname] = useState(user.fname ?? '');
+  const [lname, setLname] = useState(user.lname ?? '');
+  const [dob, setDob] = useState(user.dob ?? null);
 
   const updateUser = async () => {
     if (password !== pass2) { console.error('Passwords do not match'); return; }
     
-    const data = { 'id': user.id, 'email': email, 'password': password.length > 0 ? password : undefined }
+    const data = { 
+      'id': user.id, 
+      'email': email, 
+      'password': password.length > 0 ? password : undefined,
+      'fname': fname,
+      'lname': lname,
+      'dob': dob ? new Date(dob.toDateString()) : undefined,
+    }
     await invoke('fix_user', data)
       .then(data => {if (data !== null) setUser(data as User)})
       .catch(err => console.error(err));
@@ -44,10 +55,15 @@ export default function Profile ({ user, setUser, logout }: ProfileProps) {
           :
           <div className='profile-personal'>
             <menu>
-              <input type='text' placeholder='Name' value={user.name} readOnly/>
+              <input type='text' placeholder='Username' value={user.uname} readOnly/>
               <input type='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} />
-              <input type='text' placeholder='New password' value={password} onChange={(e) => setPassword(e.target.value)} />
-              <input type='text' placeholder='Confirm new password' value={pass2} onChange={(e) => setPass2(e.target.value)} />
+              <input type='password' placeholder='New password' value={password} onChange={(e) => setPassword(e.target.value)} />
+              <input type='password' placeholder='Confirm password' value={pass2} onChange={(e) => setPass2(e.target.value)} />
+
+              <input type='text' placeholder='First name' value={fname} onChange={(e) => setFname(e.target.value)} />
+              <input type='text' placeholder='Last name' value={lname} onChange={(e) => setLname(e.target.value)} />
+              <label htmlFor='dob'>DoB:</label><input id='dob' type='date' value={dob ? dob.toISOString().substring(0, 10) : undefined} 
+                onChange={(e) => setDob(addDays(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')), 0))} />
 
               <button onClick={updateUser}>Save</button>
             </menu>

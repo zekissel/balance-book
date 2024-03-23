@@ -50,8 +50,8 @@ fn remove_transaction(id: i32) {
 }
 
 #[tauri::command]
-fn register(name: &str, password: &str, email: Option<&str>) -> Option<User> {
-    database::api::create_user(name, password, email)
+fn register(name: &str, password: &str) -> Option<User> {
+    database::api::create_user(name, password)
 }
 
 #[tauri::command]
@@ -60,13 +60,27 @@ fn login(name: &str, password: &str) -> Option<User> {
 }
 
 #[tauri::command]
-fn fix_user(id: i32, password: Option<&str>, email: Option<&str>) -> Option<User> {
-    let user_o = match password {
+fn fix_user(id: i32, password: Option<&str>, email: Option<&str>, fname: Option<&str>, lname: Option<&str>, dob: Option<&str>) -> Option<User> {
+    let mut user_o = match password {
         Some(password) => database::api::update_user_password(id, password),
         None => read_user_by_id(id).unwrap(),
     };
-    match email {
-        Some(email) => Some(database::api::update_user_email(id, email)),
+    user_o = match email {
+        Some(email) => database::api::update_user_email(id, email),
+        None => user_o,
+    };
+    user_o = match fname {
+        Some(fname) => match lname {
+            Some(lname) => database::api::update_user_fullname(id, fname, lname),
+            None => database::api::update_user_fullname(id, fname, ""),
+        },
+        None => match lname {
+            Some(lname) => database::api::update_user_fullname(id, "", lname),
+            None => user_o,
+        },
+    };
+    match dob {
+        Some(dob) => Some(database::api::update_user_dob(id, dob)),
         None => Some(user_o),
     }
 }

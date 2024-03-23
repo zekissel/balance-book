@@ -1,10 +1,18 @@
 
 export interface User {
   id: number;
-  name: string;
+  uname: string;
   email: string | null;
+  fname: string | null;
+  lname: string | null;
+  dob: Date | null;
 }
 
+export enum DataState {
+  Loading,
+  Success,
+  Error,
+}
 
 export enum State {
   Auth,
