@@ -17,15 +17,20 @@ export default function Assets ({ user, accounts, transactions, signalRefresh }:
       default: return AccountType.Checking;
     }
   }
+  function matchAccounts (view: AccountType) {
+    switch (view) {
+      case AccountType.Checking: return checkingAccounts;
+      case AccountType.Savings: return savingsAccounts;
+      case AccountType.Investing: return investingAccounts;
+    }
+  }
   
-
   const checkingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Checking), [accounts]);
   const savingsAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Savings), [accounts]);
   const investingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Investing), [accounts]);
 
 
-  const [showAddAccount, setShowAddAccount] = useState(false);
-  const toggleAddAccount = () => setShowAddAccount(!showAddAccount);
+  const [showAddAccount, setShowAddAccount] = useState<AccountType | null>(null);
 
   return (
     <div className='page-root'>
@@ -47,24 +52,14 @@ export default function Assets ({ user, accounts, transactions, signalRefresh }:
         </div>
 
         <div className='dynamic-menu-main'>
-          <button onClick={toggleAddAccount}><img src='/add-account.svg'/> Add Account</button>
+          <button onClick={() => setShowAddAccount(AccountType.Checking)}><img src='/add-account.svg'/> Add Account</button>
         </div>
       </menu>
 
-      { curView === AccountType.Checking &&
-        <AccountPage accounts={checkingAccounts} updateAccounts={signalRefresh} transactions={transactions} />
-      }
-
-      { curView === AccountType.Savings &&
-        <AccountPage accounts={savingsAccounts} updateAccounts={signalRefresh} transactions={transactions} />
-      }
-
-      { curView === AccountType.Investing &&
-        <AccountPage accounts={investingAccounts} updateAccounts={signalRefresh} transactions={transactions} />
-      }
-
+      <AccountPage user={user} accounts={matchAccounts(curView)} updateAccounts={signalRefresh} transactions={transactions} type={curView} addAccount={setShowAddAccount} />
+      
       { showAddAccount &&
-        <CreateAccount user={user} toggle={toggleAddAccount} update={signalRefresh} />
+        <CreateAccount user={user} type={showAddAccount} toggle={() => setShowAddAccount(null)} update={signalRefresh} setAddAccount={setShowAddAccount}/>
       }
       
     </div>

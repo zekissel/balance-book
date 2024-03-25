@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Transaction, IncomeCat, ExpenseCat, getEnumKeys, Account, AccountType } from "../../typedef";
 
 
@@ -20,10 +20,19 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
   const savingsAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Savings), [accounts]);
   const investingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Investing), [accounts]);
 
+  const accountError = useMemo(() => !isIncome ? (checkingAccounts.length === 0 ? '*Expense requires a source account' : '') : (accounts.length === 0 ? '*Income requires a destination account' : ''), [isIncome]);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    const timer = setTimeout(() => setError(''), 5000);
+    return () => clearTimeout(timer);
+  }, [error]);
+
+
   function addTransaction() {
-    if ((!isInternal() && company === '') || amount === '0' || accountId === '') return;
-    if (category === ExpenseCat.None || category === IncomeCat.None) return;
-    if (accountId2 === '' && isInternal()) return
+    if (!isInternal() && company === '') { setError('Company/Payee required'); return;} 
+    if (amount === '0' || accountId === '') { setError('Account and amount required'); return; }
+    if (category === ExpenseCat.None || category === IncomeCat.None) { setError('Category required'); return; }
+    if (accountId2 === '' && isInternal()) { setError('Specify secondary account'); return; }
 
     const party = isInternal() ? `${accounts.find(a => a.id === Number(accountId2))!.account_type}:${accounts.find(a => a.id === Number(accountId2))!.account_name}` : company;
     const transactionData = {
@@ -161,6 +170,9 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
         <button onClick={cancel}>Cancel</button>
         { log && <button className='delete-trans' onClick={deleteTransaction}>Delete</button> }
       </li>
+
+      { accountError !== '' && <li><>{ accountError }</></li> }
+      { error !== '' && <li><>{ error }</></li> }
       
     </fieldset>
   );

@@ -1,13 +1,20 @@
 import { useState, useMemo } from "react";
-import { Account, Transaction, AccountType } from "../../typedef";
+import { Account, Transaction, AccountType, User } from "../../typedef";
 import { addDays } from "../../typeassist";
 import '../../styles/AccountPage.css';
 import ReactECharts from "echarts-for-react";
 import { EditAccount } from "./EditAccount";
 
 
-interface AccountPageProps { accounts: Account[], transactions: Transaction[], updateAccounts: () => void }
-export default function AccountPage ({ accounts, transactions, updateAccounts }: AccountPageProps) {
+interface AccountPageProps { 
+  user: User, 
+  accounts: Account[], 
+  transactions: Transaction[], 
+  updateAccounts: () => void, 
+  type: AccountType,
+  addAccount: React.Dispatch<React.SetStateAction<AccountType | null>>,
+}
+export default function AccountPage ({ user, accounts, transactions, updateAccounts, type, addAccount }: AccountPageProps) {
 
   return (
     <div className='page-main'>
@@ -16,11 +23,14 @@ export default function AccountPage ({ accounts, transactions, updateAccounts }:
         { accounts.map((a, i) => 
           <AccountCard 
             key={i} 
+            user={user}
             account={a} 
             updateAccount={updateAccounts} 
             transactions={transactions.filter(t => (t.account_id === a.id || t.secondary_id === a.id))} />
         )}
-        { accounts.length === 0 && <div className='assets-account-card'>No accounts found</div> }
+        { accounts.length === 0 && 
+          <div className='assets-account-card card-empty'>No accounts found<br/><button onClick={() => addAccount(type)}>Add {type} Account</button></div> 
+        }
       </ul>
 
     </div>
@@ -28,8 +38,8 @@ export default function AccountPage ({ accounts, transactions, updateAccounts }:
 }
 
 
-interface AccountCardProps { account: Account, updateAccount: () => void, transactions: Transaction[] }
-function AccountCard ({ account, updateAccount, transactions }: AccountCardProps) {
+interface AccountCardProps { user: User, account: Account, updateAccount: () => void, transactions: Transaction[] }
+function AccountCard ({ user, account, updateAccount, transactions }: AccountCardProps) {
 
   const [range, setRange] = useState(account.account_type === AccountType.Checking ? 14 : 91);
   const [showEdit, setShowEdit] = useState(false);
@@ -109,7 +119,7 @@ function AccountCard ({ account, updateAccount, transactions }: AccountCardProps
     <div className="assets-account-card">
       <div className='account-info-wrapper'>
         <div className='account-info'>
-          { showEdit && <EditAccount log={account} type={account.account_type} toggle={toggleEdit} cancel={toggleEdit} updateAccounts={updateAccount} /> }
+          { showEdit && <EditAccount user={user} log={account} type={account.account_type} toggle={toggleEdit} cancel={toggleEdit} updateAccounts={updateAccount} /> }
           { !showEdit &&
             <div className='account-details'>
               <h4>{ account.account_name }</h4>

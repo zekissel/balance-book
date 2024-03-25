@@ -61,7 +61,8 @@ export default function List ({ logs, accounts, updateLog, showFilter }: ListPro
 
       {
         allTransactions.map((transactionCollection, ind) => (
-          
+
+          <>{ transactionCollection.length > 0 && 
           <ol className='list-main' key={ind}>
             <h2 onClick={() => handleIndexToggle(ind)}>{ transactionTitles[ind] }<img src={ showIndices.includes(ind) ? '/double-down.svg' : 'double-left.svg'}/></h2>
             { showIndices.includes(ind) && transactionCollection.map((transaction, index) => (
@@ -75,8 +76,12 @@ export default function List ({ logs, accounts, updateLog, showFilter }: ListPro
               </li>
             ))}
           </ol>
+          }</>
+
         ))
       }
+
+      { logs.length === 0 && <div className='list-item-empty'>No transactions found</div> }
 
       { selectedTransactions.length > 0 && 
         selectedTransactions.map((trans, index) => (

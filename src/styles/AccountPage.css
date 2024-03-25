@@ -39,6 +39,14 @@ div.assets-account-card {
   align-items: center;
 }
 
+div.card-empty {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  margin: 1rem;
+}
+
 div.account-info {
   display: flex;
   flex-direction: column;

@@ -26,7 +26,7 @@ export default function StatsPage ({ transactions, upcoming, startDate, endDate,
 
   
 
-  const [categoryPieTypeIncome, setCatPieTypeIncome] = useState(true);
+  const [categoryPieTypeIncome, setCatPieTypeIncome] = useState<boolean>(JSON.parse(localStorage.getItem('stats.categoryPieIncome')??'').income ?? true);
 
 
   return (
@@ -39,8 +39,8 @@ export default function StatsPage ({ transactions, upcoming, startDate, endDate,
           <i>Since { startDate.toDateString() }{ endDate && ',' }</i>
           { endDate && <i>Until { endDate.toDateString() }</i> }
           <div className='stats-main-info'>
-            <p>Total expenses: -${ expenseTotal / 100 } ({ numExpenses } transactions)</p>
-            <p>Total income: +${ incomeTotal / 100 } ({ numIncome } transactions)</p>
+            <p>Total expenses: -${ expenseTotal / 100 } ({ numExpenses } transaction{ numExpenses > 1 ? 's' : '' })</p>
+            <p>Total income: +${ incomeTotal / 100 } ({ numIncome } transaction{ numExpenses > 1 ? 's' : '' })</p>
           </div>
           { upcoming.length > 0 && <span>Upcoming: { upcomingTotal > 0 ? '+$' : '-$'}{ Math.abs(upcomingTotal) } ({upcoming.length})</span>}
         </div>
@@ -60,8 +60,8 @@ export default function StatsPage ({ transactions, upcoming, startDate, endDate,
           <PieGraph transactions={transactions} isIncome={categoryPieTypeIncome} />
 
           <div className='stats-category-radio'>
-            <input type='radio' id='radio-category-income' name='type' onChange={() => setCatPieTypeIncome(true)} defaultChecked /><label htmlFor='radio-category-income'>Income</label>
-            <input type='radio' id='radio-category-expense' name='type' onChange={() => setCatPieTypeIncome(false)} /><label htmlFor='radio-category-expense'>Expense</label>
+            <input type='radio' id='radio-category-income' name='type' onChange={() => {setCatPieTypeIncome(true); localStorage.setItem('stats.categoryPieIncome', JSON.stringify({income: true}))}} defaultChecked={categoryPieTypeIncome} /><label htmlFor='radio-category-income'>Income</label>
+            <input type='radio' id='radio-category-expense' name='type' onChange={() => {setCatPieTypeIncome(false); localStorage.setItem('stats.categoryPieIncome', JSON.stringify({income: false}))}} defaultChecked={!categoryPieTypeIncome} /><label htmlFor='radio-category-expense'>Expense</label>
           </div>
         </div>
       </div>
