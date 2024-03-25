@@ -11,11 +11,16 @@ export default function Auth ({ verify, logout }: AuthProps) {
     const timer = setTimeout(() => setError(''), 5000);
     return () => clearTimeout(timer);
    }, [error]);
+   useEffect(() => { 
+    const timer = setTimeout(() => setDataState(DataState.Success), 5000);
+    return () => clearTimeout(timer);
+   }, [dataState]);
 
   const [name, setName] = useState(localStorage.getItem('user') ?? '');
   const [pass, setPass] = useState(localStorage.getItem('pass') ?? '');
   const [confirmPass, setConfirmPass] = useState('');
 
+  const enterLogin = (e: React.KeyboardEvent<HTMLInputElement>) => { if (e.key === 'Enter') login(); }
   const login = async () => {
     setDataState(DataState.Loading);
     await invoke('login', { 'name': name, 'password': pass })
@@ -31,6 +36,7 @@ export default function Auth ({ verify, logout }: AuthProps) {
       .catch(() => setDataState(DataState.Error));
   }
   const [showRegister, setShowRegister] = useState(false);
+  const toggleRegister = () => setShowRegister(!showRegister);
   const register = async () => {
     if (pass === confirmPass) {
       setDataState(DataState.Loading);
@@ -50,7 +56,7 @@ export default function Auth ({ verify, logout }: AuthProps) {
   }
 
   const handleRegister = () => {
-    if (name.length > 0 && pass.length > 0 && !showRegister) { setShowRegister(!showRegister); return; }
+    if (!showRegister) { toggleRegister(); return; }
     if (name.length > 0 && pass.length > 0 && confirmPass.length > 0) { register(); return; }
   }
 
@@ -58,11 +64,11 @@ export default function Auth ({ verify, logout }: AuthProps) {
     <div className='no-auth'>
       <div className='auth-field'>
         <input type='text' placeholder='Username' value={name} onChange={e => setName(e.target.value)} />
-        <input type='password' placeholder='Password' value={pass} onChange={e => setPass(e.target.value)} />
+        <input type='password' placeholder='Password' value={pass} onChange={e => setPass(e.target.value)} onKeyDown={enterLogin} />
         { showRegister && <input type='password' placeholder='Confirm Password' value={confirmPass} onChange={e => setConfirmPass(e.target.value)} /> }
         { !showRegister && <button onClick={login}>Login</button> }
         <button onClick={handleRegister} disabled={dataState === DataState.Loading}>Register</button>
-        { showRegister && <button onClick={() => setShowRegister(!showRegister)} disabled={dataState === DataState.Loading}>Cancel</button> }
+        { showRegister && <button onClick={toggleRegister} disabled={dataState === DataState.Loading}>Cancel</button> }
         { dataState === DataState.Loading && <p>Loading...</p> }
         { error !== '' && <p>{error}</p> }
         { dataState === DataState.Error && <p>Something went wrong</p> }

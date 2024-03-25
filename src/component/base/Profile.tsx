@@ -42,7 +42,6 @@ export default function Profile ({ user, setUser, logout }: ProfileProps) {
         </div>
 
         <div className='dynamic-menu-main'>
-          <button>Lock</button>
           <button onClick={logout}>Logout</button>
         </div>
       </menu>

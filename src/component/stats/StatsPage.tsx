@@ -3,6 +3,7 @@ import { Transaction } from "../../typedef";
 import TotalGraph from "./TotalGraph";
 import PieGraph from "./PieGraph";
 import LineGraph from "./LineGraph";
+import HeatMap from "./HeatMap";
 
 interface StatsPageProps { transactions: Transaction[], upcoming: Transaction[], startDate: Date, endDate: Date, showFilter: boolean }
 export default function StatsPage ({ transactions, upcoming, startDate, endDate, showFilter }: StatsPageProps) {
@@ -26,6 +27,7 @@ export default function StatsPage ({ transactions, upcoming, startDate, endDate,
 
   
 
+  const [historyGraphLine, setHistoryGraphLine] = useState(localStorage.getItem('stats.historyGraphLine') === 'true' ? true : false);
   const [categoryPieTypeIncome, setCatPieTypeIncome] = useState<boolean>(JSON.parse(localStorage.getItem('stats.categoryPieIncome')??'').income ?? true);
 
 
@@ -52,7 +54,13 @@ export default function StatsPage ({ transactions, upcoming, startDate, endDate,
       
       <div className='stats-main-row'>
         <div className='stats-main-box-longer'>
-          <LineGraph transactions={transactions} range={Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))} endDate={endDate} />
+          { historyGraphLine && <LineGraph transactions={transactions} range={Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))} endDate={endDate} /> }
+          { !historyGraphLine && <HeatMap transactions={transactions} startDate={startDate} endDate={endDate}/> }
+
+          <div className='stats-category-radio'>
+            <input type='radio' id='radio-history-line' name='line' onChange={() => {setHistoryGraphLine(true); localStorage.setItem('stats.historyGraphLine', 'true')}} defaultChecked={historyGraphLine} /><label htmlFor='radio-history-line'>Line</label>
+            <input type='radio' id='radio-history-heat' name='line' onChange={() => {setHistoryGraphLine(false); localStorage.setItem('stats.historyGraphLine', 'false')}} defaultChecked={!historyGraphLine} /><label htmlFor='radio-history-heat'>Heat</label>
+          </div>
         </div>
 
         <div className='stats-main-box-shorter'>

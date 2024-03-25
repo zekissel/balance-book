@@ -68,7 +68,7 @@ div.stats-main-box-longer {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: start;
 }
 
 div.stats-main-box-shorter {
