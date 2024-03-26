@@ -28,9 +28,9 @@ export function EditAccount ({ log, user, type, toggle, cancel, updateAccounts }
     else {
       const account: Account = await invoke("new_account", data);
       switch (type) {
-        case AccountType.Checking: localStorage.setItem('accountDefault', account.id.toString()); break;
-        case AccountType.Savings: localStorage.setItem('accountSavings', account.id.toString()); break;
-        case AccountType.Investing: localStorage.setItem('accountInvesting', account.id.toString()); break;
+        case AccountType.Checking: if (!localStorage.getItem('accountDefault')) localStorage.setItem('accountDefault', account.id.toString()); break;
+        case AccountType.Savings: if (!localStorage.getItem('accountSavings')) localStorage.setItem('accountSavings', account.id.toString()); break;
+        case AccountType.Investing: if (!localStorage.getItem('accountInvesting')) localStorage.setItem('accountInvesting', account.id.toString()); break;
       }
     }
     

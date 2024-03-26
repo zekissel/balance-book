@@ -2,6 +2,7 @@ import '../../styles/Page.css';
 import '../../styles/Menu.css';
 import Logo from './Logo';
 import { User, Account, Transaction } from '../../typedef';
+import Preview from './Preview';
 
 interface HomeProps { user: User, accounts: Account[], transactions: Transaction[] }
 export default function Home ({ user, accounts, transactions }: HomeProps) {
@@ -24,7 +25,7 @@ export default function Home ({ user, accounts, transactions }: HomeProps) {
         <Logo />
 
         <div>
-          Account balances
+          <Preview accounts={accounts} transactions={transactions}/>
         </div>
 
         <div>
