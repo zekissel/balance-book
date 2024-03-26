@@ -248,34 +248,14 @@ pub fn update_user_password(id_i: i32, password_i: &str) -> User {
     .expect("Error updating user password")
 }
 
-pub fn update_user_email(id_i: i32, email_i: &str) -> User {
+pub fn update_user_data(id_i: i32, email_i: Option<&str>, fname_i: Option<&str>, lname_i: Option<&str>, dob_i: Option<&str>) -> User {
   use super::schema::user::dsl::*;
 
   diesel::update(user.find(id_i))
-    .set(email.eq(email_i))
+    .set((email.eq(email_i), fname.eq(fname_i), lname.eq(lname_i), dob.eq(dob_i)))
     .returning(User::as_returning())
     .get_result(&mut establish_connection())
-    .expect("Error updating user email")
-}
-
-pub fn update_user_fullname(id_i: i32, fname_i: &str, lname_i: &str) -> User {
-  use super::schema::user::dsl::*;
-
-  diesel::update(user.find(id_i))
-    .set((fname.eq(fname_i), lname.eq(lname_i)))
-    .returning(User::as_returning())
-    .get_result(&mut establish_connection())
-    .expect("Error updating user full name")
-}
-
-pub fn update_user_dob(id_i: i32, dob_i: &str) -> User {
-  use super::schema::user::dsl::*;
-
-  diesel::update(user.find(id_i))
-    .set(dob.eq(dob_i))
-    .returning(User::as_returning())
-    .get_result(&mut establish_connection())
-    .expect("Error updating user email")
+    .expect("Error updating user data")
 }
 
 pub fn delete_user(id_i: i32) {

@@ -31,6 +31,7 @@ export default function List ({ logs, accounts, updateLog, showFilter }: ListPro
   }, [logs, futureTransactions, pastWeekTransactions, pastMonthTransactions, past90DTransactions]);
 
 
+  /* recombine subsections of transactions into one array */
   const allTransactions = useMemo(() => [
     futureTransactions, pastWeekTransactions, pastMonthTransactions, past90DTransactions, otherTransactions
   ], [futureTransactions, pastWeekTransactions, pastMonthTransactions, past90DTransactions, otherTransactions]);
@@ -64,9 +65,9 @@ export default function List ({ logs, accounts, updateLog, showFilter }: ListPro
 
           <>{ transactionCollection.length > 0 && 
           <ol className='list-main' key={ind}>
-            <h2 onClick={() => handleIndexToggle(ind)}>{ transactionTitles[ind] }<img src={ showIndices.includes(ind) ? '/double-down.svg' : 'double-left.svg'}/></h2>
+            <h2 onClick={() => handleIndexToggle(ind)}>{ transactionTitles[ind] }<img src={ showIndices.includes(ind) ? '/double-down.svg' : '/double-left.svg'}/></h2>
             { showIndices.includes(ind) && transactionCollection.map((transaction, index) => (
-              <li key={index} className={ (transaction.amount < 0 ? 'list-item-expense' : 'list-item-income') + ' list-item'} onClick={() => updateSelected(transaction)}>
+              <li key={`${ind}:${index}`} className={ (transaction.amount < 0 ? 'list-item-expense' : 'list-item-income') + ' list-item'} onClick={() => updateSelected(transaction)}>
                 <span className='list-item-date'>{transaction.date.toDateString().split(' ').slice(0, 3).join(' ')}</span>
                 <span className='list-item-source'> { transaction.company }</span>
                 <span className='list-item-amount'> { transaction.amount < 0 ? `-$`: `+$`}{Math.abs(transaction.amount / 100).toFixed(2)} </span>

@@ -15,20 +15,28 @@ export default function Profile ({ user, setUser, logout }: ProfileProps) {
   const [lname, setLname] = useState(user.lname ?? '');
   const [dob, setDob] = useState(user.dob ?? null);
 
+  const [oldPass, setOldPass] = useState('');
+
+  const [error, setError] = useState('');
+
   const updateUser = async () => {
-    if (password !== pass2) { console.error('Passwords do not match'); return; }
+    if (password !== pass2) { setError('Passwords do not match'); return; }
     
     const data = { 
       'id': user.id, 
-      'email': email, 
-      'password': password.length > 0 ? password : undefined,
+      'password': oldPass,
+      'newPass': password,
+      'email': email,
       'fname': fname,
       'lname': lname,
       'dob': dob ? new Date(dob.toDateString()) : undefined,
     }
     await invoke('fix_user', data)
-      .then(data => {if (data !== null) setUser(data as User)})
-      .catch(err => console.error(err));
+      .then(data => {
+        if (data !== null) setUser(data as User)
+        else setError('Incorrect password');
+      })
+      .catch(err => setError(err));
   }
 
   const [stateFinancial, setStateFinancial] = useState(true)
@@ -53,18 +61,30 @@ export default function Profile ({ user, setUser, logout }: ProfileProps) {
           :
           <div className='profile-personal'>
             <menu>
-              <input type='text' placeholder='Username' value={user.uname} readOnly/>
-              <input type='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} />
+              <label>Username: </label><input type='text' placeholder='Username' value={user.uname} readOnly />
+              <label>Recovery Email: </label><input type='email' placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} />
+
+              <label>Full Name: </label>
+              <input type='text' placeholder='First name' value={fname} onChange={(e) => setFname(e.target.value)} />
+              <input type='text' placeholder='Last name' value={lname} onChange={(e) => setLname(e.target.value)} />
+              <label htmlFor='dob'>Date of Birth: </label><input id='dob' type='date' value={dob ? dob.toISOString().substring(0, 10) : undefined} 
+                onChange={(e) => setDob(addDays(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')), 0))} />
+
+            </menu>
+            <menu>
+              <label>Confirm Password: </label>
+              <input type='password' placeholder='Current password' value={oldPass} onChange={(e) => setOldPass(e.target.value)} />
+              <label>Upate Password: </label>
               <input type='password' placeholder='New password' value={password} onChange={(e) => setPassword(e.target.value)} />
               <input type='password' placeholder='Confirm password' value={pass2} onChange={(e) => setPass2(e.target.value)} />
 
-              <input type='text' placeholder='First name' value={fname} onChange={(e) => setFname(e.target.value)} />
-              <input type='text' placeholder='Last name' value={lname} onChange={(e) => setLname(e.target.value)} />
-              <label htmlFor='dob'>DoB:</label><input id='dob' type='date' value={dob ? dob.toISOString().substring(0, 10) : undefined} 
-                onChange={(e) => setDob(addDays(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')), 0))} />
-
-              <button onClick={updateUser}>Save</button>
+              <div>
+                <button onClick={updateUser}>Save</button>
+                { error !== '' && <em>{ error }</em> }
+              </div>
             </menu>
+
+            
           </div>
         }
         

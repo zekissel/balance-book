@@ -1,7 +1,13 @@
 
+div.profile-personal {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: start;
+}
+
 div.profile-personal > menu {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: start;
+  justify-content: space-evenly;
 }

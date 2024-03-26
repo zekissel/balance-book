@@ -60,28 +60,19 @@ fn login(name: &str, password: &str) -> Option<User> {
 }
 
 #[tauri::command]
-fn fix_user(id: i32, password: Option<&str>, email: Option<&str>, fname: Option<&str>, lname: Option<&str>, dob: Option<&str>) -> Option<User> {
-    let mut user_o = match password {
-        Some(password) => database::api::update_user_password(id, password),
-        None => read_user_by_id(id).unwrap(),
-    };
-    user_o = match email {
-        Some(email) => database::api::update_user_email(id, email),
-        None => user_o,
-    };
-    user_o = match fname {
-        Some(fname) => match lname {
-            Some(lname) => database::api::update_user_fullname(id, fname, lname),
-            None => database::api::update_user_fullname(id, fname, ""),
+fn fix_user(id: i32, password: &str, new_pass: Option<&str>, email: Option<&str>, fname: Option<&str>, lname: Option<&str>, dob: Option<&str>) -> Option<User> {
+    match read_user_by_id(id) {
+        None => return None,
+        Some(user) => match database::api::verify_user(&user.uname, password) {
+            None => return None,
+            Some(user) => {
+                match new_pass {
+                    Some(new_pass) => database::api::update_user_password(id, new_pass),
+                    None => user,
+                };
+                Some(database::api::update_user_data(id, email, fname, lname, dob))
+            },
         },
-        None => match lname {
-            Some(lname) => database::api::update_user_fullname(id, "", lname),
-            None => user_o,
-        },
-    };
-    match dob {
-        Some(dob) => Some(database::api::update_user_dob(id, dob)),
-        None => Some(user_o),
     }
 }
 

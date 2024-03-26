@@ -53,7 +53,7 @@ export default function FilterGUI ({ accounts, toggle, filters, setFilters }: Fi
   }
 
   const voidCategory = () => { toggleCategory(); setFilters({...filters, category: []}); sessionStorage.removeItem('filter.category'); }
-  const handleCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCategory = (e: any) => {
     if (filters.category.includes(e.target.value)) {
       const newCategories = filters.category.filter(c => c !== e.target.value);
       setFilters({ ...filters, category: newCategories });
@@ -72,7 +72,7 @@ export default function FilterGUI ({ accounts, toggle, filters, setFilters }: Fi
   }
 
   const voidAccounts = () => { toggleAccounts(); setFilters({...filters, accounts: []}); sessionStorage.removeItem('filter.accounts'); }
-  const handleAccounts = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleAccounts = (e: any) => {
     if (filters.accounts.includes(Number(e.target.value))) {
       const newAccounts = filters.accounts.filter(a => a !== Number(e.target.value));
       setFilters({ ...filters, accounts: newAccounts });
@@ -142,12 +142,12 @@ export default function FilterGUI ({ accounts, toggle, filters, setFilters }: Fi
           <select multiple size={5} value={filters.category} onChange={handleCategory}>
             {getEnumKeys(ExpenseCat).map((key, index) => (
               
-              <option style={filters.category.includes(ExpenseCat[key]) ? { backgroundColor: `#abc` }:undefined} key={index} value={ExpenseCat[key]}>
+              <option style={filters.category.includes(ExpenseCat[key]) ? { backgroundColor: `#abc` }:undefined} key={index} value={ExpenseCat[key]} onClick={handleCategory}>
                 {ExpenseCat[key]}
               </option>
             ))}
             {getEnumKeys(IncomeCat).map((key, index) => (
-              <option style={filters.category.includes(IncomeCat[key]) ? { backgroundColor: `#abc` }:undefined} key={index} value={IncomeCat[key]}>
+              <option style={filters.category.includes(IncomeCat[key]) ? { backgroundColor: `#abc` }:undefined} key={index} value={IncomeCat[key]} onClick={handleCategory}>
                 {IncomeCat[key]}
               </option>
             ))}
@@ -182,7 +182,7 @@ export default function FilterGUI ({ accounts, toggle, filters, setFilters }: Fi
           <select multiple size={5} value={filters.accounts.map(a => String(a))}
             onChange={handleAccounts}>
             {accounts.map((acc, index) => (
-              <option style={filters.accounts.includes(acc.id) ? { backgroundColor: `#abc` }:undefined} key={index} value={acc.id}>
+              <option style={filters.accounts.includes(acc.id) ? { backgroundColor: `#abc` } : undefined} key={index} value={acc.id} onClick={handleAccounts}>
                 {`${acc.account_type}:${acc.account_name}`}
               </option>
             ))}
