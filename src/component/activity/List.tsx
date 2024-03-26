@@ -82,7 +82,7 @@ export default function List ({ logs, accounts, updateLog, showFilter }: ListPro
         ))
       }
 
-      { logs.length === 0 && <div className='list-item-empty'>No transactions found</div> }
+      { logs.length === 0 && <ol className='list-main'>No transactions found</ol> }
 
       { selectedTransactions.length > 0 && 
         selectedTransactions.map((trans, index) => (

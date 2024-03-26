@@ -35,8 +35,8 @@ export default function HeatMap ({ transactions, startDate, endDate }: GraphProp
     return totals;
   }, [transactions, rangeStart, rangeEnd]);
 
-  const max = Math.round((timeFrameTotals.reduce((max, t) => t.total > max ? t.total : max, 0) * 1.25) / 100);
-  const min = Math.round((timeFrameTotals.reduce((min, t) => t.total < min ? t.total : min, 0) * 1.25) / 100);
+  const max = Math.round((timeFrameTotals.reduce((max, t) => t.total > max ? t.total : max, 0) * 1.05) / 100);
+  const min = Math.round((timeFrameTotals.reduce((min, t) => t.total < min ? t.total : min, 0) * 1.05) / 100);
   
   const option = {
     title: {
