@@ -26,7 +26,7 @@ function App() {
   const refreshTransactions = async () => { setTransactions(await getTransactions(accounts.map(a => a.id))) };
   useEffect(() => { refreshAccounts() }, [signalRefreshAcct, user]);
   useEffect(() => { refreshTransactions() }, [signalRefreshTrans, accounts])
-  
+  useEffect(() => { localStorage.removeItem('link_token'); localStorage.removeItem('auth_state'); }, [user]);
 
 
   

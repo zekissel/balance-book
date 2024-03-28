@@ -26,7 +26,7 @@ const PlaidLinkWithOAuth = ({ user }: PlaidLinkWithOAuthProps) => {
 
   React.useEffect(() => {
 
-    if (localStorage.getItem('link_token')) return;
+    if (localStorage.getItem('auth_state')) { console.log('USEEFFECT STOPPED (FROM REDIRECT?)'); return;}
     
 
     const unlisten = listen("oauth://url", (data) => {
@@ -38,8 +38,8 @@ const PlaidLinkWithOAuth = ({ user }: PlaidLinkWithOAuthProps) => {
       console.log(data.payload, state);
       if (state) {
         setState(state);
+        console.log(state);
         localStorage.setItem('auth_state', state);
-        invoke('authorize', { userId: user.id, publicToken: state })
       }
     });
 
@@ -71,7 +71,7 @@ const PlaidLinkWithOAuth = ({ user }: PlaidLinkWithOAuthProps) => {
   const onSuccess = useCallback<PlaidLinkOnSuccess>((publicToken, metadata) => {
     // send public_token to your server: https://plaid.com/docs/api/tokens/#token-exchange-flow
     console.log(publicToken, metadata);
-    setToken(publicToken);
+    invoke('authorize', { userId: user.id, publicToken: publicToken })
   }, []);
   const onEvent = useCallback<PlaidLinkOnEvent>((eventName, metadata) => {
     // log onEvent callbacks from Link
@@ -81,6 +81,7 @@ const PlaidLinkWithOAuth = ({ user }: PlaidLinkWithOAuthProps) => {
   const onExit = useCallback<PlaidLinkOnExit>((error, metadata) => {
     // log onExit callbacks from Link, handle errors
     localStorage.removeItem('link_token');
+    localStorage.removeItem('auth_state');
     console.log(error, metadata);
   }, []);
   const config: PlaidLinkOptions = { token, onSuccess, onEvent, onExit, receivedRedirectUri: redirect };
