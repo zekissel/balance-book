@@ -14,7 +14,7 @@ diesel::table! {
 diesel::table! {
   account (id) {
     id -> Integer,
-    user_id -> Integer,
+    user_id -> Text,
     account_type -> Text,
     account_name -> Text,
     balance -> Integer,
@@ -24,7 +24,7 @@ diesel::table! {
 
 diesel::table! {
   user (id) {
-    id -> Integer,
+    id -> Text,
     uname -> Text,  /* unique */
     pwhash -> Text,
     pwsalt -> Text,
@@ -32,5 +32,14 @@ diesel::table! {
     fname -> Nullable<Text>,
     lname -> Nullable<Text>,
     dob -> Nullable<Text>,
+  }
+}
+
+diesel::table! {
+  token (id) {
+    id -> Integer,
+    user_id -> Text,
+    token_id -> Text,
+    item_id -> Text,
   }
 }

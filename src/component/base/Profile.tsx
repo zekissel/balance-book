@@ -39,7 +39,7 @@ export default function Profile ({ user, setUser, logout }: ProfileProps) {
       .catch(err => setError(err));
   }
 
-  const [stateFinancial, setStateFinancial] = useState(true)
+  const [stateFinancial, setStateFinancial] = useState(false)
 
   return (
     <div className='page-root'>
@@ -57,7 +57,7 @@ export default function Profile ({ user, setUser, logout }: ProfileProps) {
       <div className='page-main'>
 
         { stateFinancial ?
-          <ProfileLink />
+          <ProfileLink user={user} />
           :
           <div className='profile-personal'>
             <menu>

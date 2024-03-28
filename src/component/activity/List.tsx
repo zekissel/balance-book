@@ -89,6 +89,7 @@ export default function List ({ logs, accounts, updateLog, showFilter }: ListPro
           <ViewLog 
             key={index} 
             transaction={trans} 
+            accounts={accounts}
             toggle={() => setSelectedTransactions(selectedTransactions.filter(t => JSON.stringify(t) !== JSON.stringify(trans)))}
             updateLog={updateLog}
           />

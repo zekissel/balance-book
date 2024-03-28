@@ -77,7 +77,7 @@ export default function Activity ({ transactions, accounts, signalRefresh }: Act
       { listView ?
         <List logs={filteredTransactions} accounts={accounts} updateLog={signalRefresh} showFilter={filterGUI} />
         :
-        <Calendar logs={filteredTransactions} updateLog={signalRefresh} showFilter={filterGUI} /> 
+        <Calendar logs={filteredTransactions} accounts={accounts} updateLog={signalRefresh} showFilter={filterGUI} /> 
       }
       
     </div>

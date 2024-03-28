@@ -1,14 +1,14 @@
-import { useRef, useMemo } from "react";
+import { User } from '../../typedef';
+import PlaidLinkWithOAuth from './PlaidLinkWithOAuth';
 
-export default function ProfileLink () {
-
-  const windowURL = useRef(window.location.href);
-  const isOAuthRedirect = useMemo(() => windowURL.current.includes('?oauth_state_id='), [windowURL.current]);
+interface ProfileLinkProps { user: User }
+export default function ProfileLink ({ user }: ProfileLinkProps) {
 
   return (
     <div className='profile-financial'>
-      <p onClick={() => console.log(windowURL.current, isOAuthRedirect)}>work in progress; connect bank account with plaid/link</p>
+      <p>work in progress; connect bank account with plaid/link</p>
       <a href='about:blank' target='_blank' rel='noreferrer'>Plaid</a>
+      <PlaidLinkWithOAuth user={user} />
     </div>
   )
 }

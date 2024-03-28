@@ -1,11 +1,12 @@
 use std::fs;
 use std::path::Path;
 
+use uuid::Uuid;
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use diesel_migrations::{ embed_migrations, EmbeddedMigrations, MigrationHarness };
 
-use super::models::{ Account, AddAccount, AddTransaction, AddUser, Transaction, User };
+use super::models::{ Account, AddAccount, AddTransaction, AddUser, AddToken, Token, Transaction, User };
 
 use argon2::{
   password_hash::{
@@ -129,7 +130,7 @@ pub fn delete_transaction(id_i: i32) {
 
 /* CRUD for Accounts */
 pub fn create_account(
-  user_id: i32,
+  user_id: &str,
   account_type: &str, 
   account_name: &str, 
   balance: i32,
@@ -145,7 +146,7 @@ pub fn create_account(
     .expect("Error saving new account")
 }
 
-pub fn read_account(user_id_i: i32) -> Vec<Account> {
+pub fn read_account(user_id_i: &str) -> Vec<Account> {
   use super::schema::account::dsl::*;
 
   account
@@ -198,7 +199,7 @@ pub fn create_user(
   let pwhash = PasswordHash::new(&password_hash).unwrap();
   assert!(Argon2::default().verify_password(password.as_bytes(), &pwhash).is_ok());
 
-  let new_user = AddUser { uname, pwhash: &pwhash.to_string(), pwsalt: &pwsalt.to_string(), email: None, fname: None, lname: None, dob: None };
+  let new_user = AddUser { id: &Uuid::new_v4().to_string(), uname, pwhash: &pwhash.to_string(), pwsalt: &pwsalt.to_string(), email: None, fname: None, lname: None, dob: None };
   Some(diesel::insert_into(user::table)
     .values(&new_user)
     .returning(User::as_returning())
@@ -224,7 +225,7 @@ pub fn read_user_by_email(email_i: &str) -> Option<User> {
     .ok()
 }
 
-pub fn read_user_by_id(id_i: i32) -> Option<User> {
+pub fn read_user_by_id(id_i: &str) -> Option<User> {
   use super::schema::user::dsl::*;
 
   user
@@ -233,7 +234,7 @@ pub fn read_user_by_id(id_i: i32) -> Option<User> {
     .ok()
 }
 
-pub fn update_user_password(id_i: i32, password_i: &str) -> User {
+pub fn update_user_password(id_i: &str, password_i: &str) -> User {
   use super::schema::user::dsl::*;
 
   let pwsalt_i = SaltString::generate(&mut OsRng);
@@ -248,17 +249,28 @@ pub fn update_user_password(id_i: i32, password_i: &str) -> User {
     .expect("Error updating user password")
 }
 
-pub fn update_user_data(id_i: i32, email_i: Option<&str>, fname_i: Option<&str>, lname_i: Option<&str>, dob_i: Option<&str>) -> User {
+pub fn update_user_data(id_i: &str, email_i: Option<&str>, fname_i: Option<&str>, lname_i: Option<&str>, dob_i: Option<&str>) -> User {
   use super::schema::user::dsl::*;
 
-  diesel::update(user.find(id_i))
-    .set((email.eq(email_i), fname.eq(fname_i), lname.eq(lname_i), dob.eq(dob_i)))
+  let user_o = diesel::update(user.find(id_i))
+    .set((fname.eq(fname_i), lname.eq(lname_i), dob.eq(dob_i)))
     .returning(User::as_returning())
     .get_result(&mut establish_connection())
-    .expect("Error updating user data")
+    .expect("Error updating user data");
+
+  match read_user_by_email(email_i.unwrap()) {
+    Some(_) => return user_o,
+    None => (),
+  };
+  diesel::update(user.find(id_i))
+    .set(email.eq(email_i))
+    .returning(User::as_returning())
+    .get_result(&mut establish_connection())
+    .expect("Error updating user email")
+    
 }
 
-pub fn delete_user(id_i: i32) {
+pub fn delete_user(id_i: &str) {
   use super::schema::user::dsl::*;
 
   diesel::delete(user.find(id_i))
@@ -288,4 +300,21 @@ pub fn verify_user(name_i: &str, password_i: &str) -> Option<User> {
     .ok();
 
   user_o
+}
+
+
+
+pub fn deposit_token(
+  user_id: &str, 
+  token_id: &str,
+  item_id: &str,
+) -> Option<Token> {
+  use super::schema::token;
+
+  let new_token = AddToken { user_id, token_id, item_id };
+  Some(diesel::insert_into(token::table)
+    .values(&new_token)
+    .returning(Token::as_returning())
+    .get_result(&mut establish_connection())
+    .expect("Error saving new token"))
 }
