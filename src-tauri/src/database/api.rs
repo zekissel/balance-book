@@ -129,7 +129,7 @@ pub fn delete_transaction(id_i: i32) {
 
 /* CRUD for Accounts */
 pub fn create_account(
-  user_id: i32,
+  user_id: &str,
   account_type: &str, 
   account_name: &str, 
   balance: i32,
@@ -145,7 +145,7 @@ pub fn create_account(
     .expect("Error saving new account")
 }
 
-pub fn read_account(user_id_i: i32) -> Vec<Account> {
+pub fn read_account(user_id_i: &str) -> Vec<Account> {
   use super::schema::account::dsl::*;
 
   account
@@ -198,7 +198,7 @@ pub fn create_user(
   let pwhash = PasswordHash::new(&password_hash).unwrap();
   assert!(Argon2::default().verify_password(password.as_bytes(), &pwhash).is_ok());
 
-  let new_user = AddUser { uname, pwhash: &pwhash.to_string(), pwsalt: &pwsalt.to_string(), email: None, fname: None, lname: None, dob: None };
+  let new_user = AddUser { id: &uuid::Uuid::new_v4().to_string(), uname, pwhash: &pwhash.to_string(), pwsalt: &pwsalt.to_string(), email: None, fname: None, lname: None, dob: None };
   Some(diesel::insert_into(user::table)
     .values(&new_user)
     .returning(User::as_returning())
@@ -224,7 +224,7 @@ pub fn read_user_by_email(email_i: &str) -> Option<User> {
     .ok()
 }
 
-pub fn read_user_by_id(id_i: i32) -> Option<User> {
+pub fn read_user_by_id(id_i: &str) -> Option<User> {
   use super::schema::user::dsl::*;
 
   user
@@ -233,7 +233,7 @@ pub fn read_user_by_id(id_i: i32) -> Option<User> {
     .ok()
 }
 
-pub fn update_user_password(id_i: i32, password_i: &str) -> User {
+pub fn update_user_password(id_i: &str, password_i: &str) -> User {
   use super::schema::user::dsl::*;
 
   let pwsalt_i = SaltString::generate(&mut OsRng);
@@ -248,7 +248,7 @@ pub fn update_user_password(id_i: i32, password_i: &str) -> User {
     .expect("Error updating user password")
 }
 
-pub fn update_user_data(id_i: i32, email_i: Option<&str>, fname_i: Option<&str>, lname_i: Option<&str>, dob_i: Option<&str>) -> User {
+pub fn update_user_data(id_i: &str, email_i: Option<&str>, fname_i: Option<&str>, lname_i: Option<&str>, dob_i: Option<&str>) -> User {
   use super::schema::user::dsl::*;
 
   diesel::update(user.find(id_i))
@@ -258,7 +258,7 @@ pub fn update_user_data(id_i: i32, email_i: Option<&str>, fname_i: Option<&str>,
     .expect("Error updating user data")
 }
 
-pub fn delete_user(id_i: i32) {
+pub fn delete_user(id_i: &str) {
   use super::schema::user::dsl::*;
 
   diesel::delete(user.find(id_i))

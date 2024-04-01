@@ -38,7 +38,7 @@ export async function getTransactions(account_ids: number[]): Promise<Transactio
 }
 
 
-export async function getAccounts(user_id: number): Promise<Account[]> {
+export async function getAccounts(user_id: string): Promise<Account[]> {
   return await invoke("get_accounts", { 'userId': user_id })
     .then(data => {
       const acc = data as Account[];

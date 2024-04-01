@@ -1,5 +1,5 @@
 CREATE TABLE user (
-  id      INTEGER PRIMARY KEY AUTOINCREMENT,
+  id      TEXT    PRIMARY KEY,
   uname   TEXT    NOT NULL    UNIQUE,
   pwhash  TEXT    NOT NULL,
   pwsalt  TEXT    NOT NULL,

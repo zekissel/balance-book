@@ -1,6 +1,6 @@
 
 export interface User {
-  id: number;
+  id: string;
   uname: string;
   email: string | null;
   fname: string | null;
@@ -88,7 +88,7 @@ export const Month = [
 
 export interface Account {
   id: number;
-  user_id: number;
+  user_id: string;
   account_type: AccountType;
   account_name: string;
   balance: number;

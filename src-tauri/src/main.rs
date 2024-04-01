@@ -10,12 +10,12 @@ pub mod database;
 
 
 #[tauri::command]
-fn new_account(user_id: i32, account_type: &str, account_id: &str, balance: i32, date: &str) -> Account {
+fn new_account(user_id: &str, account_type: &str, account_id: &str, balance: i32, date: &str) -> Account {
     database::api::create_account(user_id, account_type, account_id, balance, date)
 }
 
 #[tauri::command]
-fn get_accounts(user_id: i32) -> Vec<Account> {
+fn get_accounts(user_id: &str) -> Vec<Account> {
     database::api::read_account(user_id)
 }
 
@@ -60,7 +60,7 @@ fn login(name: &str, password: &str) -> Option<User> {
 }
 
 #[tauri::command]
-fn fix_user(id: i32, password: &str, new_pass: Option<&str>, email: Option<&str>, fname: Option<&str>, lname: Option<&str>, dob: Option<&str>) -> Option<User> {
+fn fix_user(id: &str, password: &str, new_pass: Option<&str>, email: Option<&str>, fname: Option<&str>, lname: Option<&str>, dob: Option<&str>) -> Option<User> {
     match read_user_by_id(id) {
         None => return None,
         Some(user) => match database::api::verify_user(&user.uname, password) {

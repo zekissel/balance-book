@@ -18,6 +18,7 @@ diesel = { version = "*", default-features = false, features = ["sqlite", "retur
 diesel_migrations = "2.1.0"
 homedir = "0.2.1"
 argon2 = "0.5.3"
+uuid = "1.8.0"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

@@ -3,7 +3,6 @@ import { User } from "../../typedef";
 import { addDays } from "../../typeassist";
 import '../../styles/Profile.css';
 import { invoke } from "@tauri-apps/api";
-import ProfileLink from "./ProfileLink";
 
 interface ProfileProps { user: User, setUser: React.Dispatch<React.SetStateAction<User | null>>, logout: () => void }
 export default function Profile ({ user, setUser, logout }: ProfileProps) {
@@ -25,7 +24,7 @@ export default function Profile ({ user, setUser, logout }: ProfileProps) {
     const data = { 
       'id': user.id, 
       'password': oldPass,
-      'newPass': password,
+      'newPass': password.length > 0 ? password : undefined,
       'email': email,
       'fname': fname,
       'lname': lname,
@@ -57,7 +56,9 @@ export default function Profile ({ user, setUser, logout }: ProfileProps) {
       <div className='page-main'>
 
         { stateFinancial ?
-          <ProfileLink />
+          <div className='profile-personal'>
+            Financial Profile
+          </div>
           :
           <div className='profile-personal'>
             <menu>

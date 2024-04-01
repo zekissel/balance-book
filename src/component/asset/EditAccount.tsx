@@ -11,7 +11,7 @@ export function EditAccount ({ log, user, type, toggle, cancel, updateAccounts }
 
 
   async function addAccount() {
-    if (name === '' || user.id === 0) return;
+    if (name === '' || user.id.length === 0) return;
 
     const data = {
       'id': log ? log.id : undefined,
