@@ -16,7 +16,7 @@ export default function Auth ({ verify, logout }: AuthProps) {
     return () => clearTimeout(timer);
    }, [dataState]);
 
-  const [name, setName] = useState(localStorage.getItem('user') ?? '');
+  const [name, setName] = useState(localStorage.getItem('username') ?? '');
   const [pass, setPass] = useState(localStorage.getItem('pass') ?? '');
   const [confirmPass, setConfirmPass] = useState('');
 
@@ -27,9 +27,7 @@ export default function Auth ({ verify, logout }: AuthProps) {
       .then(data => {
         if (data === null) {logout(); setError('Invalid credentials'); setDataState(DataState.Error);}
         else {
-          const user = data as User;
-          user.dob = user.dob ? new Date(user.dob) : null;
-          verify(user);
+          confirmUser(data as User);
           setDataState(DataState.Success);
         }
       })
@@ -44,15 +42,19 @@ export default function Auth ({ verify, logout }: AuthProps) {
         .then(data => {
           if (data === null) {logout(); setError('Username already in use'); setDataState(DataState.Error);}
           else {
-            const user = data as User;
-            user.dob = user.dob ? new Date(user.dob) : null;
-            verify(user);
+            confirmUser(data as User);
             setDataState(DataState.Success);
           }
         })
         .catch(() => setDataState(DataState.Error));
     }
     else setError('Passwords do not match');
+  }
+
+  const confirmUser = (data: User) => {
+    const user = data as User;
+    user.dob = user.dob ? new Date(user.dob) : null;
+    verify(user);
   }
 
   const handleRegister = () => {

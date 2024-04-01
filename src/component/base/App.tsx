@@ -27,12 +27,15 @@ function App() {
   useEffect(() => { refreshAccounts() }, [signalRefreshAcct, user]);
   useEffect(() => { refreshTransactions() }, [signalRefreshTrans, accounts])
   
-
-
   
   const [UIState, setUIState] = useState(State.Auth);
-  const verify = (user: User) => { setUser(user); setUIState(State.Home); localStorage.setItem('user', user.uname); }
-  const logout = () => { setUser(null); setUIState(State.Auth); }
+  const logout = () => { localStorage.removeItem('username'); setUser(null);  setUIState(State.Auth); }
+  const verify = (user: User) => { 
+    setUser(user); 
+    setUIState(State.Home); 
+    localStorage.setItem('username', user.uname); 
+  }
+
   return (
     <div className='app'>
       <Nav state={UIState} setState={setUIState}/>

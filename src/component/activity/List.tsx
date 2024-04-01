@@ -61,33 +61,31 @@ export default function List ({ logs, accounts, updateLog, showFilter }: ListPro
     <div className={showFilter ? 'main-down-shift page-main' : 'page-main'}>
 
       {
-        allTransactions.map((transactionCollection, ind) => (
-
-          <>{ transactionCollection.length > 0 && 
-          <ol className='list-main' key={ind}>
+        allTransactions.map((transactionCollection, ind) => 
+          
+          <ol className={'list-main ' + (transactionCollection.length === 0 ? 'list-hide' : null)} key={ind}>
             <h2 onClick={() => handleIndexToggle(ind)}>{ transactionTitles[ind] }<img src={ showIndices.includes(ind) ? '/double-down.svg' : '/double-left.svg'}/></h2>
-            { showIndices.includes(ind) && transactionCollection.map((transaction, index) => (
-              <li key={`${ind}:${index}`} className={ (transaction.amount < 0 ? 'list-item-expense' : 'list-item-income') + ' list-item'} onClick={() => updateSelected(transaction)}>
+            { showIndices.includes(ind) && transactionCollection.map((transaction) => 
+              <li key={transaction.id} className={ (transaction.amount < 0 ? 'list-item-expense' : 'list-item-income') + ' list-item'} onClick={() => updateSelected(transaction)}>
                 <span className='list-item-date'>{transaction.date.toDateString().split(' ').slice(0, 3).join(' ')}</span>
                 <span className='list-item-source'> { transaction.company }</span>
                 <span className='list-item-amount'> { transaction.amount < 0 ? `-$`: `+$`}{Math.abs(transaction.amount / 100).toFixed(2)} </span>
                 <span className='list-item-category' style={{ backgroundColor: getCategoryColor(transaction.category) }}>{transaction.category}</span>
-                <span className='list-item-desc'> - {transaction.desc}</span>
+                <span className='list-item-desc'> - { transaction.desc }</span>
                 <span className='list-item-account'>{ `${accounts.find(a => a.id === transaction.account_id)?.account_type.slice(0,5)}:${accounts.find(a => a.id === transaction.account_id)?.account_name}` }</span>
               </li>
-            ))}
+            )}
           </ol>
-          }</>
 
-        ))
+        )
       }
 
-      { logs.length === 0 && <ol className='list-main'>No transactions found</ol> }
+      { logs.length === 0 && <ol key={'empty'} className='list-main'>No transactions found</ol> }
 
       { selectedTransactions.length > 0 && 
-        selectedTransactions.map((trans, index) => (
+        selectedTransactions.map((trans) => (
           <ViewLog 
-            key={index} 
+            key={`${trans.id}:viewlog`} 
             transaction={trans} 
             toggle={() => setSelectedTransactions(selectedTransactions.filter(t => JSON.stringify(t) !== JSON.stringify(trans)))}
             updateLog={updateLog}

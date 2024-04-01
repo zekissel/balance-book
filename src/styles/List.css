@@ -28,6 +28,7 @@ ol.list-main > h2 {
   justify-content: space-between;
 }
 ol.list-main > h2:hover { color: #444; }
+ol.list-hide { display: none; }
 
 li.list-item {
   width: 100%;
