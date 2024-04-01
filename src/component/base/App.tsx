@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { State, Transaction, Account, User } from "../../typedef";
 import { getTransactions, getAccounts } from "../../typeassist";
-import Nav from "./Nav";
+import Nav from "../template/Nav";
 import Home from "./Home";
 import Activity from "./Activity";
 import Stats from "./Stats";

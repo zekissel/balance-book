@@ -1,8 +1,8 @@
 import '../../styles/Page.css';
 import '../../styles/Menu.css';
-import Logo from './Logo';
+import Logo from '../home/Logo';
 import { User, Account, Transaction } from '../../typedef';
-import Preview from './Preview';
+import Preview from '../home/Preview';
 
 interface HomeProps { user: User, accounts: Account[], transactions: Transaction[] }
 export default function Home ({ user, accounts, transactions }: HomeProps) {
