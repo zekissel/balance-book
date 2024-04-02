@@ -34,3 +34,11 @@ diesel::table! {
     dob -> Nullable<Text>,
   }
 }
+
+diesel::table! {
+  token (id) {
+    id -> Text,
+    user_id -> Text,
+    item_id -> Text,
+  }
+}

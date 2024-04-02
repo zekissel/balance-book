@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 import { User, DataState } from "../../typedef";
+import { useNavigate } from "react-router-dom";
 
 interface AuthProps { verify: (user: User) => void, logout: () => void}
 export default function Auth ({ verify, logout }: AuthProps) {
@@ -15,10 +16,19 @@ export default function Auth ({ verify, logout }: AuthProps) {
     const timer = setTimeout(() => setDataState(DataState.Success), 5000);
     return () => clearTimeout(timer);
    }, [dataState]);
+   useEffect(() => {
+    localStorage.removeItem('userid');
+    localStorage.removeItem('username');
+    localStorage.removeItem('useremail');
+    localStorage.removeItem('userf');
+    localStorage.removeItem('userl');
+    localStorage.removeItem('dob');
+   }, []);
 
   const [name, setName] = useState(localStorage.getItem('username') ?? '');
   const [pass, setPass] = useState(localStorage.getItem('pass') ?? '');
   const [confirmPass, setConfirmPass] = useState('');
+  const navigate = useNavigate();
 
   const enterLogin = (e: React.KeyboardEvent<HTMLInputElement>) => { if (e.key === 'Enter') login(); }
   const login = async () => {
@@ -27,8 +37,8 @@ export default function Auth ({ verify, logout }: AuthProps) {
       .then(data => {
         if (data === null) {logout(); setError('Invalid credentials'); setDataState(DataState.Error);}
         else {
-          confirmUser(data as User);
           setDataState(DataState.Success);
+          confirmUser(data as User);
         }
       })
       .catch(() => setDataState(DataState.Error));
@@ -42,8 +52,8 @@ export default function Auth ({ verify, logout }: AuthProps) {
         .then(data => {
           if (data === null) {logout(); setError('Username already in use'); setDataState(DataState.Error);}
           else {
-            confirmUser(data as User);
             setDataState(DataState.Success);
+            confirmUser(data as User);
           }
         })
         .catch(() => setDataState(DataState.Error));
@@ -55,6 +65,7 @@ export default function Auth ({ verify, logout }: AuthProps) {
     const user = data as User;
     user.dob = user.dob ? new Date(user.dob) : null;
     verify(user);
+    navigate("/home");
   }
 
   const handleRegister = () => {

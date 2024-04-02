@@ -1,15 +1,19 @@
 import { useState } from "react";
-import { State } from "../../typedef";
 import "../../styles/Nav.css";
+import { Outlet } from "react-router";
+import { Link } from "react-router-dom";
 
 
-export interface NavProps { state: State, setState: React.Dispatch<React.SetStateAction<State>> }
-export default function Nav ({ state, setState }: NavProps) {
+//export interface NavProps { state: State, setState: React.Dispatch<React.SetStateAction<State>> }
+export default function Nav () {
 
   const [fullNav, setFullNav] = useState(true);
   const toggleNav = () => setFullNav(!fullNav);
 
+  const curPageStyle = (path: string) => new URL(window.location.href).pathname === path ? 'nav-current' : undefined;
+
   return (
+    <>
     <nav>
 
       <ul className='nav-top'>
@@ -23,32 +27,51 @@ export default function Nav ({ state, setState }: NavProps) {
       </ul>
       
       <ul className='nav-core'>
-        <li id={state === State.Home ? 'nav-current' : undefined} onClick={() => setState(State.Home)}>
-          { fullNav ? 'Home' : <img draggable={false} src='/home.svg' alt='Home' /> }
-        </li>
-        <li id={state === State.Activity ? 'nav-current' : undefined} onClick={() => setState(State.Activity)}>
-          { fullNav ? 'Activity' : <img draggable={false} src='/book.svg' alt='Activity' />}
-        </li>
-        <li id={state === State.Stats ? 'nav-current' : undefined} onClick={() => setState(State.Stats)}>
-        { fullNav ? 'Statistics' : <img draggable={false} src='/stats.svg' alt='Statistics' />}
-        </li>
-        <li id={state === State.Assets ? 'nav-current' : undefined} onClick={() => setState(State.Assets)}>
-        { fullNav ? 'Accounts' : <img draggable={false} src='/wallet.svg' alt='Accounts' />}
-        </li>
-        <li id={state === State.Market ? 'nav-current' : undefined} onClick={() => setState(State.Market)}>
-        { fullNav ? 'Market' : <img draggable={false} src='/candles.svg' alt='Market' />}
-        </li>
+        <Link to='/home' >
+          <li id={curPageStyle('/home')}>
+            { fullNav ? 'Home' : <img draggable={false} src='/home.svg' alt='Home' /> }
+          </li>
+        </Link>
+        <Link to='/activity' >
+          <li id={curPageStyle('/activity')}>
+            { fullNav ? 'Activity' : <img draggable={false} src='/book.svg' alt='Activity' />}
+          </li>
+        </Link>
+        <Link to='/stats' >
+          <li id={curPageStyle('/stats')}>
+            { fullNav ? 'Statistics' : <img draggable={false} src='/stats.svg' alt='Statistics' />}
+          </li>
+        </Link>
+        <Link to='/assets' > 
+          <li id={curPageStyle('/assets')}>
+            { fullNav ? 'Accounts' : <img draggable={false} src='/wallet.svg' alt='Accounts' />}
+          </li>
+        </Link>
+        <Link to='/market' >  
+          <li id={curPageStyle('/market')}>
+            { fullNav ? 'Market' : <img draggable={false} src='/candles.svg' alt='Market' />}
+          </li>
+        </Link>
       </ul>
 
       <ul className={ fullNav ? 'nav-extra' : 'nav-extra nav-inverse'}>
-        <li id={state === State.Profile ? 'nav-current' : undefined} onClick={() => setState(State.Profile)}>
-        { fullNav ? 'Profile' : <img draggable={false} src='/user.svg' alt='Profile' />}
-        </li>
-        <li id={state === State.Settings ? 'nav-current' : undefined} onClick={() => setState(State.Settings)}>
-        { fullNav ? 'Settings' : <img draggable={false} src='/cog.svg' alt='Settings' />}
-        </li>
+        <Link to='/profile' >
+          <li id={curPageStyle('/profile')}>
+            { fullNav ? 'Profile' : <img draggable={false} src='/user.svg' alt='Profile' />}
+          </li>
+        </Link>
+        <Link to='/settings' >
+          <li id={curPageStyle('/settings')}>
+            { fullNav ? 'Settings' : <img draggable={false} src='/cog.svg' alt='Settings' />}
+          </li>
+        </Link>
       </ul>
       
     </nav>
+
+    <main>
+      <Outlet />
+    </main>
+    </>
   )
 }

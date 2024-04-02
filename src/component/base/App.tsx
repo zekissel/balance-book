@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { State, Transaction, Account, User } from "../../typedef";
+import { Transaction, Account, User } from "../../typedef";
 import { getTransactions, getAccounts } from "../../typeassist";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Nav from "../template/Nav";
 import Home from "./Home";
 import Activity from "./Activity";
@@ -12,7 +13,14 @@ import Auth from "./Auth";
 
 function App() {
 
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>({
+    id: localStorage.getItem('userid') ?? '',
+    uname: localStorage.getItem('username') ?? '',
+    email: localStorage.getItem('useremail') ?? '',
+    fname: localStorage.getItem('userf') ?? '',
+    lname: localStorage.getItem('userl') ?? '',
+    dob: localStorage.getItem('dob') ? new Date(localStorage.getItem('dob') as string) : null,
+  });
 
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -24,56 +32,51 @@ function App() {
   const signalRefreshTrans = () => setSignalTrans(!signalTrans);
   const refreshAccounts = async () => { if (user) setAccounts(await getAccounts(user.id)) };
   const refreshTransactions = async () => { setTransactions(await getTransactions(accounts.map(a => a.id))) };
-  useEffect(() => { setTimeout(() => refreshAccounts(), 500) }, [signalRefreshAcct, user]);
-  useEffect(() => { setTimeout(() => refreshTransactions(), 500) }, [signalRefreshTrans, accounts])
+  useEffect(() => { setTimeout(() => { refreshAccounts() }, 500) }, [signalRefreshAcct, user]);
+  useEffect(() => { setTimeout(() => { refreshTransactions() }, 500) }, [signalRefreshTrans, accounts])
+  useEffect(() => { localStorage.removeItem('link_token'); localStorage.removeItem('auth_state'); }, [user]);
   
+
   
-  const [UIState, setUIState] = useState(State.Auth);
-  const logout = () => { localStorage.removeItem('username'); setUser(null);  setUIState(State.Auth); }
   const verify = (user: User) => { 
-    setUser(user); 
-    setUIState(State.Home); 
+    setUser(user);
+    localStorage.setItem('userid', user.id);
     localStorage.setItem('username', user.uname); 
+    if (user.email) localStorage.setItem('useremail', user.email);
+    if (user.fname) localStorage.setItem('userf', user.fname);
+    if (user.lname) localStorage.setItem('userl', user.lname);
+    if (user.dob) localStorage.setItem('dob', user.dob.toDateString());
+    
+  }
+  const logout = () => { 
+    setUser(null); 
+    localStorage.removeItem('userid');
+    localStorage.removeItem('username');
+    localStorage.removeItem('useremail');
+    localStorage.removeItem('userf');
+    localStorage.removeItem('userl');
+    localStorage.removeItem('dob');
   }
 
   return (
     <div className='app'>
-      <Nav state={UIState} setState={setUIState} />
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<Auth verify={verify} logout={logout} />} />
 
-      { UIState === State.Auth && <Auth verify={verify} logout={logout} /> }
+          <Route element={<Nav />} >
 
-      { user !== null && 
-        <main>
-          { UIState === State.Home &&
-            <Home user={user} accounts={accounts} transactions={transactions} />
-          }
-
-          { UIState === State.Activity &&
-            <Activity transactions={transactions} accounts={accounts} signalRefresh={signalRefreshTrans} />
-          }
-
-          { UIState === State.Stats &&
-            <Stats transactions={transactions} accounts={accounts} />
-          }
-
-          { UIState === State.Assets &&
-            <Assets user={user} accounts={accounts} transactions={transactions} signalRefresh={signalRefreshAcct} />
-          }
-
-          { UIState === State.Market &&
-            <>work in progress</>
-          }
-
-          { UIState === State.Profile &&
-            <Profile user={user} setUser={setUser} logout={logout} />
-          }
-
-          { UIState === State.Settings &&
-            <>work in progress</>
-          }
-
-        </main>
-      }
+            <Route path='/home' element={<Home user={user!} accounts={accounts} transactions={transactions} />} />
+            <Route path='/activity' element={<Activity transactions={transactions} accounts={accounts} signalRefresh={signalRefreshTrans} />} />
+            <Route path='/stats' element={<Stats transactions={transactions} accounts={accounts} />} />
+            <Route path='/assets' element={<Assets user={user!} accounts={accounts} transactions={transactions} signalRefresh={signalRefreshAcct} />} />
+            <Route path='/market' element={<>work in progress</>} />
+            <Route path='/profile' element={<Profile user={user!} setUser={setUser} logout={logout} />} />
+            <Route path='/settings' element={<>work in progress</>} />
+            
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

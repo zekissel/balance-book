@@ -5,7 +5,7 @@ use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use diesel_migrations::{ embed_migrations, EmbeddedMigrations, MigrationHarness };
 
-use super::models::{ Account, AddAccount, AddTransaction, AddUser, Transaction, User };
+use super::models::{ Account, AddAccount, AddTransaction, AddUser, Transaction, User, Token, AddToken };
 
 use argon2::{
   password_hash::{
@@ -288,4 +288,20 @@ pub async fn verify_user(name_i: &str, password_i: &str) -> Option<User> {
     .ok();
 
   user_o
+}
+
+
+pub async fn deposit_token(
+  user_id: &str, 
+  token_id: &str,
+  item_id: &str,
+) -> Option<Token> {
+  use super::schema::token;
+
+  let new_token = AddToken { id: token_id, user_id, item_id };
+  Some(diesel::insert_into(token::table)
+    .values(&new_token)
+    .returning(Token::as_returning())
+    .get_result(&mut establish_connection())
+    .expect("Error saving new token"))
 }

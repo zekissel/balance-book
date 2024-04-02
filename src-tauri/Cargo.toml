@@ -19,6 +19,10 @@ diesel_migrations = "2.1.0"
 homedir = "0.2.1"
 argon2 = "0.5.3"
 uuid = "1.8.0"
+plaid = "8.0.0"
+dotenv = "0.15.0"
+open = "5.1.2"
+tauri-plugin-oauth = "0.0.0-alpha.0"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
