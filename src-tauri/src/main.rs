@@ -1,7 +1,6 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use database::api::read_user_by_id;
 use database::models::Account;
 use database::models::Transaction;
 use database::models::User;
@@ -61,19 +60,19 @@ fn login(name: &str, password: &str) -> Option<User> {
 
 #[tauri::command]
 fn fix_user(id: &str, password: &str, new_pass: Option<&str>, email: Option<&str>, fname: Option<&str>, lname: Option<&str>, dob: Option<&str>) -> Option<User> {
-    match read_user_by_id(id) {
-        None => return None,
-        Some(user) => match database::api::verify_user(&user.uname, password) {
-            None => return None,
-            Some(user) => {
-                match new_pass {
-                    Some(new_pass) => database::api::update_user_password(id, new_pass),
-                    None => user,
-                };
-                Some(database::api::update_user_data(id, email, fname, lname, dob))
-            },
-        },
-    }
+  match database::api::read_user_by_id(id) {
+    None => return None,
+    Some(user) => match database::api::verify_user(&user.uname, password) {
+      None => return None,
+      Some(user) => {
+        match new_pass {
+          Some(new_pass) => database::api::update_user_password(id, new_pass),
+          None => user,
+        };
+        Some(database::api::update_user_data(id, email, fname, lname, dob))
+      },
+    },
+  }
 }
 
 fn main() {
