@@ -9,67 +9,67 @@ pub mod database;
 
 
 #[tauri::command]
-fn new_account(user_id: &str, account_type: &str, account_id: &str, balance: i32, date: &str) -> Account {
-    database::api::create_account(user_id, account_type, account_id, balance, date)
+async fn new_account(user_id: &str, account_type: &str, account_id: &str, balance: i32, date: &str) -> Result<Account, ()> {
+  Ok(database::api::create_account(user_id, account_type, account_id, balance, date).await)
 }
 
 #[tauri::command]
-fn get_accounts(user_id: &str) -> Vec<Account> {
-    database::api::read_account(user_id)
+async fn get_accounts(user_id: &str) -> Result<Vec<Account>, ()> {
+  Ok(database::api::read_account(user_id).await)
 }
 
 #[tauri::command]
-fn fix_account(id: i32, account_type: &str, account_id: &str, balance: i32, date: &str) -> Account {
-    database::api::update_account(id, account_type, account_id, balance, date)
+async fn fix_account(id: &str, account_type: &str, account_id: &str, balance: i32, date: &str) -> Result<Account, ()> {
+  Ok(database::api::update_account(id, account_type, account_id, balance, date).await)
 }
 
 #[tauri::command]
-fn remove_account(id: i32) {
-    database::api::delete_account(id);
+fn remove_account(id: &str) {
+  database::api::delete_account(id);
 }
 
 #[tauri::command]
-fn new_transaction(company: &str, amount: i32, category: &str, date: &str, desc: &str, account_id: i32, secondary_id: Option<i32>) -> Transaction {
-    database::api::create_transaction(company, amount, category, date, desc, account_id, secondary_id)
+async fn new_transaction(company: &str, amount: i32, category: &str, date: &str, desc: &str, account_id: &str, secondary_id: Option<&str>) -> Result<Transaction, ()> {
+  Ok(database::api::create_transaction(company, amount, category, date, desc, account_id, secondary_id).await)
 }
 
 #[tauri::command]
-fn get_transactions(account_id: Vec<i32>) -> Vec<Transaction> {
-    database::api::read_transaction(account_id)
+async fn get_transactions(account_id: Vec<&str>) -> Result<Vec<Transaction>, ()> {
+  Ok(database::api::read_transaction(account_id).await)
 }
 
 #[tauri::command]
-fn fix_transaction(id: i32, company: &str, amount: i32, category: &str, date: &str, desc: &str, account_id: i32, secondary_id: Option<i32>) -> Transaction {
-    database::api::update_transaction(id, company, amount, category, date, desc, account_id, secondary_id)
+async fn fix_transaction(id: &str, company: &str, amount: i32, category: &str, date: &str, desc: &str, account_id: &str, secondary_id: Option<&str>) -> Result<Transaction, ()> {
+  Ok(database::api::update_transaction(id, company, amount, category, date, desc, account_id, secondary_id).await)
 }
 
 #[tauri::command]
-fn remove_transaction(id: i32) {
+fn remove_transaction(id: &str) {
     database::api::delete_transaction(id);
 }
 
 #[tauri::command]
-fn register(name: &str, password: &str) -> Option<User> {
-    database::api::create_user(name, password)
+async fn register(name: &str, password: &str) -> Result<Option<User>, ()> {
+  Ok(database::api::create_user(name, password).await)
 }
 
 #[tauri::command]
-fn login(name: &str, password: &str) -> Option<User> {
-    database::api::verify_user(name, password)
+async fn login(name: &str, password: &str) -> Result<Option<User>, ()> {
+  Ok(database::api::verify_user(name, password).await)
 }
 
 #[tauri::command]
-fn fix_user(id: &str, password: &str, new_pass: Option<&str>, email: Option<&str>, fname: Option<&str>, lname: Option<&str>, dob: Option<&str>) -> Option<User> {
-  match database::api::read_user_by_id(id) {
-    None => return None,
-    Some(user) => match database::api::verify_user(&user.uname, password) {
-      None => return None,
+async fn fix_user(id: &str, password: &str, new_pass: Option<&str>, email: Option<&str>, fname: Option<&str>, lname: Option<&str>, dob: Option<&str>) -> Result<Option<User>, ()> {
+  match database::api::read_user_by_id(id).await {
+    None => return Ok(None),
+    Some(user) => match database::api::verify_user(&user.uname, password).await {
+      None => return Ok(None),
       Some(user) => {
         match new_pass {
-          Some(new_pass) => database::api::update_user_password(id, new_pass),
+          Some(new_pass) => database::api::update_user_password(id, new_pass).await,
           None => user,
         };
-        Some(database::api::update_user_data(id, email, fname, lname, dob))
+        Ok(database::api::update_user_data(id, email, fname, lname, dob).await)
       },
     },
   }

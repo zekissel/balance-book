@@ -5,7 +5,7 @@ import "../../styles/Page.css";
 import "../../styles/Menu.css";
 import { Transaction, Filter, filterTransactions, anyFiltersActive, Account } from "../../typedef";
 import EditLog from "../transaction/CreateLog";
-import FilterGUI from "../template/FilterGUI";
+import FilterGUI from "../template/FilterBar";
 
 
 interface ActivityProps { transactions: Transaction[], accounts: Account[], signalRefresh: () => void }
@@ -22,7 +22,7 @@ export default function Activity ({ transactions, accounts, signalRefresh }: Act
     source: sessionStorage.getItem('filter.source')?.split(' ') ?? [''],
     lowAmount: sessionStorage.getItem('filter.low') ?? '0',
     highAmount: sessionStorage.getItem('filter.high') ?? '0',
-    accounts: sessionStorage.getItem('filter.accounts')?.split(' ').map(a => Number(a)) ?? [],
+    accounts: sessionStorage.getItem('filter.accounts')?.split(' ') ?? [],
   });
 
   const filteredTransactions = useMemo(() => {
@@ -77,7 +77,7 @@ export default function Activity ({ transactions, accounts, signalRefresh }: Act
       { listView ?
         <List logs={filteredTransactions} accounts={accounts} updateLog={signalRefresh} showFilter={filterGUI} />
         :
-        <Calendar logs={filteredTransactions} updateLog={signalRefresh} showFilter={filterGUI} /> 
+        <Calendar logs={filteredTransactions} accounts={accounts} updateLog={signalRefresh} showFilter={filterGUI} /> 
       }
       
     </div>

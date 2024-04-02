@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Transaction, Filter, filterTransactions, anyFiltersActive, Account } from "../../typedef"
 import { addDays } from "../../typeassist";
 import StatsPage from "../stats/StatsPage"
-import FilterGUI from "../template/FilterGUI";
+import FilterGUI from "../template/FilterBar";
 import "../../styles/Stats.css"
 import '../../styles/Page.css'
 import "../../styles/Menu.css"
@@ -22,7 +22,7 @@ export default function Stats ({ transactions, accounts }: StatsProps) {
     source: sessionStorage.getItem('filter.source')?.split(' ') ?? [''],
     lowAmount: sessionStorage.getItem('filter.low') ?? '0',
     highAmount: sessionStorage.getItem('filter.high') ?? '0',
-    accounts: sessionStorage.getItem('filter.accounts')?.split(' ').map(a => Number(a)) ?? [],
+    accounts: sessionStorage.getItem('filter.accounts')?.split(' ') ?? [],
   });
 
   const [timeRange, setTimeRange] = useState(2);

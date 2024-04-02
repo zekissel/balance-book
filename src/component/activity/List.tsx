@@ -69,7 +69,7 @@ export default function List ({ logs, accounts, updateLog, showFilter }: ListPro
               <li key={transaction.id} className={ (transaction.amount < 0 ? 'list-item-expense' : 'list-item-income') + ' list-item'} onClick={() => updateSelected(transaction)}>
                 <span className='list-item-date'>{transaction.date.toDateString().split(' ').slice(0, 3).join(' ')}</span>
                 <span className='list-item-source'> { transaction.company }</span>
-                <span className='list-item-amount'> { transaction.amount < 0 ? `-$`: `+$`}{Math.abs(transaction.amount / 100).toFixed(2)} </span>
+                <span className='list-item-amount'> { transaction.amount < 0 ? `-$`: `+$`}{Math.abs(transaction.amount / 100).toFixed(2)}</span>
                 <span className='list-item-category' style={{ backgroundColor: getCategoryColor(transaction.category) }}>{transaction.category}</span>
                 <span className='list-item-desc'> - { transaction.desc }</span>
                 <span className='list-item-account'>{ `${accounts.find(a => a.id === transaction.account_id)?.account_type.slice(0,5)}:${accounts.find(a => a.id === transaction.account_id)?.account_name}` }</span>
@@ -87,6 +87,7 @@ export default function List ({ logs, accounts, updateLog, showFilter }: ListPro
           <ViewLog 
             key={`${trans.id}:viewlog`} 
             transaction={trans} 
+            accounts={accounts}
             toggle={() => setSelectedTransactions(selectedTransactions.filter(t => JSON.stringify(t) !== JSON.stringify(trans)))}
             updateLog={updateLog}
           />

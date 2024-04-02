@@ -24,8 +24,8 @@ function App() {
   const signalRefreshTrans = () => setSignalTrans(!signalTrans);
   const refreshAccounts = async () => { if (user) setAccounts(await getAccounts(user.id)) };
   const refreshTransactions = async () => { setTransactions(await getTransactions(accounts.map(a => a.id))) };
-  useEffect(() => { refreshAccounts() }, [signalRefreshAcct, user]);
-  useEffect(() => { refreshTransactions() }, [signalRefreshTrans, accounts])
+  useEffect(() => { setTimeout(() => refreshAccounts(), 500) }, [signalRefreshAcct, user]);
+  useEffect(() => { setTimeout(() => refreshTransactions(), 500) }, [signalRefreshTrans, accounts])
   
   
   const [UIState, setUIState] = useState(State.Auth);
@@ -38,7 +38,7 @@ function App() {
 
   return (
     <div className='app'>
-      <Nav state={UIState} setState={setUIState}/>
+      <Nav state={UIState} setState={setUIState} />
 
       { UIState === State.Auth && <Auth verify={verify} logout={logout} /> }
 

@@ -64,14 +64,14 @@ export enum IncomeCat {
 }
 
 export interface Transaction {
-  id: number;
+  id: string;
   company: string;
   amount: number;
   category: ExpenseCat | IncomeCat;
   date: Date;
   desc: string;
-  account_id: number;
-  secondary_id: number | null;
+  account_id: string;
+  secondary_id: string | null;
 }
 
 
@@ -87,7 +87,7 @@ export const Month = [
 
 
 export interface Account {
-  id: number;
+  id: string;
   user_id: string;
   account_type: AccountType;
   account_name: string;
@@ -111,7 +111,7 @@ export interface Filter {
   source: string[],
   lowAmount: string,
   highAmount: string,
-  accounts: number[],
+  accounts: string[],
 }
 
 export function anyFiltersActive (filter: Filter): boolean {

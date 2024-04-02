@@ -67,17 +67,17 @@ fn get_db_path() -> String {
 
 /* --------- Interacting with database --------- */
 /* CRUD for Transactions (negative amount for expense, positive for income) */
-pub fn create_transaction(
+pub async fn create_transaction(
   company: &str, 
   amount: i32,
   category: &str,
   date: &str,
   desc: &str,
-  account_id: i32,
-  secondary_id: Option<i32>
+  account_id: &str,
+  secondary_id: Option<&str>
 ) -> Transaction {
   use super::schema::transaction;
-  let new_transaction = AddTransaction { company, amount, category, date, desc, account_id, secondary_id };
+  let new_transaction = AddTransaction { id: &uuid::Uuid::new_v4().to_string(), company, amount, category, date, desc, account_id, secondary_id };
 
   diesel::insert_into(transaction::table)
     .values(&new_transaction)
@@ -86,7 +86,7 @@ pub fn create_transaction(
     .expect("Error saving new transaction")
 }
 
-pub fn read_transaction(account_id_i: Vec<i32>) -> Vec<Transaction> {
+pub async fn read_transaction(account_id_i: Vec<&str>) -> Vec<Transaction> {
   use super::schema::transaction::dsl::*;
 
   let mut ret = Vec::new();
@@ -100,15 +100,15 @@ pub fn read_transaction(account_id_i: Vec<i32>) -> Vec<Transaction> {
   ret
 }
 
-pub fn update_transaction(
-  id_i: i32,
+pub async fn update_transaction(
+  id_i: &str,
   company_i: &str, 
   amount_i: i32,
   category_i: &str,
   date_i: &str,
   desc_i: &str,
-  account_id_i: i32,
-  secondary_id_i: Option<i32>
+  account_id_i: &str,
+  secondary_id_i: Option<&str>
 ) -> Transaction {
   use super::schema::transaction::dsl::*;
 
@@ -119,7 +119,7 @@ pub fn update_transaction(
     .expect("Error updating transaction")
 }
 
-pub fn delete_transaction(id_i: i32) {
+pub fn delete_transaction(id_i: &str) {
   use super::schema::transaction::dsl::*;
 
   diesel::delete(transaction.find(id_i))
@@ -128,7 +128,7 @@ pub fn delete_transaction(id_i: i32) {
 }
 
 /* CRUD for Accounts */
-pub fn create_account(
+pub async fn create_account(
   user_id: &str,
   account_type: &str, 
   account_name: &str, 
@@ -136,7 +136,7 @@ pub fn create_account(
   date: &str
 ) -> Account {
   use super::schema::account;
-  let new_account = AddAccount { user_id, account_type, account_name, balance, date };
+  let new_account = AddAccount { id: &uuid::Uuid::new_v4().to_string(), user_id, account_type, account_name, balance, date };
 
   diesel::insert_into(account::table)
     .values(&new_account)
@@ -145,7 +145,7 @@ pub fn create_account(
     .expect("Error saving new account")
 }
 
-pub fn read_account(user_id_i: &str) -> Vec<Account> {
+pub async fn read_account(user_id_i: &str) -> Vec<Account> {
   use super::schema::account::dsl::*;
 
   account
@@ -154,8 +154,8 @@ pub fn read_account(user_id_i: &str) -> Vec<Account> {
     .expect("Error loading accounts")
 }
 
-pub fn update_account(
-  id_i: i32,
+pub async fn update_account(
+  id_i: &str,
   account_type_i: &str, 
   account_name_i: &str, 
   balance_i: i32,
@@ -170,7 +170,7 @@ pub fn update_account(
     .expect("Error updating account")
 }
 
-pub fn delete_account(id_i: i32) {
+pub fn delete_account(id_i: &str) {
   use super::schema::account::dsl::*;
 
   diesel::delete(account.find(id_i))
@@ -180,13 +180,13 @@ pub fn delete_account(id_i: i32) {
 
 
 /* CRUD for Users */
-pub fn create_user(
+pub async fn create_user(
   uname: &str, 
   password: &str,
 ) -> Option<User> {
   use super::schema::user;
   // if user name exists, return
-  match read_user_by_uname(uname) {
+  match read_user_by_uname(uname).await {
     Some(_) => return None,
     None => (),
   };
@@ -206,7 +206,7 @@ pub fn create_user(
     .expect("Error saving new user"))
 }
 
-pub fn read_user_by_uname(name_i: &str) -> Option<User> {
+pub async fn read_user_by_uname(name_i: &str) -> Option<User> {
   use super::schema::user::dsl::*;
 
   user
@@ -215,7 +215,7 @@ pub fn read_user_by_uname(name_i: &str) -> Option<User> {
     .ok()
 }
 
-pub fn read_user_by_email(email_i: &str) -> Option<User> {
+pub async fn read_user_by_email(email_i: &str) -> Option<User> {
   use super::schema::user::dsl::*;
 
   user
@@ -224,7 +224,7 @@ pub fn read_user_by_email(email_i: &str) -> Option<User> {
     .ok()
 }
 
-pub fn read_user_by_id(id_i: &str) -> Option<User> {
+pub async fn read_user_by_id(id_i: &str) -> Option<User> {
   use super::schema::user::dsl::*;
 
   user
@@ -233,7 +233,7 @@ pub fn read_user_by_id(id_i: &str) -> Option<User> {
     .ok()
 }
 
-pub fn update_user_password(id_i: &str, password_i: &str) -> User {
+pub async fn update_user_password(id_i: &str, password_i: &str) -> User {
   use super::schema::user::dsl::*;
 
   let pwsalt_i = SaltString::generate(&mut OsRng);
@@ -248,14 +248,14 @@ pub fn update_user_password(id_i: &str, password_i: &str) -> User {
     .expect("Error updating user password")
 }
 
-pub fn update_user_data(id_i: &str, email_i: Option<&str>, fname_i: Option<&str>, lname_i: Option<&str>, dob_i: Option<&str>) -> User {
+pub async fn update_user_data(id_i: &str, email_i: Option<&str>, fname_i: Option<&str>, lname_i: Option<&str>, dob_i: Option<&str>) -> Option<User> {
   use super::schema::user::dsl::*;
 
-  diesel::update(user.find(id_i))
+  Some(diesel::update(user.find(id_i))
     .set((email.eq(email_i), fname.eq(fname_i), lname.eq(lname_i), dob.eq(dob_i)))
     .returning(User::as_returning())
     .get_result(&mut establish_connection())
-    .expect("Error updating user data")
+    .expect("Error updating user data"))
 }
 
 pub fn delete_user(id_i: &str) {
@@ -267,11 +267,11 @@ pub fn delete_user(id_i: &str) {
 }
 
 
-pub fn verify_user(name_i: &str, password_i: &str) -> Option<User> {
+pub async fn verify_user(name_i: &str, password_i: &str) -> Option<User> {
   use super::schema::user::dsl::*;
 
-  let user_data = match read_user_by_uname(name_i) {
-    Some(_) => Some(read_user_by_uname(name_i).unwrap()).unwrap(),
+  let user_data = match read_user_by_uname(name_i).await {
+    Some(user_result) => user_result,
     None => return None,
   };
 

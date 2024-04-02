@@ -1,19 +1,19 @@
 diesel::table! {
   transaction (id) {
-    id -> Integer,
+    id -> Text,
     company -> Text,
     amount -> Integer,
     category -> Text,
     date -> Text,
     desc -> Text,
-    account_id -> Integer,
-    secondary_id -> Nullable<Integer>
+    account_id -> Text,
+    secondary_id -> Nullable<Text>
   }
 }
 
 diesel::table! {
   account (id) {
-    id -> Integer,
+    id -> Text,
     user_id -> Text,
     account_type -> Text,
     account_name -> Text,

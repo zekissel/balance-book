@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Day, Month, Transaction } from "../../typedef";
+import { Account, Day, Month, Transaction } from "../../typedef";
 import { addDays } from "../../typeassist";
 import ViewLog from "../transaction/ViewLog";
 import ViewDay from "./ViewDay";
 import '../../styles/Calendar.css';
 
 
-interface CalendarProps { logs: Transaction[], updateLog: () => void, showFilter: boolean }
-export default function Calendar ({ logs, updateLog, showFilter }: CalendarProps) {
+interface CalendarProps { logs: Transaction[], accounts: Account[], updateLog: () => void, showFilter: boolean }
+export default function Calendar ({ logs, accounts, updateLog, showFilter }: CalendarProps) {
 
   const curDate = useRef(new Date());
   const calDate = useRef(new Date(curDate.current.setHours(0,0,0,0)));
@@ -157,6 +157,7 @@ export default function Calendar ({ logs, updateLog, showFilter }: CalendarProps
           <ViewLog 
             key={index} 
             transaction={trans} 
+            accounts={accounts}
             toggle={() => setSelectedTransactions(selectedTransactions.filter(t => JSON.stringify(t) !== JSON.stringify(trans)))}
             updateLog={updateLog}
           />

@@ -73,12 +73,12 @@ export default function FilterGUI ({ accounts, toggle, filters, setFilters }: Fi
 
   const voidAccounts = () => { toggleAccounts(); setFilters({...filters, accounts: []}); sessionStorage.removeItem('filter.accounts'); }
   const handleAccounts = (e: any) => {
-    if (filters.accounts.includes(Number(e.target.value))) {
-      const newAccounts = filters.accounts.filter(a => a !== Number(e.target.value));
+    if (filters.accounts.includes(e.target.value)) {
+      const newAccounts = filters.accounts.filter(a => a !== e.target.value);
       setFilters({ ...filters, accounts: newAccounts });
       sessionStorage.setItem('filter.accounts', newAccounts.join(' '));
     } else {
-      const newAccounts = [...filters.accounts, Number(e.target.value)];
+      const newAccounts = [...filters.accounts, e.target.value];
       setFilters({ ...filters, accounts: newAccounts });
       sessionStorage.setItem('filter.accounts', newAccounts.join(' '));
     }

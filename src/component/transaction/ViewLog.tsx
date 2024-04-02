@@ -1,12 +1,12 @@
-import { Transaction } from "../../typedef";
+import { Transaction, Account } from "../../typedef";
 import { getCategoryColor } from "../../typeassist";
 import Draggable from "react-draggable";
 import { useState } from "react";
 import { EditLog } from "./EditLog";
 import '../../styles/Log.css';
 
-interface ViewLogProps { transaction: Transaction, toggle: () => void, updateLog: () => void }
-export default function ViewLog ({ transaction, toggle, updateLog }: ViewLogProps) {
+interface ViewLogProps { transaction: Transaction, accounts: Account[], toggle: () => void, updateLog: () => void }
+export default function ViewLog ({ transaction, accounts, toggle, updateLog }: ViewLogProps) {
 
   const [editsActive, setEditsActive] = useState(false);
   const toggleEdits = () => setEditsActive(!editsActive);
@@ -24,7 +24,7 @@ export default function ViewLog ({ transaction, toggle, updateLog }: ViewLogProp
           </li>
 
           { editsActive ? 
-            <EditLog log={transaction} toggle={toggle} cancel={toggleEdits} updateLog={updateLog} isIncome={transaction.amount > 0} />
+            <EditLog log={transaction} accounts={accounts} toggle={toggle} cancel={toggleEdits} updateLog={updateLog} isIncome={transaction.amount > 0} />
           :
             <fieldset className='view-log-static'>
               <legend>{ transaction.date.toDateString().split(' ').slice(1).join(' ') }</legend>

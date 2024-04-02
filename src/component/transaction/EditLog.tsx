@@ -28,13 +28,13 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
   }, [error]);
 
 
-  function addTransaction() {
+  async function addTransaction() {
     if (!isInternal() && company === '') { setError('Company/Payee required'); return;} 
     if (amount === '0' || accountId === '') { setError('Account and amount required'); return; }
     if (category === ExpenseCat.None || category === IncomeCat.None) { setError('Category required'); return; }
     if (accountId2 === '' && isInternal()) { setError('Specify secondary account'); return; }
 
-    const party = isInternal() ? `${accounts.find(a => a.id === Number(accountId2))!.account_type}:${accounts.find(a => a.id === Number(accountId2))!.account_name}` : company;
+    const party = isInternal() ? `${accounts.find(a => a.id === accountId2)!.account_type}:${accounts.find(a => a.id === accountId2)!.account_name}` : company;
     const transactionData = {
       'id': log ? log.id : undefined,
       'company': party,
@@ -42,8 +42,8 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
       'category': category,
       'date': new Date(date.toDateString()),
       'desc': desc,
-      'accountId': Number(accountId),
-      'secondaryId': accountId2 === '' ? null : Number(accountId2),
+      'accountId': accountId,
+      'secondaryId': accountId2 === '' ? undefined : accountId2,
     };
 
     if (log !== null) {
@@ -51,26 +51,26 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
       // edit account based on transaction
 
     } else {
-      invoke('new_transaction', transactionData);
+      await invoke('new_transaction', transactionData);
       const accountData = {
         'id': Number(accountId),
-        'userId': accounts.find(a => a.id === Number(accountId))!.user_id,
-        'accountType': accounts.find(a => a.id === Number(accountId))!.account_type,
-        'accountId': accounts.find(a => a.id === Number(accountId))!.account_name,
-        'balance': accounts.find(a => a.id === Number(accountId))!.balance + (( isIncome ? 1 : -1) * Math.round((Number(amount) + Number.EPSILON) * 100)),
+        'userId': accounts.find(a => a.id === accountId)!.user_id,
+        'accountType': accounts.find(a => a.id === accountId)!.account_type,
+        'accountId': accounts.find(a => a.id === accountId)!.account_name,
+        'balance': accounts.find(a => a.id === accountId)!.balance + (( isIncome ? 1 : -1) * Math.round((Number(amount) + Number.EPSILON) * 100)),
         'date': new Date().toISOString(),
       };
-      invoke("fix_account", accountData);
+      await invoke("fix_account", accountData);
       if (accountId2 !== '') {
         const accountData2 = {
           'id': Number(accountId2),
-          'userId': accounts.find(a => a.id === Number(accountId2))!.user_id,
-          'accountType': accounts.find(a => a.id === Number(accountId2))!.account_type,
-          'accountId': accounts.find(a => a.id === Number(accountId2))!.account_name,
-          'balance': accounts.find(a => a.id === Number(accountId2))!.balance + (( isIncome ? -1 : 1) * Math.round((Number(amount) + Number.EPSILON) * 100)),
+          'userId': accounts.find(a => a.id === accountId2)!.user_id,
+          'accountType': accounts.find(a => a.id === accountId2)!.account_type,
+          'accountId': accounts.find(a => a.id === accountId2)!.account_name,
+          'balance': accounts.find(a => a.id === accountId2)!.balance + (( isIncome ? -1 : 1) * Math.round((Number(amount) + Number.EPSILON) * 100)),
           'date': new Date().toISOString(),
         };
-        invoke("fix_account", accountData2);
+        await invoke("fix_account", accountData2);
       }
     }
 
@@ -86,9 +86,9 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
 
     const accountData = {
       'id': Number(accountId),
-      'accountType': accounts.find(a => a.id === Number(accountId))!.account_type,
-      'accountId': accounts.find(a => a.id === Number(accountId))!.account_name,
-      'balance': accounts.find(a => a.id === Number(accountId))!.balance + (( isIncome ? -1 : 1) * Math.round((Number(amount) + Number.EPSILON) * 100)),
+      'accountType': accounts.find(a => a.id === accountId)!.account_type,
+      'accountId': accounts.find(a => a.id === accountId)!.account_name,
+      'balance': accounts.find(a => a.id === accountId)!.balance + (( isIncome ? -1 : 1) * Math.round((Number(amount) + Number.EPSILON) * 100)),
       'date': new Date().toISOString(),
     };
     invoke("fix_account", accountData);
@@ -128,7 +128,7 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
             </select>
           }
         </li>
-        <li><label>Amount: </label><input type='text' value={amount} onChange={updateAmount}/></li>
+        <li><label>Amount: </label><input type='text' value={Math.abs(Number(amount))} onChange={updateAmount}/></li>
       </div>
       
       <li className='new-trans-detail'>

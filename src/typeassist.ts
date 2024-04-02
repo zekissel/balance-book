@@ -28,7 +28,7 @@ export function addDays(date: Date, days: number) {
   );
 }
 
-export async function getTransactions(account_ids: number[]): Promise<Transaction[]> {
+export async function getTransactions(account_ids: string[]): Promise<Transaction[]> {
   return await invoke("get_transactions", { 'accountId': account_ids })
     .then(data => {
       const trans = data as Transaction[];

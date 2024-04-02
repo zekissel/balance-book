@@ -6,7 +6,7 @@ interface PreviewProps { accounts: Account[], transactions: Transaction[] }
 export default function Preview ({ accounts, transactions }: PreviewProps) {
 
   const [curView, setCurView] = useState(AccountType.Checking)
-  const [curID, setCurID] = useState(Number(localStorage.getItem('accountDefault')) ?? 0);
+  const [curID, setCurID] = useState(localStorage.getItem('accountDefault') ?? '');
 
   const recentTransactions = useMemo(() => {
     const minDate = addDays(new Date(), -3);
@@ -21,7 +21,7 @@ export default function Preview ({ accounts, transactions }: PreviewProps) {
 
   const handleRadio = (view: AccountType) => {
     setCurView(view);
-    setCurID(accounts.find(a => a.account_type === view)?.id ?? 0);
+    setCurID(accounts.find(a => a.account_type === view)?.id ?? '');
   }
   const seekAccount = (positive: boolean) => {
     const nextIndex = positive ? curIndex + 1 : curIndex - 1;
@@ -34,7 +34,7 @@ export default function Preview ({ accounts, transactions }: PreviewProps) {
       <div>
         <menu><button disabled={curIndex <= 0} onClick={() => seekAccount(false)}>&lt;</button><button disabled={curIndex >= focusAccounts.length - 1} onClick={() => seekAccount(true)}>&gt;</button></menu>
         { focusAccounts.filter(a => a.id === curID).map(a => 
-          <div>{ a.account_name }</div>
+          <div key={a.id}>{ a.account_name }</div>
         )}
         <menu>
           <input type='radio' name='home-account' id='check' defaultChecked={curView === AccountType.Checking} onChange={() => handleRadio(AccountType.Checking)} /><label htmlFor="check">Checking</label>
@@ -45,7 +45,7 @@ export default function Preview ({ accounts, transactions }: PreviewProps) {
 
       <ol>
         { recentTransactions.filter(t => t.account_id === curID).map(t => 
-          <li>{ t.company } { t.amount }</li>
+          <li key={t.id}>{ t.company } { t.amount }</li>
         )}
       </ol>
 

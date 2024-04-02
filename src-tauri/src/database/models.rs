@@ -11,26 +11,27 @@ use super::schema::user;
 #[diesel(table_name = crate::database::schema::transaction)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Transaction {
-    pub id: i32,
+    pub id: String,
     pub company: String,
     pub amount: i32,
     pub category: String,
     pub date: String,
     pub desc: String,
-    pub account_id: i32,
-    pub secondary_id: Option<i32>,
+    pub account_id: String,
+    pub secondary_id: Option<String>,
 }
 
 #[derive(Insertable)]
 #[diesel(table_name = transaction)]
 pub struct AddTransaction<'a> {
+    pub id: &'a str,
     pub company: &'a str,
     pub amount: i32,
     pub category: &'a str,
     pub date: &'a str,
     pub desc: &'a str,
-    pub account_id: i32,
-    pub secondary_id: Option<i32>,
+    pub account_id: &'a str,
+    pub secondary_id: Option<&'a str>,
 }
 
 impl Serialize for Transaction {
@@ -57,7 +58,7 @@ impl Serialize for Transaction {
 #[diesel(table_name = crate::database::schema::account)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Account {
-    pub id: i32,
+    pub id: String,
     pub user_id: String,
     pub account_type: String,
     pub account_name: String,
@@ -68,6 +69,7 @@ pub struct Account {
 #[derive(Insertable)]
 #[diesel(table_name = account)]
 pub struct AddAccount<'a> {
+    pub id: &'a str,
     pub user_id: &'a str,
     pub account_type: &'a str,
     pub account_name: &'a str,
