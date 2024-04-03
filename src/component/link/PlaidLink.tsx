@@ -15,8 +15,8 @@ function getLocalURL(port: number) {
   return `http://localhost:${port}`;
 }
 
-interface PlaidLinkWithOAuthProps { user: User }
-const PlaidLink = ({ user }: PlaidLinkWithOAuthProps) => {
+interface PlaidLinkWithOAuthProps { user: User, refreshAcct: () => void, refreshTrans: () => void }
+const PlaidLink = ({ user, refreshAcct, refreshTrans }: PlaidLinkWithOAuthProps) => {
   const navigate = useNavigate();
 
   const port = 1421;
@@ -70,8 +70,11 @@ const PlaidLink = ({ user }: PlaidLinkWithOAuthProps) => {
   // send public_token to server: https://plaid.com/docs/api/tokens/#token-exchange-flow
   const onSuccess = useCallback<PlaidLinkOnSuccess>(async (publicToken, metadata) => {
     console.log(publicToken, metadata);
-    await invoke('authorize', { userId: user.id, publicToken: publicToken })
+    await invoke('authorize', { userId: user.id, publicToken: publicToken });
+
     localStorage.removeItem('auth_state');
+    refreshAcct();
+    refreshTrans();
   }, []);
   // log onEvent callbacks from Link: https://plaid.com/docs/link/web/#onevent
   const onEvent = useCallback<PlaidLinkOnEvent>((eventName, metadata) => {

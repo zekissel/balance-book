@@ -5,15 +5,15 @@ import '../../styles/Profile.css';
 import { invoke } from "@tauri-apps/api";
 import ProfileLink from "../link/ProfileLink";
 
-interface ProfileProps { user: User, setUser: React.Dispatch<React.SetStateAction<User | null>>, logout: () => void }
-export default function Profile ({ user, setUser, logout }: ProfileProps) {
+interface ProfileProps { user: User, setUser: React.Dispatch<React.SetStateAction<User | null>>, logout: () => void, refreshAcct: () => void, refreshTrans: () => void }
+export default function Profile ({ user, setUser, logout, refreshAcct, refreshTrans }: ProfileProps) {
 
-  const [email, setEmail] = useState(user.email ?? '');
+  const [email, setEmail] = useState(localStorage.getItem('useremail') ?? '');
   const [password, setPassword] = useState('');
   const [pass2, setPass2] = useState('');
-  const [fname, setFname] = useState(user.fname ?? '');
-  const [lname, setLname] = useState(user.lname ?? '');
-  const [dob, setDob] = useState(user.dob ?? null);
+  const [fname, setFname] = useState(localStorage.getItem('userf') ?? '');
+  const [lname, setLname] = useState(localStorage.getItem('userl') ?? '');
+  const [dob, setDob] = useState(localStorage.getItem('dob') ? new Date(localStorage.getItem('dob') as string) : null);
 
   const [oldPass, setOldPass] = useState('');
 
@@ -58,7 +58,7 @@ export default function Profile ({ user, setUser, logout }: ProfileProps) {
 
         { stateFinancial ?
           <div className='profile-personal'>
-            <ProfileLink user={user} />
+            <ProfileLink user={user} refreshAcct={refreshAcct} refreshTrans={refreshTrans}/>
           </div>
           :
           <div className='profile-personal'>

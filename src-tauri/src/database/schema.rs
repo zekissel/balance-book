@@ -40,5 +40,6 @@ diesel::table! {
     id -> Text,
     user_id -> Text,
     item_id -> Text,
+    cursor -> Nullable<Text>,
   }
 }

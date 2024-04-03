@@ -11,7 +11,7 @@ pub mod link;
 
 #[tauri::command]
 async fn new_account(user_id: &str, account_type: &str, account_id: &str, balance: i32, date: &str) -> Result<Account, ()> {
-  Ok(database::api::create_account(user_id, account_type, account_id, balance, date).await)
+  Ok(database::api::create_account(None, user_id, account_type, account_id, balance, date).await)
 }
 
 #[tauri::command]
@@ -76,6 +76,42 @@ async fn fix_user(id: &str, password: &str, new_pass: Option<&str>, email: Optio
   }
 }
 
+#[tauri::command]
+async fn fetch_financial_trans(user_id: &str) -> Result<Vec<Transaction>, ()> {
+  let tokens = database::api::read_user_tokens(user_id).await;
+
+  let mut more = true;
+  let mut resp = Vec::new();
+  for token in &tokens {
+    let mut cursor: String = token.cursor.as_ref().unwrap_or(&"".to_owned()).to_string();
+    while more {
+      match link::api::sync_transactions(&token.id, Some(&cursor)).await {
+        Ok(d) => {
+          for trans in d.added {
+            let company = trans.merchant_name.as_ref().unwrap_or(&"N/A".to_owned()).to_string();
+            let amount = (trans.amount * 100.) as i32;
+            let category = &trans.category.as_ref().unwrap().join(", ");
+            let date = &trans.date;
+            let desc = &trans.name.as_ref().unwrap();
+            let account_id = &trans.account_id;
+            let secondary_id = None;
+
+            let transaction = database::api::create_transaction(&company, amount, &category, &date.to_string(), desc, account_id, secondary_id).await;
+            resp.push(transaction);
+            more = d.has_more;
+            cursor = d.next_cursor.to_owned();
+          };
+        },
+        Err(_) => more = false,
+      };
+    }
+  }
+  
+  print!("{:?}", resp);
+  Ok(resp)
+}
+
+
 fn main() {
   dotenv::dotenv().ok();
 
@@ -87,7 +123,7 @@ fn main() {
       Ok(())
     })
     .plugin(tauri_plugin_oauth::init())
-    .invoke_handler(tauri::generate_handler![new_transaction, get_transactions, fix_transaction, remove_transaction, new_account, get_accounts, fix_account, remove_account, login, register, fix_user, link::auth::authenticate, link::auth::authorize, link::auth::open_link])
+    .invoke_handler(tauri::generate_handler![new_transaction, get_transactions, fix_transaction, remove_transaction, new_account, get_accounts, fix_account, remove_account, login, register, fix_user, link::auth::authenticate, link::auth::authorize, link::auth::open_link, fetch_financial_trans])
     .run(tauri::generate_context!())
     .expect("Error while running tauri application");
 }

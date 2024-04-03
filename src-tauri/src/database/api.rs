@@ -128,7 +128,9 @@ pub fn delete_transaction(id_i: &str) {
 }
 
 /* CRUD for Accounts */
+#[allow(unused_assignments)]
 pub async fn create_account(
+  id: Option<&str>,
   user_id: &str,
   account_type: &str, 
   account_name: &str, 
@@ -136,7 +138,12 @@ pub async fn create_account(
   date: &str
 ) -> Account {
   use super::schema::account;
-  let new_account = AddAccount { id: &uuid::Uuid::new_v4().to_string(), user_id, account_type, account_name, balance, date };
+  let mut account_id = String::new();
+  match id {
+    Some(id) => account_id = id.to_string(),
+    None => account_id = uuid::Uuid::new_v4().to_string(),
+  }
+  let new_account = AddAccount { id: &account_id, user_id, account_type, account_name, balance, date };
 
   diesel::insert_into(account::table)
     .values(&new_account)
@@ -152,6 +159,15 @@ pub async fn read_account(user_id_i: &str) -> Vec<Account> {
     .filter(user_id.eq(user_id_i))
     .load::<Account>(&mut establish_connection())
     .expect("Error loading accounts")
+}
+
+pub async fn read_account_by_id(id_i: &str) -> Option<Account> {
+  use super::schema::account::dsl::*;
+
+  account
+    .filter(id.eq(id_i))
+    .first::<Account>(&mut establish_connection())
+    .ok()
 }
 
 pub async fn update_account(
@@ -298,10 +314,19 @@ pub async fn deposit_token(
 ) -> Option<Token> {
   use super::schema::token;
 
-  let new_token = AddToken { id: token_id, user_id, item_id };
+  let new_token = AddToken { id: token_id, user_id, item_id, cursor: None };
   Some(diesel::insert_into(token::table)
     .values(&new_token)
     .returning(Token::as_returning())
     .get_result(&mut establish_connection())
     .expect("Error saving new token"))
+}
+
+pub async fn read_user_tokens(user_id_i: &str) -> Vec<Token> {
+  use super::schema::token::dsl::*;
+
+  token
+    .filter(user_id.eq(user_id_i))
+    .load::<Token>(&mut establish_connection())
+    .expect("Error loading user access tokens")
 }

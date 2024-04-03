@@ -30,12 +30,15 @@ function App() {
   
   const signalRefreshAcct = () => setSignalAcct(!signalAcct);
   const signalRefreshTrans = () => setSignalTrans(!signalTrans);
+  const update = (refresh: () => void) => {
+    setTimeout(() => { refresh() }, 400);
+  }
   const refreshAccounts = async () => { if (user) setAccounts(await getAccounts(user.id)) };
   const refreshTransactions = async () => { setTransactions(await getTransactions(accounts.map(a => a.id))) };
-  useEffect(() => { setTimeout(() => { refreshAccounts() }, 500) }, [signalRefreshAcct, user]);
-  useEffect(() => { setTimeout(() => { refreshTransactions() }, 500) }, [signalRefreshTrans, accounts])
+  useEffect(() => { update(refreshAccounts) }, [signalRefreshAcct, user]);
+  useEffect(() => { update(refreshTransactions) }, [signalRefreshTrans, accounts])
   useEffect(() => { localStorage.removeItem('link_token'); localStorage.removeItem('auth_state'); }, [user]);
-  
+
 
   
   const verify = (user: User) => { 
@@ -71,7 +74,7 @@ function App() {
             <Route path='/stats' element={<Stats transactions={transactions} accounts={accounts} />} />
             <Route path='/assets' element={<Assets user={user!} accounts={accounts} transactions={transactions} signalRefresh={signalRefreshAcct} />} />
             <Route path='/market' element={<>work in progress</>} />
-            <Route path='/profile' element={<Profile user={user!} setUser={setUser} logout={logout} />} />
+            <Route path='/profile' element={<Profile user={user!} setUser={setUser} logout={logout} refreshAcct={refreshAccounts} refreshTrans={refreshTransactions} />} />
             <Route path='/settings' element={<>work in progress</>} />
             
           </Route>

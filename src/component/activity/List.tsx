@@ -32,7 +32,7 @@ export default function List ({ logs, accounts, updateLog, showFilter }: ListPro
 
 
   /* recombine subsections of transactions into one array */
-  const allTransactions = useMemo(() => [
+  const allTransactions: Transaction[][] = useMemo(() => [
     futureTransactions, pastWeekTransactions, pastMonthTransactions, past90DTransactions, otherTransactions
   ], [futureTransactions, pastWeekTransactions, pastMonthTransactions, past90DTransactions, otherTransactions]);
 

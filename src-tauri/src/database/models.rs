@@ -8,7 +8,7 @@ use super::schema::user;
 use super::schema::token;
 
 
-#[derive(Queryable, Selectable)]
+#[derive(Queryable, Selectable, Debug)]
 #[diesel(table_name = crate::database::schema::transaction)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Transaction {
@@ -55,7 +55,7 @@ impl Serialize for Transaction {
 
 
 
-#[derive(Queryable, Selectable)]
+#[derive(Queryable, Selectable, Debug)]
 #[diesel(table_name = crate::database::schema::account)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Account {
@@ -148,6 +148,7 @@ pub struct Token {
     pub id: String,
     pub user_id: String,
     pub item_id: String,
+    pub cursor: Option<String>,
 }
 
 #[derive(Insertable)]
@@ -156,6 +157,7 @@ pub struct AddToken<'a> {
     pub id: &'a str,
     pub user_id: &'a str,
     pub item_id: &'a str,
+    pub cursor: Option<&'a str>,
 }
 
 impl Serialize for Token {
@@ -163,10 +165,11 @@ impl Serialize for Token {
     where
         S: serde::Serializer,
     {
-        let mut state = serializer.serialize_struct("Token", 3)?;
+        let mut state = serializer.serialize_struct("Token", 4)?;
         state.serialize_field("id", &self.id)?;
         state.serialize_field("user_id", &self.user_id)?;
         state.serialize_field("item_id", &self.item_id)?;
+        state.serialize_field("cursor", &self.cursor)?;
         state.end()
     }
 }

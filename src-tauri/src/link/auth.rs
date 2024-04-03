@@ -3,7 +3,6 @@ use plaid::request::LinkTokenCreateRequired;
 use plaid::model::*;
 
 use crate::database::api::deposit_token;
-use crate::link::api::sync_transactions;
 
 
 #[tauri::command]
@@ -66,7 +65,7 @@ pub async fn authorize(
   let token_id = response.access_token;
   let item_id = response.item_id;
   deposit_token(user_id, &token_id, &item_id).await;
-  let _ = sync_transactions(&token_id).await;
+  let _ = super::api::extract_accounts(user_id, &token_id).await;
 
   Ok("Authorized".to_string())
 }

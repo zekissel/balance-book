@@ -25,10 +25,10 @@ export default function Assets ({ user, accounts, transactions, signalRefresh }:
     }
   }
   
-  const checkingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Checking), [accounts]);
   const savingsAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Savings), [accounts]);
   const investingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Investing), [accounts]);
-
+  //const checkingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Checking), [accounts]);
+  const checkingAccounts = accounts.filter(a => !savingsAccounts.includes(a) && !investingAccounts.includes(a));
 
   const [showAddAccount, setShowAddAccount] = useState<AccountType | null>(null);
 
