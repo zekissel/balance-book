@@ -64,8 +64,9 @@ pub async fn authorize(
     .unwrap();
   let token_id = response.access_token;
   let item_id = response.item_id;
-  deposit_token(user_id, &token_id, &item_id).await;
+  let token = deposit_token(user_id, &token_id, &item_id).await.unwrap();
   let _ = super::api::extract_accounts(user_id, &token_id).await;
+  let _ = super::api::fetch_transactions(token).await;
 
   Ok("Authorized".to_string())
 }

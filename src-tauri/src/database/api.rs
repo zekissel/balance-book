@@ -67,7 +67,9 @@ fn get_db_path() -> String {
 
 /* --------- Interacting with database --------- */
 /* CRUD for Transactions (negative amount for expense, positive for income) */
+#[allow(unused_assignments)]
 pub async fn create_transaction(
+  id: Option<&str>,
   company: &str, 
   amount: i32,
   category: &str,
@@ -77,7 +79,12 @@ pub async fn create_transaction(
   secondary_id: Option<&str>
 ) -> Transaction {
   use super::schema::transaction;
-  let new_transaction = AddTransaction { id: &uuid::Uuid::new_v4().to_string(), company, amount, category, date, desc, account_id, secondary_id };
+  let mut trans_id = String::new();
+  match id {
+    Some(id) => trans_id = id.to_string(),
+    None => trans_id = uuid::Uuid::new_v4().to_string(),
+  }
+  let new_transaction = AddTransaction { id: &trans_id, company, amount, category, date, desc, account_id, secondary_id };
 
   diesel::insert_into(transaction::table)
     .values(&new_transaction)
@@ -329,4 +336,17 @@ pub async fn read_user_tokens(user_id_i: &str) -> Vec<Token> {
     .filter(user_id.eq(user_id_i))
     .load::<Token>(&mut establish_connection())
     .expect("Error loading user access tokens")
+}
+
+pub async fn update_token_cursor(
+  token_id_i: &str,
+  cursor_i: &str,
+) -> Token {
+  use super::schema::token::dsl::*;
+
+  diesel::update(token.find(token_id_i))
+    .set(cursor.eq(cursor_i))
+    .returning(Token::as_returning())
+    .get_result(&mut establish_connection())
+    .expect("Error updating token cursor")
 }
