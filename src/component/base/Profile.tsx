@@ -1,9 +1,10 @@
+import { invoke } from "@tauri-apps/api";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { User } from "../../typedef";
 import { addDays } from "../../typeassist";
-import '../../styles/Profile.css';
-import { invoke } from "@tauri-apps/api";
 import ProfileLink from "../link/ProfileLink";
+import '../../styles/Profile.css';
 
 interface ProfileProps { user: User, setUser: React.Dispatch<React.SetStateAction<User | null>>, logout: () => void, refreshAcct: () => void, refreshTrans: () => void }
 export default function Profile ({ user, setUser, logout, refreshAcct, refreshTrans }: ProfileProps) {
@@ -39,6 +40,7 @@ export default function Profile ({ user, setUser, logout, refreshAcct, refreshTr
       .catch(err => setError(err));
   }
 
+  const navigate = useNavigate();
   const [stateFinancial, setStateFinancial] = useState(true)
 
   return (
@@ -50,7 +52,7 @@ export default function Profile ({ user, setUser, logout, refreshAcct, refreshTr
         </div>
 
         <div className='dynamic-menu-main'>
-          <button onClick={logout}>Logout</button>
+          <button onClick={() => {navigate('/'); logout()}}>Logout</button>
         </div>
       </menu>
 

@@ -8,13 +8,13 @@ pub async fn sync_transactions(access_token: &str, cursor: Option<&str>) -> Resu
   let client = PlaidClient::from_env();
   let response = client
     .transactions_sync(access_token)
-    .count(300)
+    .count(100)
     .cursor(cursor.unwrap_or(""))
     .options(TransactionsSyncRequestOptions {
       days_requested: Some(1),
       include_logo_and_counterparty_beta: None,//Some(true),
       include_original_description: Some(true),
-      include_personal_finance_category: None, //Some(true),
+      include_personal_finance_category: Some(true),
     })
     .await
     .unwrap();
@@ -33,15 +33,18 @@ pub async fn fetch_transactions(token: Token) -> Result<Vec<Transaction>, ()> {
       Ok(d) => {
         for trans in d.added {
           let id = &trans.transaction_id;
-          let company = &trans.merchant_name.as_ref().unwrap_or(&"N/A".to_owned()).to_string();
-          let amount = (trans.amount * 100.) as i32;
+          let company = &trans.name.as_ref().unwrap_or(&"N/A".to_owned()).to_string();
+          let amount = (trans.amount * -100.) as i32;
           let category = &trans.category.as_ref().unwrap_or(&vec!["n/a".to_string()]).join(", ");
           let date = &trans.date.to_string();
-          let desc = &trans.name.as_ref().unwrap_or(&"n/a".to_owned()).to_string();
+          let desc = match trans.personal_finance_category.as_ref() {
+            Some(c) => c.primary.to_string(),
+            None => "n/a".to_string(),
+          };
           let account_id = &trans.account_id;
           let secondary_id = None;
 
-          let transaction = crate::database::api::create_transaction(Some(id), company, amount, category, date, desc, account_id, secondary_id).await;
+          let transaction = crate::database::api::create_transaction(Some(id), company, amount, category, date, &desc, account_id, secondary_id).await;
           resp.push(transaction);
           more = d.has_more;
           cursor = d.next_cursor.to_owned();

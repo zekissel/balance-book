@@ -8,6 +8,7 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
 
   const [company, setCompany] = useState(log ? log.company : '');
   const [amount, setAmount] = useState(log ? String(log.amount / 100) : '0');
+  const displayAmount = useMemo(() => `${(Math.abs(Number(amount)))}${amount.charAt(amount.length - 1) === '.' ? '.' : ''}${(amount.charAt(amount.length - 2) === '.' && amount.charAt(amount.length - 1) === '0') ? '.0' : ''}`, [amount]);
   const [category, setCategory] = useState(log ? log.category : ( isIncome ? IncomeCat.None : ExpenseCat.None));
   const [date, setDate] = useState(log ? log.date : new Date(new Date().toDateString()));
   const [desc, setDesc] = useState(log ? log.desc : '');
@@ -15,12 +16,13 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
   const [accountId, setAccountId] = useState(log ? (String(log.account_id)) : (localStorage.getItem('accountDefault') ?? ''));
   const [accountId2, setAccountId2] = useState(log ? (String(log.secondary_id)) : '');
 
+  const [isIncomeState, setIsIncomeState] = useState(isIncome);
 
   const checkingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Checking), [accounts]);
   const savingsAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Savings), [accounts]);
   const investingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Investing), [accounts]);
 
-  const accountError = useMemo(() => !isIncome ? (checkingAccounts.length === 0 ? '*Expense requires a source account' : '') : (accounts.length === 0 ? '*Income requires a destination account' : ''), [isIncome]);
+  const accountError = useMemo(() => !isIncomeState ? (checkingAccounts.length === 0 ? '*Expense requires a source account' : '') : (accounts.length === 0 ? '*Income requires a destination account' : ''), [isIncomeState]);
   const [error, setError] = useState('');
   useEffect(() => {
     const timer = setTimeout(() => setError(''), 5000);
@@ -35,10 +37,11 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
     if (accountId2 === '' && isInternal()) { setError('Specify secondary account'); return; }
 
     const party = isInternal() ? `${accounts.find(a => a.id === accountId2)!.account_type}:${accounts.find(a => a.id === accountId2)!.account_name}` : company;
+    const balanceAdjustor = Number(amount) < 0 ? (isIncomeState ? -1 : 1) : (isIncomeState ? 1 : -1);
     const transactionData = {
       'id': log ? log.id : undefined,
       'company': party,
-      'amount': (isIncome ? 1 : -1) * Math.round((Number(amount) + Number.EPSILON) * 100),
+      'amount': Math.round((Number(amount) + Number.EPSILON) * 100) * balanceAdjustor,
       'category': category,
       'date': new Date(date.toDateString()),
       'desc': desc,
@@ -57,7 +60,7 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
         'userId': accounts.find(a => a.id === accountId)!.user_id,
         'accountType': accounts.find(a => a.id === accountId)!.account_type,
         'accountId': accounts.find(a => a.id === accountId)!.account_name,
-        'balance': accounts.find(a => a.id === accountId)!.balance + (( isIncome ? 1 : -1) * Math.round((Number(amount) + Number.EPSILON) * 100)),
+        'balance': accounts.find(a => a.id === accountId)!.balance + (( isIncomeState ? 1 : -1) * Math.round((Number(amount) + Number.EPSILON) * 100)),
         'date': new Date().toISOString(),
       };
       await invoke("fix_account", accountData);
@@ -67,7 +70,7 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
           'userId': accounts.find(a => a.id === accountId2)!.user_id,
           'accountType': accounts.find(a => a.id === accountId2)!.account_type,
           'accountId': accounts.find(a => a.id === accountId2)!.account_name,
-          'balance': accounts.find(a => a.id === accountId2)!.balance + (( isIncome ? -1 : 1) * Math.round((Number(amount) + Number.EPSILON) * 100)),
+          'balance': accounts.find(a => a.id === accountId2)!.balance + (( isIncomeState ? -1 : 1) * Math.round((Number(amount) + Number.EPSILON) * 100)),
           'date': new Date().toISOString(),
         };
         await invoke("fix_account", accountData2);
@@ -88,7 +91,7 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
       'id': Number(accountId),
       'accountType': accounts.find(a => a.id === accountId)!.account_type,
       'accountId': accounts.find(a => a.id === accountId)!.account_name,
-      'balance': accounts.find(a => a.id === accountId)!.balance + (( isIncome ? -1 : 1) * Math.round((Number(amount) + Number.EPSILON) * 100)),
+      'balance': accounts.find(a => a.id === accountId)!.balance + (( isIncomeState ? -1 : 1) * Math.round((Number(amount) + Number.EPSILON) * 100)),
       'date': new Date().toISOString(),
     };
     invoke("fix_account", accountData);
@@ -102,7 +105,7 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
   }
 
   const handleCategorySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (isIncome) setCategory(IncomeCat[e.target.value as keyof typeof IncomeCat]);
+    if (isIncomeState) setCategory(IncomeCat[e.target.value as keyof typeof IncomeCat]);
     else setCategory(ExpenseCat[e.target.value as keyof typeof ExpenseCat]);
 
     if (e.target.value === ExpenseCat.Investment || e.target.value === IncomeCat.InvestmentIncome) setAccountId2(String(log?.secondary_id) ?? (localStorage.getItem('accountInvesting') ?? ''));
@@ -112,11 +115,11 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
   const isInternal = (): Boolean => { return (category === IncomeCat.SavingsIncome || category === ExpenseCat.Savings || category === IncomeCat.InvestmentIncome || category === ExpenseCat.Investment) }
 
   return (
-    <fieldset className={isIncome ? 'new-trans new-trans-income' : 'new-trans new-trans-expense'}>
-      <legend>{ log ? 'Edit' : 'New' }{ isIncome ? ` Income` : ` Expense` }</legend>
+    <fieldset className={isIncomeState ? 'new-trans new-trans-income' : 'new-trans new-trans-expense'}>
+      <legend>{ log ? 'Edit' : 'New' }{ isIncomeState ? ` Income` : ` Expense` }</legend>
 
       <div className='new-trans-main'>
-        <li><label>{ isIncome ? `Source`: `Payee`}: </label>
+        <li><label>{ isIncomeState ? `Source`: `Payee`}: </label>
           { !isInternal() && <input type='text' value={company} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCompany(e.target.value)}/> }
           { isInternal() &&
             <select value={accountId2} onChange={(e) => setAccountId2(e.target.value)}>
@@ -128,11 +131,11 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
             </select>
           }
         </li>
-        <li><label>Amount: </label><input type='text' value={Math.abs(Number(amount))} onChange={updateAmount}/></li>
+        <li><label>Amount: </label><input type='text' value={displayAmount} onChange={updateAmount}/></li>
       </div>
       
       <li className='new-trans-detail'>
-        { isIncome ?
+        { isIncomeState ?
           <select value={category} onChange={handleCategorySelect}>
             {getEnumKeys(IncomeCat).map((key, index) => (
               <option key={index} value={IncomeCat[key]}>
@@ -153,11 +156,11 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
           setDate(new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')));
           }} />
       </li>
-      <li><label>{ isIncome ? 'Destination' : 'Source' }: </label>
+      <li><label>{ isIncomeState ? 'Destination' : 'Source' }: </label>
           <select value={accountId} onChange={(e) => { setAccountId(e.target.value) }}>
             <option value=''>Select Account</option>
               {
-                ( isIncome ? accounts : checkingAccounts).map((a, index) => (
+                ( isIncomeState ? accounts : checkingAccounts).map((a, index) => (
                   <option key={index} value={String(a.id)}>{a.account_type}:{a.account_name}</option>
               ))}
           </select>
@@ -167,6 +170,7 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
       
       <li className='new-trans-meta'>
         <button className='new-trans-submit' onClick={addTransaction}>Submit</button>
+        <button onClick={() => setIsIncomeState(!isIncomeState)}>{ isIncomeState ? `Expense` : `Income` }</button>
         <button onClick={cancel}>Cancel</button>
         { log && <button className='delete-trans' onClick={deleteTransaction}>Delete</button> }
       </li>

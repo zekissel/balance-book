@@ -1,11 +1,11 @@
 import { useState, useMemo } from "react";
+import { Transaction, Filter, filterTransactions, anyFiltersActive, Account } from "../../typedef";
 import List from "../activity/List";
 import Calendar from "../activity/Calendar";
-import "../../styles/Page.css";
-import "../../styles/Menu.css";
-import { Transaction, Filter, filterTransactions, anyFiltersActive, Account } from "../../typedef";
 import EditLog from "../transaction/CreateLog";
 import FilterGUI from "../template/FilterBar";
+import "../../styles/Page.css";
+import "../../styles/Menu.css";
 
 
 interface ActivityProps { transactions: Transaction[], accounts: Account[], signalRefresh: () => void }

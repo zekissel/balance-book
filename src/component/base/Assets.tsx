@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react';
-import AccountPage from '../asset/AccountPage';
 import { Account, AccountType, Transaction, User } from '../../typedef';
+import AccountPage from '../asset/AccountPage';
+import CreateAccount from '../asset/CreateAccount';
 import '../../styles/Page.css';
 import '../../styles/Menu.css';
-import CreateAccount from '../asset/CreateAccount';
+
 
 interface AssetsProps { user: User, accounts: Account[], transactions: Transaction[], signalRefresh: () => void }
 export default function Assets ({ user, accounts, transactions, signalRefresh }: AssetsProps) {

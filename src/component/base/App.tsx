@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Transaction, Account, User } from "../../typedef";
 import { getTransactions, getAccounts } from "../../typeassist";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Nav from "../template/Nav";
 import Home from "./Home";
 import Activity from "./Activity";
 import Stats from "./Stats";
 import Assets from "./Assets";
-import "../../styles/App.css";
 import Profile from "./Profile";
 import Auth from "./Auth";
+import "../../styles/App.css";
 
 function App() {
 
@@ -26,22 +26,27 @@ function App() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   
   const [signalAcct, setSignalAcct] = useState(false);
-  const [signalTrans, setSignalTrans] = useState(false);
-  
   const signalRefreshAcct = () => setSignalAcct(!signalAcct);
+  const [signalTrans, setSignalTrans] = useState(false);
   const signalRefreshTrans = () => setSignalTrans(!signalTrans);
-  const update = (refresh: () => void) => {
-    setTimeout(() => { refresh() }, 400);
-  }
+
+  const update = (refresh: () => void) => { setTimeout(() => { refresh() }, 400) };
   const refreshAccounts = async () => { if (user) setAccounts(await getAccounts(user.id)) };
   const refreshTransactions = async () => { setTransactions(await getTransactions(accounts.map(a => a.id))) };
   useEffect(() => { update(refreshAccounts) }, [signalRefreshAcct, user]);
-  useEffect(() => { update(refreshTransactions) }, [signalRefreshTrans, accounts])
+  useEffect(() => { update(refreshTransactions) }, [signalRefreshTrans, accounts]);
   useEffect(() => { localStorage.removeItem('link_token'); localStorage.removeItem('auth_state'); }, [user]);
 
-
-  
-  const verify = (user: User) => { 
+  const clearUserLocalStorage = () => {
+    localStorage.removeItem('userid');
+    localStorage.removeItem('username');
+    localStorage.removeItem('useremail');
+    localStorage.removeItem('userf');
+    localStorage.removeItem('userl');
+    localStorage.removeItem('dob');
+  }
+  const verify = (user: User) => {
+    clearUserLocalStorage();
     setUser(user);
     localStorage.setItem('userid', user.id);
     localStorage.setItem('username', user.uname); 
@@ -53,12 +58,7 @@ function App() {
   }
   const logout = () => { 
     setUser(null); 
-    localStorage.removeItem('userid');
-    localStorage.removeItem('username');
-    localStorage.removeItem('useremail');
-    localStorage.removeItem('userf');
-    localStorage.removeItem('userl');
-    localStorage.removeItem('dob');
+    clearUserLocalStorage();
   }
 
   return (

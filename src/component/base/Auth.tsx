@@ -1,7 +1,8 @@
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
-import { User, DataState } from "../../typedef";
 import { useNavigate } from "react-router-dom";
+import { User, DataState } from "../../typedef";
+
 
 interface AuthProps { verify: (user: User) => void, logout: () => void}
 export default function Auth ({ verify, logout }: AuthProps) {
