@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api";
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Transaction, Account, User } from "../../typedef";
@@ -10,6 +11,7 @@ import Assets from "./Assets";
 import Profile from "./Profile";
 import Auth from "./Auth";
 import "../../styles/App.css";
+
 
 function App() {
 
@@ -36,6 +38,7 @@ function App() {
   useEffect(() => { update(refreshAccounts) }, [signalRefreshAcct, user]);
   useEffect(() => { update(refreshTransactions) }, [signalRefreshTrans, accounts]);
   useEffect(() => { localStorage.removeItem('link_token'); localStorage.removeItem('auth_state'); }, [user]);
+  useEffect(() => { if (user) invoke('sync_info', { userId: user.id }) }, [user]);
 
   const clearUserLocalStorage = () => {
     localStorage.removeItem('userid');

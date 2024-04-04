@@ -4,6 +4,7 @@
 use database::models::Account;
 use database::models::Transaction;
 use database::models::User;
+use link::api::fetch_transactions;
 
 pub mod database;
 pub mod link;
@@ -76,6 +77,13 @@ async fn fix_user(id: &str, password: &str, new_pass: Option<&str>, email: Optio
   }
 }
 
+#[tauri::command]
+async fn sync_info (user_id: &str) -> Result<bool, ()> {
+  let tokens = database::api::read_user_tokens(user_id).await;
+  for token in tokens { let _ = fetch_transactions(token).await; }
+  Ok(true)
+}
+  
 
 fn main() {
   dotenv::dotenv().ok();
@@ -88,7 +96,7 @@ fn main() {
       Ok(())
     })
     .plugin(tauri_plugin_oauth::init())
-    .invoke_handler(tauri::generate_handler![new_transaction, get_transactions, fix_transaction, remove_transaction, new_account, get_accounts, fix_account, remove_account, login, register, fix_user, link::auth::authenticate, link::auth::authorize, link::auth::open_link])
+    .invoke_handler(tauri::generate_handler![new_transaction, get_transactions, fix_transaction, remove_transaction, new_account, get_accounts, fix_account, remove_account, login, register, fix_user, link::auth::authenticate, link::auth::authorize, link::auth::open_link, sync_info])
     .run(tauri::generate_context!())
     .expect("Error while running tauri application");
 }

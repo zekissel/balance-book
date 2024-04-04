@@ -179,7 +179,7 @@ export default function FilterGUI ({ accounts, toggle, filters, setFilters }: Fi
           <span id='category-img' onClick={toggleAccounts}>{ showAccounts ? <img src='/close-up.svg' /> : <img src='/open-down.svg' /> }</span>
         </span>
         { showAccounts &&
-          <select multiple size={5} value={filters.accounts.map(a => String(a))}
+          <select className='filter-account-select' multiple size={5} value={filters.accounts.map(a => String(a))}
             onChange={handleAccounts}>
             {accounts.map((acc, index) => (
               <option style={filters.accounts.includes(acc.id) ? { backgroundColor: `#abc` } : undefined} key={index} value={acc.id} onClick={handleAccounts}>

@@ -77,3 +77,8 @@ li.filter-menu-meta > button:hover {
 
 button#clear-filters { background-color: #e0beb8; }
 button#clear-filters:hover { background-color: #f2b2a8; }
+
+select.filter-account-select {
+  position: relative;
+  z-index: 70;
+}
