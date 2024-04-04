@@ -3,6 +3,7 @@ import { Transaction } from "../../typedef";
 import TotalGraph from "./TotalGraph";
 import PieGraph from "./PieGraph";
 import LineGraph from "./LineGraph";
+import BarGraph from "./BarGraph";
 import HeatMap from "./HeatMap";
 
 interface StatsPageProps { transactions: Transaction[], upcoming: Transaction[], startDate: Date, endDate: Date, showFilter: boolean }
@@ -55,11 +56,11 @@ export default function StatsPage ({ transactions, upcoming, startDate, endDate,
       <div className='stats-main-row'>
         <div className='stats-main-box-longer'>
           { historyGraphLine && <LineGraph transactions={transactions} range={Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))} endDate={endDate} /> }
-          { !historyGraphLine && <HeatMap transactions={transactions} startDate={startDate} endDate={endDate}/> }
+          { !historyGraphLine && <BarGraph transactions={transactions} range={Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))} endDate={endDate} /> }
 
           <div className='stats-category-radio'>
             <input type='radio' id='radio-history-line' name='line' onChange={() => {setHistoryGraphLine(true); localStorage.setItem('stats.historyGraphLine', 'true')}} defaultChecked={historyGraphLine} /><label htmlFor='radio-history-line'>Line</label>
-            <input type='radio' id='radio-history-heat' name='line' onChange={() => {setHistoryGraphLine(false); localStorage.setItem('stats.historyGraphLine', 'false')}} defaultChecked={!historyGraphLine} /><label htmlFor='radio-history-heat'>Heat</label>
+            <input type='radio' id='radio-history-heat' name='line' onChange={() => {setHistoryGraphLine(false); localStorage.setItem('stats.historyGraphLine', 'false')}} defaultChecked={!historyGraphLine} /><label htmlFor='radio-history-heat'>Bar</label>
           </div>
         </div>
 
@@ -80,7 +81,7 @@ export default function StatsPage ({ transactions, upcoming, startDate, endDate,
         </div>
       
         <div className='stats-main-box-longer'>
-          graph
+          <HeatMap transactions={transactions} startDate={startDate} endDate={endDate}/>
         </div>
       </div>
     </div>

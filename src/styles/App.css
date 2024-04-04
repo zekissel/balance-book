@@ -80,6 +80,12 @@ div.auth-field > button {
   background-color: #91d2b396;
 }
 
+div.app-loading {
+  position: absolute;
+  z-index: 100;
+  top: 18rem;
+}
+
 div.home-preview {
   display: flex;
   flex-direction: row;

@@ -83,7 +83,7 @@ export const ExpenseLeaf = {
     'Healthcare', 'Services', 'Textile', 'Toilietries', 'Other'
   ],
   Office: [
-    'Supplies', 'Equipment', 'Cloud', 'Other'
+    'Supplies', 'Equipment', 'Projects', 'Other'
   ],
   Entertainment: [
     'Movies', 'Games', 'Concerts', 'Events', 'Music', 'Other'

@@ -40,7 +40,7 @@ export default function HeatMap ({ transactions, startDate, endDate }: GraphProp
   
   const option = {
     title: {
-      text: 'Net Balance by Day',
+      text: 'Transaction Heat Map',
     },
     tooltip: {
       position: 'top',

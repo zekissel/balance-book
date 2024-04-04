@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ReactECharts from 'echarts-for-react';
 import { User, DataState } from "../../typedef";
 
 
@@ -83,10 +84,52 @@ export default function Auth ({ verify, logout }: AuthProps) {
         { !showRegister && <button onClick={login}>Login</button> }
         <button onClick={handleRegister} disabled={dataState === DataState.Loading}>Register</button>
         { showRegister && <button onClick={toggleRegister} disabled={dataState === DataState.Loading}>Cancel</button> }
-        { dataState === DataState.Loading && <p>Loading...</p> }
         { error !== '' && <p>{error}</p> }
         { dataState === DataState.Error && <p>Something went wrong</p> }
+        { dataState === DataState.Loading && <div className='stats-graph app-loading'><ReactECharts option={option} /></div> }
       </div>
     </div>
   )
 }
+
+const option = {
+  graphic: {
+    elements: [
+      {
+        type: 'group',
+        left: 'center',
+        top: 'center',
+        children: new Array(7).fill(0).map((_, i) => ({
+          type: 'rect',
+          x: i * 20,
+          shape: {
+            x: 0,
+            y: -40,
+            width: 10,
+            height: 80
+          },
+          style: {
+            fill: '#739d88'
+          },
+          keyframeAnimation: {
+            duration: 1000,
+            delay: i * 200,
+            loop: true,
+            keyframes: [
+              {
+                percent: 0.5,
+                scaleY: 0.3,
+                easing: 'cubicIn'
+              },
+              {
+                percent: 1,
+                scaleY: 1,
+                easing: 'cubicOut'
+              }
+            ]
+          }
+        }))
+      }
+    ]
+  }
+};

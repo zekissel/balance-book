@@ -120,6 +120,7 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
 
   const isInternal = (): Boolean => { return (category.split('>')[0] === `${IncomeRoot.FinanceIncome}` || category.split('>')[0] === `${ExpenseRoot.Financial}`) && (category.split('>').length > 1) && (category.split('>')[1] === 'Investment' || category.split('>')[1] === 'Savings') }
 
+
   return (
     <fieldset className={isIncomeState ? 'new-trans new-trans-income' : 'new-trans new-trans-expense'}>
       <legend>{ log ? 'Edit' : 'New' }{ isIncomeState ? ` Income` : ` Expense` }</legend>
@@ -146,22 +147,22 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
 
         { isIncomeState ?
           <select value={`${category}`} onChange={handleCategorySelect}>
-            {getEnumKeys(IncomeRoot).map((key, index) => (
-              <optgroup key={index} label={key}>
-                {IncomeLeaf[key].map((leaf, index) => (
-                  <option key={index} value={`${key}>${leaf}`}>
-                    {`> ${leaf}`}
-                  </option>
-                ))}
-              </optgroup>
+            {getEnumKeys(IncomeRoot).map((root, index) => (
+              <optgroup label={root} key={index}>
+              {IncomeLeaf[root].map((leaf, index) => (
+                <option key={index} value={`${root}>${leaf}`}>
+                  {`> ${leaf}`}
+                </option>
+              ))}
+            </optgroup> 
             ))}
           </select>
           :
           <select value={`${category}`} onChange={handleCategorySelect}>
-            {getEnumKeys(ExpenseRoot).map((key, index) => (
-              <optgroup key={index} label={key}>
-                {ExpenseLeaf[key].map((leaf, index) => (
-                  <option key={index} value={`${key}>${leaf}`}>
+            {getEnumKeys(ExpenseRoot).map((root, index) => (
+              <optgroup key={index} label={root}>
+                {ExpenseLeaf[root].map((leaf, index) => (
+                  <option key={index} value={`${root}>${leaf}`}>
                     {`> ${leaf}`}
                   </option>
                 ))}
