@@ -15,7 +15,7 @@ export default function TotalGraph ({ transactions }: GraphProps) {
     return totals;
   }, [transactions]);
 
-  const categories = useMemo(() => Object.keys(categoryTotals).sort((a, b) => categoryTotals[a] - categoryTotals[b]).map(cat => cat.slice(0, 8)), [categoryTotals]);
+  const categories = useMemo(() => Object.keys(categoryTotals).sort((a, b) => categoryTotals[a] - categoryTotals[b]), [categoryTotals]);
   const totals = useMemo(() => Object.values(categoryTotals).sort((a, b) => a - b).map(t => new Object({value: t, itemStyle: { color: t > 0 ? '#739d88' : '#f6d6aa' }, label: {show:true,position:t > 0 ?'top':'bottom',formatter: '${c}'} })), [categoryTotals]);
 
   const option = {
@@ -24,6 +24,7 @@ export default function TotalGraph ({ transactions }: GraphProps) {
       data: categories,
       axisLabel: {
         rotate: 28,
+        show: false,
       },
     },
     yAxis: {
@@ -43,9 +44,11 @@ export default function TotalGraph ({ transactions }: GraphProps) {
     width: '87%',
     dataZoom: { type: 'inside' },
     tooltip: {
-      trigger: 'item',
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
       formatter: '{b}: <b>${c}</b>',
     },
+    
   }; 
 
   return (

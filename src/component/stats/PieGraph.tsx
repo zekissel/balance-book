@@ -9,14 +9,14 @@ export default function PieGraph ({ transactions, isIncome }: GraphProps) {
   const categoryTotals = useMemo(() => {
     let totals: { [key: string]: number } = {};
     transactions.forEach(t => {
-      if ((isIncome ? 1 : -1) * t.amount > 0 && totals[t.category] === undefined) totals[t.category] = 0;
-      if ((isIncome ? 1 : -1) * t.amount > 0) totals[t.category] += Math.abs(t.amount / 100);
+      if ((isIncome ? 1 : -1) * t.amount > 0 && totals[t.category.split('>')[0]] === undefined) totals[t.category.split('>')[0]] = 0;
+      if ((isIncome ? 1 : -1) * t.amount > 0) totals[t.category.split('>')[0]] += Math.abs(t.amount / 100);
     });
     if (Object.keys(totals).length === 0) return { 'No Data': 0 };
     return totals;
   }, [transactions, isIncome]);
 
-  const categories = useMemo(() => Object.keys(categoryTotals).sort((a, b) => categoryTotals[b] - categoryTotals[a]).map(cat => cat.slice(0, 10)), [categoryTotals]);
+  const categories = useMemo(() => Object.keys(categoryTotals).sort((a, b) => categoryTotals[b] - categoryTotals[a]).map(cat => cat.slice(0, 14)), [categoryTotals]);
   const totals = useMemo(() => Object.values(categoryTotals).sort((a, b) => b - a), [categoryTotals]);
 
   //const totalBalance = useMemo(() => { return totals.reduce((acc, t) => acc + t, 0); }, [totals]);

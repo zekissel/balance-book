@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import React, { useState, useMemo, useEffect } from "react";
-import { Transaction, IncomeCat, ExpenseCat, getEnumKeys, Account, AccountType } from "../../typedef";
+import { Transaction, IncomeRoot, IncomeLeaf, ExpenseRoot, ExpenseLeaf, getEnumKeys, Account, AccountType } from "../../typedef";
 
 
 interface EditLogProps { log: Transaction | null, accounts: Account[], toggle: () => void, cancel: () => void, isIncome: boolean, updateLog: () => void }
@@ -9,7 +9,7 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
   const [company, setCompany] = useState(log ? log.company : '');
   const [amount, setAmount] = useState(log ? String(log.amount / 100) : '0');
   const displayAmount = useMemo(() => `${(Math.abs(Number(amount)))}${amount.charAt(amount.length - 1) === '.' ? '.' : ''}${(amount.charAt(amount.length - 2) === '.' && amount.charAt(amount.length - 1) === '0') ? '.0' : ''}`, [amount]);
-  const [category, setCategory] = useState(log ? log.category : ( isIncome ? IncomeCat.None : ExpenseCat.None));
+  const [category, setCategory] = useState(log ? log.category : ( isIncome ? `OtherIncome>Other` : `Other>Other`));
   const [date, setDate] = useState(log ? log.date : new Date(new Date().toDateString()));
   const [desc, setDesc] = useState(log ? log.desc : '');
 
@@ -17,12 +17,13 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
   const [accountId2, setAccountId2] = useState(log ? (String(log.secondary_id)) : '');
 
   const [isIncomeState, setIsIncomeState] = useState(isIncome);
+  useEffect(() => setIsIncomeState(isIncome), [isIncome]);
 
   const checkingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Checking), [accounts]);
   const savingsAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Savings), [accounts]);
   const investingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Investing), [accounts]);
 
-  const accountError = useMemo(() => !isIncomeState ? (checkingAccounts.length === 0 ? '*Expense requires a source account' : '') : (accounts.length === 0 ? '*Income requires a destination account' : ''), [isIncomeState]);
+  const accountError = useMemo(() => !isIncome ? (checkingAccounts.length === 0 ? '*Expense requires a source account' : '') : (accounts.length === 0 ? '*Income requires a destination account' : ''), [isIncome]);
   const [error, setError] = useState('');
   useEffect(() => {
     const timer = setTimeout(() => setError(''), 5000);
@@ -33,7 +34,6 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
   async function addTransaction() {
     if (!isInternal() && company === '') { setError('Company/Payee required'); return;} 
     if (amount === '0' || accountId === '') { setError('Account and amount required'); return; }
-    if (category === ExpenseCat.None || category === IncomeCat.None) { setError('Category required'); return; }
     if (accountId2 === '' && isInternal()) { setError('Specify secondary account'); return; }
 
     const party = isInternal() ? `${accounts.find(a => a.id === accountId2)!.account_type}:${accounts.find(a => a.id === accountId2)!.account_name}` : company;
@@ -105,14 +105,20 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
   }
 
   const handleCategorySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (isIncomeState) setCategory(IncomeCat[e.target.value as keyof typeof IncomeCat]);
-    else setCategory(ExpenseCat[e.target.value as keyof typeof ExpenseCat]);
-
-    if (e.target.value === ExpenseCat.Investment || e.target.value === IncomeCat.InvestmentIncome) setAccountId2(String(log?.secondary_id) ?? (localStorage.getItem('accountInvesting') ?? ''));
-    else if (e.target.value === ExpenseCat.Savings || e.target.value === IncomeCat.SavingsIncome) setAccountId2(localStorage.getItem('accountSavings') ?? '');
+    if (isIncomeState) setCategory(e.target.value as typeof category);
+    else setCategory(e.target.value as typeof category);
+    
+    if ( e.target.value.split('>').length > 1 &&
+      (`${ExpenseRoot.Financial}` === e.target.value.split('>')[1] || 
+      e.target.value === `${IncomeRoot.FinanceIncome}`)
+    ) {
+      // use logs secondary id, or default. if investing inc/exp, use investing accounts, else use savings
+      setAccountId2(String(log?.secondary_id) ?? (localStorage.getItem('accountInvesting') ?? ''));
+      setAccountId2(localStorage.getItem('accountSavings') ?? '');
+    } 
   }
 
-  const isInternal = (): Boolean => { return (category === IncomeCat.SavingsIncome || category === ExpenseCat.Savings || category === IncomeCat.InvestmentIncome || category === ExpenseCat.Investment) }
+  const isInternal = (): Boolean => { return (category.split('>')[0] === `${IncomeRoot.FinanceIncome}` || category.split('>')[0] === `${ExpenseRoot.Financial}`) && (category.split('>').length > 1) && (category.split('>')[1] === 'Investment' || category.split('>')[1] === 'Savings') }
 
   return (
     <fieldset className={isIncomeState ? 'new-trans new-trans-income' : 'new-trans new-trans-expense'}>
@@ -120,12 +126,14 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
 
       <div className='new-trans-main'>
         <li><label>{ isIncomeState ? `Source`: `Payee`}: </label>
-          { !isInternal() && <input type='text' value={company} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCompany(e.target.value)}/> }
+          { !isInternal() && 
+            <input type='text' value={company} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCompany(e.target.value)}/> 
+          }
           { isInternal() &&
             <select value={accountId2} onChange={(e) => setAccountId2(e.target.value)}>
               <option value=''>Select Account</option>
               
-              { ((category === IncomeCat.InvestmentIncome || category === ExpenseCat.Investment) ? investingAccounts : savingsAccounts).map((a, index) => (
+              { (((category.split('>').length > 1) && (category.split('>')[1] === 'Investment')) ? investingAccounts : savingsAccounts).map((a, index) => (
                 <option key={index} value={String(a.id)}>{a.account_type}:{a.account_name}</option>
               ))}
             </select>
@@ -135,20 +143,29 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
       </div>
       
       <li className='new-trans-detail'>
+
         { isIncomeState ?
-          <select value={category} onChange={handleCategorySelect}>
-            {getEnumKeys(IncomeCat).map((key, index) => (
-              <option key={index} value={IncomeCat[key]}>
-                {IncomeCat[key]}
-              </option>
+          <select value={`${category}`} onChange={handleCategorySelect}>
+            {getEnumKeys(IncomeRoot).map((key, index) => (
+              <optgroup key={index} label={key}>
+                {IncomeLeaf[key].map((leaf, index) => (
+                  <option key={index} value={`${key}>${leaf}`}>
+                    {`> ${leaf}`}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
           :
-          <select value={category} onChange={handleCategorySelect}>
-            {getEnumKeys(ExpenseCat).map((key, index) => (
-              <option key={index} value={ExpenseCat[key]}>
-                {ExpenseCat[key]}
-              </option>
+          <select value={`${category}`} onChange={handleCategorySelect}>
+            {getEnumKeys(ExpenseRoot).map((key, index) => (
+              <optgroup key={index} label={key}>
+                {ExpenseLeaf[key].map((leaf, index) => (
+                  <option key={index} value={`${key}>${leaf}`}>
+                    {`> ${leaf}`}
+                  </option>
+                ))}
+            </optgroup>
             ))}
           </select>
         }
@@ -170,7 +187,7 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
       
       <li className='new-trans-meta'>
         <button className='new-trans-submit' onClick={addTransaction}>Submit</button>
-        <button onClick={() => setIsIncomeState(!isIncomeState)}>{ isIncomeState ? `Expense` : `Income` }</button>
+        { log && <button onClick={() => setIsIncomeState(!isIncomeState)}>{ isIncomeState ? `Expense` : `Income` }</button> }
         <button onClick={cancel}>Cancel</button>
         { log && <button className='delete-trans' onClick={deleteTransaction}>Delete</button> }
       </li>

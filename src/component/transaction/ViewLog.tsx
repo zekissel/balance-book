@@ -33,7 +33,7 @@ export default function ViewLog ({ transaction, accounts, toggle, updateLog }: V
                 <span className='view-log-source'>{ transaction.company }</span>
               </li>
               <li className='view-log-category'>
-                <span style={{ backgroundColor: getCategoryColor(transaction.category) }}>{ transaction.category }</span>
+                <span style={{ backgroundColor: getCategoryColor(transaction.category) }}>{ `${transaction.category}` }</span>
               </li>
               
               <li className='view-log-desc'>{ transaction.desc }</li>

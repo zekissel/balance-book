@@ -37,8 +37,14 @@ function App() {
   const refreshTransactions = async () => { setTransactions(await getTransactions(accounts.map(a => a.id))) };
   useEffect(() => { update(refreshAccounts) }, [signalRefreshAcct, user]);
   useEffect(() => { update(refreshTransactions) }, [signalRefreshTrans, accounts]);
-  useEffect(() => { localStorage.removeItem('link_token'); localStorage.removeItem('auth_state'); }, [user]);
-  useEffect(() => { if (user) invoke('sync_info', { userId: user.id }) }, [user]);
+  useEffect(() => { 
+    localStorage.removeItem('link_token');
+    localStorage.removeItem('auth_state');
+    if (user) { 
+      invoke('sync_info', { userId: user.id });
+      update(refreshTransactions);
+    }
+  }, [user]);
 
   const clearUserLocalStorage = () => {
     localStorage.removeItem('userid');

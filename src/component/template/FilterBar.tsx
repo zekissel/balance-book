@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Filter, ExpenseCat, IncomeCat, getEnumKeys, Account } from '../../typedef';
+import { Filter, ExpenseRoot, ExpenseLeaf, IncomeRoot, IncomeLeaf, getEnumKeys, Account } from '../../typedef';
 import { addDays } from '../../typeassist';
 import '../../styles/Filter.css';
 
@@ -139,17 +139,26 @@ export default function FilterGUI ({ accounts, toggle, filters, setFilters }: Fi
           <span id='category-img' onClick={toggleCategory}>{ showCategory ? <img src='/close-up.svg' /> : <img src='/open-down.svg' /> }</span>
         </span>
         { showCategory &&
-          <select multiple size={5} value={filters.category} onChange={handleCategory}>
-            {getEnumKeys(ExpenseCat).map((key, index) => (
-              
-              <option style={filters.category.includes(ExpenseCat[key]) ? { backgroundColor: `#abc` }:undefined} key={index} value={ExpenseCat[key]} onClick={handleCategory}>
-                {ExpenseCat[key]}
-              </option>
+          <select multiple size={10} value={filters.category} onChange={handleCategory}>
+
+            {getEnumKeys(ExpenseRoot).map((key, index) => (
+              <optgroup key={index} label={key}>
+                {ExpenseLeaf[key].map((leaf, ind) => (
+                  <option key={ind} value={`${key}>${leaf}`} style={filters.category.includes(`${key}>${leaf}`) ? { backgroundColor: `#abc` }:undefined} onClick={handleCategory}>
+                    {`> ${leaf}`}
+                  </option>
+                ))}
+              </optgroup>
             ))}
-            {getEnumKeys(IncomeCat).map((key, index) => (
-              <option style={filters.category.includes(IncomeCat[key]) ? { backgroundColor: `#abc` }:undefined} key={index} value={IncomeCat[key]} onClick={handleCategory}>
-                {IncomeCat[key]}
-              </option>
+
+            {getEnumKeys(IncomeRoot).map((key, index) => (
+              <optgroup key={index} onClick={handleCategory}>
+                {IncomeLeaf[key].map((leaf, ind) => (
+                  <option key={ind} value={`${key}>${leaf}`} style={filters.category.includes(`${key}>${leaf}`) ? { backgroundColor: `#abc` }:undefined}>
+                    {`> ${leaf}`}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
         }

@@ -14,17 +14,6 @@ export enum DataState {
   Error,
 }
 
-export enum State {
-  Auth,
-  Home,
-  Activity,
-  Stats,
-  Assets,
-  Market,
-  Profile,
-  Settings,
-}
-
 export function getEnumKeys<
    T extends string,
    TEnumValue extends string | number,
@@ -32,6 +21,7 @@ export function getEnumKeys<
     return Object.keys(enumVariable) as Array<T>;
 }
 
+/*
 export enum ExpenseCat {
   Rent = 'Rent',
   Utilities = 'Utilities',
@@ -61,13 +51,83 @@ export enum IncomeCat {
   InvestmentIncome = 'InvestmentIncome',
   OtherIncome = 'OtherIncome',
   None = '---',
+}*/
+
+export enum ExpenseRoot {
+  Home = 'Home',
+  Utilities = 'Utilities',
+  Food = 'Food',
+  Transport = 'Transport',
+  Personal = 'Personal',
+  Office = 'Office',
+  Entertainment = 'Entertainment',
+  Travel = 'Travel',
+  Financial = 'Financial',
+  Other = 'Other',
 }
+
+export const ExpenseLeaf = {
+  Home: [
+    'Rent', 'Maintenance', 'Amenities', 'Garden', 'Insurance', 'Other'
+  ],
+  Utilities: [
+    'Electricity', 'Water', 'Gas', 'Internet', 'Phone', 'Trash/Recycle', 'Other'
+  ],
+  Food: [
+    'Groceries', 'Restaurants', 'Fast Food', 'Drinks', 'Other'
+  ],
+  Transport: [
+    'Gas', 'Lease', 'Maintenance', 'Fare/Toll', 'Public', 'Other'
+  ],
+  Personal: [
+    'Healthcare', 'Services', 'Textile', 'Toilietries', 'Other'
+  ],
+  Office: [
+    'Supplies', 'Equipment', 'Cloud', 'Other'
+  ],
+  Entertainment: [
+    'Movies', 'Games', 'Concerts', 'Events', 'Music', 'Other'
+  ],
+  Travel: [
+    'Transportation', 'Housing', 'Fees', 'Food', 'Other'
+  ],
+  Financial: [
+    'Investment', 'Savings', 'Taxes', 'Other'
+  ],
+  Other: [
+    'Gifts', 'Pets', 'Other'
+  ],
+}
+
+export enum IncomeRoot {
+  Salary = 'Salary',
+  SideJob = 'SideJob',
+  FinanceIncome = 'FinanceIncome',
+  OtherIncome = 'OtherIncome',
+}
+
+export const IncomeLeaf = {
+  Salary: [
+    'Monthly', 'Bi-Weekly', 'Weekly', 'Other'
+  ],
+  SideJob: [
+    'Gig', 'Freelance', 'Other'
+  ],
+  FinanceIncome: [
+    'Investment', 'Savings', 'Interest', 'Dividends', 'Other'
+  ],
+  OtherIncome: [
+    'Reimbursement', 'Gifts', 'Other'
+  ],
+}
+
+export type Category = `${(IncomeRoot | ExpenseRoot)}>${string}`;
 
 export interface Transaction {
   id: string;
   company: string;
   amount: number;
-  category: ExpenseCat | IncomeCat;
+  category: Category;
   date: Date;
   desc: string;
   account_id: string;

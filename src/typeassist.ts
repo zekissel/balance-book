@@ -1,8 +1,11 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import { ExpenseCat, IncomeCat, Transaction, Account } from './typedef';
+import { ExpenseRoot, IncomeRoot, Transaction, Account, Category } from './typedef';
 
-export const getCategoryColor = (category: ExpenseCat | IncomeCat): string => {
+export const getCategoryColor = (category: Category): string => {
+  /*
   switch (category) {
+    
+    case category.root == typeof ExpenseRoot: return '#F5E890';
     case ExpenseCat.Other: case IncomeCat.OtherIncome: return '#F5E890';
     case ExpenseCat.Savings: case IncomeCat.SavingsIncome: return '#C2F3FA';
     case ExpenseCat.Investment: case IncomeCat.InvestmentIncome: return '#F9C9C9';
@@ -16,7 +19,8 @@ export const getCategoryColor = (category: ExpenseCat | IncomeCat): string => {
     case IncomeCat.Salary: return '#C9F9E6'; case IncomeCat.SideJob: return '#F8CDF9';
     case IncomeCat.Reimbursement: return '#C9CBC7'; case ExpenseCat.Pet: return '#FAD49F';
     default: return '#fff';
-  }
+  }*/
+  return '#fff';
 }
 
 export function addDays(date: Date, days: number) {
@@ -32,7 +36,9 @@ export async function getTransactions(account_ids: string[]): Promise<Transactio
   return await invoke("get_transactions", { 'accountId': account_ids })
     .then(data => {
       const trans = data as Transaction[];
-      trans.forEach(t => t.date = addDays(new Date(new Date(t.date).toUTCString().split(' ').slice(0, 4).join(' ')), 0));
+      trans.forEach(t => {
+        t.date = addDays(new Date(new Date(t.date).toUTCString().split(' ').slice(0, 4).join(' ')), 0);
+      });
       return trans.sort((a, b) => a.date > b.date ? -1 : 1);
     })
 }
