@@ -193,6 +193,20 @@ pub async fn update_account(
     .expect("Error updating account")
 }
 
+pub async fn update_account_balance(
+  id_i: &str, 
+  balance_i: i32, 
+  date_i: &str
+) -> Account {
+  use super::schema::account::dsl::*;
+
+  diesel::update(account.find(id_i))
+    .set((balance.eq(balance_i), date.eq(date_i)))
+    .returning(Account::as_returning())
+    .get_result(&mut establish_connection())
+    .expect("Error updating account balance")
+}
+
 pub fn delete_account(id_i: &str) {
   use super::schema::account::dsl::*;
 

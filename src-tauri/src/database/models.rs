@@ -141,7 +141,7 @@ impl Serialize for User {
 
 
 
-#[derive(Queryable, Selectable)]
+#[derive(Queryable, Selectable, Clone)]
 #[diesel(table_name = crate::database::schema::token)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Token {

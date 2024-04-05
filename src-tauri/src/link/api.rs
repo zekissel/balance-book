@@ -28,7 +28,7 @@ pub async fn fetch_transactions(token: Token) -> Result<Vec<Transaction>, ()> {
     let t_id = trans.transaction_id.to_string();
     let company = trans.name.as_ref().unwrap_or(&"N/A".to_owned()).to_string();
     let amount = (trans.amount * -100.) as i32;
-    let category = trans.category.as_ref().unwrap_or(&vec!["n/a".to_string()]).join(", ");
+    let category = trans.category.as_ref().unwrap_or(&vec![if amount < 0 {"Other>Other"} else {"OtherIncome>Other"}.to_string()]).join(", ");
     let date = trans.date.to_string();
     let desc = match trans.personal_finance_category.as_ref() {
       Some(c) => c.primary.to_string(),
@@ -73,6 +73,21 @@ pub async fn fetch_transactions(token: Token) -> Result<Vec<Transaction>, ()> {
   Ok(resp)
 }
 
+pub async fn fetch_balance(token: Token) -> Result<bool, ()> {
+  let client = PlaidClient::from_env();
+  let response = client
+    .accounts_balance_get(&token.id)
+    .await
+    .unwrap();
+
+  for acc in response.accounts {
+    let a_id = &acc.account_id;
+    let balance = (acc.balances.current.unwrap() * 100.) as i32;
+    let date = &chrono::Utc::now().to_string();
+    let _ = crate::database::api::update_account_balance(&a_id, balance, date).await;
+  }
+  Ok(true)
+}
 
 pub async fn extract_accounts(user_id: &str, access_token: &str) -> Result<bool, ()> {
   let client = PlaidClient::from_env();
@@ -93,7 +108,7 @@ pub async fn extract_accounts(user_id: &str, access_token: &str) -> Result<bool,
     let a_id = &acc.account_id;
     let account_name = &acc.name;
     let balance = (acc.balances.current.unwrap() * 100.) as i32;
-    let date = &"2024-04-01".to_owned();
+    let date = &chrono::Utc::now().to_string();
     let account_type = match acc.type_.as_ref() {
       "depository" => match acc.subtype.as_ref() {
         Some(AccountSubtype(..)) => {

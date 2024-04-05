@@ -23,6 +23,7 @@ plaid = "8.0.0"
 dotenv = "0.15.0"
 open = "5.1.2"
 tauri-plugin-oauth = "0.0.0-alpha.0"
+chrono = "0.4.37"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

@@ -21,7 +21,7 @@ export default function TotalGraph ({ transactions, range, endDate }: GraphProps
   }, [transactions, range, endDate]);
 
 
-  const xAxisInterval = useMemo(() => {
+  const xAxisInterval: number = useMemo(() => {
     if (range <= 14) return 0;
     else if (range <= 30) return 1;
     else if (range <= 60) return 3;
@@ -33,7 +33,7 @@ export default function TotalGraph ({ transactions, range, endDate }: GraphProps
   }, [range]);
 
   const option = {
-    color: ['#739d88'],
+    color: [transactions.length === 0 ? '#abc' : '#739d88'],
     grid: { show: true },
     tooltip: {
       trigger: 'axis',
