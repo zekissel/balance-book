@@ -11,7 +11,9 @@ import {
   PlaidLinkOptions,
 } from 'react-plaid-link';
 
-function getLocalURL(port: number) {
+
+function getServerURL(port: number) {
+  // in Plaid dev and prod: change to hosted server (https://your-server.com)
   return `http://localhost:${port}`;
 }
 
@@ -23,7 +25,7 @@ const PlaidLink = ({ user, refreshAcct, refreshTrans }: PlaidLinkWithOAuthProps)
   const [token, setToken] = useState<string | null>(localStorage.getItem('link_token'));
   const [state, setState] = useState<string | null>(localStorage.getItem('auth_state'));
 
-  const redirect = state ? `http://localhost:${port}/callback?oauth_state_id=${state}` : undefined;
+  const redirect = state ? `${getServerURL(port)}/callback?oauth_state_id=${state}` : undefined;
 
 
   React.useEffect(() => {
@@ -48,7 +50,7 @@ const PlaidLink = ({ user, refreshAcct, refreshTrans }: PlaidLinkWithOAuthProps)
     const createLinkToken = async () => {
       const resp = await invoke('authenticate', {
         userId: user.id,
-        redirectUri: `${getLocalURL(port)}/callback`,
+        redirectUri: `${getServerURL(port)}/callback`,
       })
       const link_token = resp as string;
       console.log('link_token', link_token);
