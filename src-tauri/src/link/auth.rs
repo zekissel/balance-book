@@ -42,7 +42,7 @@ pub async fn create_link_token(
 
   client
     .link_token_create(args)
-    .products(&["auth", "transactions"])
+    .products(&["transactions"])
     .redirect_uri(redirect_uri)
     //.access_token("your access token")
     //.user_token("your user token")

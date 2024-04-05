@@ -12,9 +12,10 @@ import {
 } from 'react-plaid-link';
 
 
-function getServerURL(port: number) {
+function getServerURL(_port: number) {
   // in Plaid dev and prod: change to hosted server (https://your-server.com)
-  return `http://localhost:${port}`;
+  //return `https://us-central1-balance-book-auth.cloudfunctions.net/balance`; 
+  return `http://localhost:${_port}`
 }
 
 interface PlaidLinkWithOAuthProps { user: User, refreshAcct: () => void, refreshTrans: () => void }

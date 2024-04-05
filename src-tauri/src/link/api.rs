@@ -90,12 +90,6 @@ pub async fn fetch_balance(token: Token) -> Result<bool, ()> {
 }
 
 pub async fn extract_accounts(user_id: &str, access_token: &str) -> Result<bool, ()> {
-  let client = PlaidClient::from_env();
-  let response = client
-    .auth_get(access_token)
-    .await
-    .unwrap();
-
   fn to_upper(s: &str) -> String {
     let mut c = s.chars();
     match c.next() {
@@ -103,6 +97,12 @@ pub async fn extract_accounts(user_id: &str, access_token: &str) -> Result<bool,
       Some(f) => f.to_uppercase().chain(c).collect(),
     }
   }
+
+  let client = PlaidClient::from_env();
+  let response = client
+    .accounts_balance_get(access_token)
+    .await
+    .unwrap();
 
   for acc in response.accounts {
     let a_id = &acc.account_id;
