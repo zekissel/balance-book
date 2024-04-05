@@ -1,0 +1,1 @@
+module github.com/zekissel/balance-book/tree/main/server
