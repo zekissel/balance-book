@@ -4,11 +4,11 @@ use plaid::model::*;
 use crate::database::models::Transaction;
 use crate::database::models::Token;
 
-pub async fn sync_transactions(access_token: &str, cursor: Option<&str>) -> Result<TransactionsSyncResponse, ()> {
+pub async fn sync_transactions(access_token: &str, count: i16, cursor: Option<&str>) -> Result<TransactionsSyncResponse, ()> {
   let client = PlaidClient::from_env();
   let response = client
     .transactions_sync(access_token)
-    .count(200)
+    .count(count.into())
     .cursor(cursor.unwrap_or(""))
     .options(TransactionsSyncRequestOptions {
       days_requested: Some(1),
@@ -18,10 +18,11 @@ pub async fn sync_transactions(access_token: &str, cursor: Option<&str>) -> Resu
     })
     .await
     .unwrap();
+  println!("{:#?}", response);
   Ok(response)
 }
 
-pub async fn fetch_transactions(token: Token) -> Result<Vec<Transaction>, ()> {
+pub async fn fetch_transactions(token: Token, number: i16) -> Result<Vec<Transaction>, ()> {
   fn format_transaction(
     trans: plaid::model::Transaction
   ) -> (String, String, i32, String, String, String, String) {
@@ -46,7 +47,7 @@ pub async fn fetch_transactions(token: Token) -> Result<Vec<Transaction>, ()> {
   while more {
     print!("Fetching transactions: {:#?}", count);
     count += 1;
-    match sync_transactions(&token.id, Some(&cursor)).await {
+    match sync_transactions(&token.id, number, Some(&cursor)).await {
       Ok(d) => {
         for trans in d.added {
           let new_trans = format_transaction(trans);

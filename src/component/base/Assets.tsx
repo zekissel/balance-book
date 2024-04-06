@@ -14,7 +14,7 @@ export default function Assets ({ user, accounts, transactions, signalRefresh }:
     switch (view) {
       case '0': return AccountType.Checking;
       case '1': return AccountType.Savings;
-      case '2': return AccountType.Investing;
+      case '2': return AccountType.Investment;
       default: return AccountType.Checking;
     }
   }
@@ -22,12 +22,12 @@ export default function Assets ({ user, accounts, transactions, signalRefresh }:
     switch (view) {
       case AccountType.Checking: return checkingAccounts;
       case AccountType.Savings: return savingsAccounts;
-      case AccountType.Investing: return investingAccounts;
+      case AccountType.Investment: return investingAccounts;
     }
   }
   
   const savingsAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Savings), [accounts]);
-  const investingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Investing), [accounts]);
+  const investingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Investment), [accounts]);
   //const checkingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Checking), [accounts]);
   const checkingAccounts = accounts.filter(a => !savingsAccounts.includes(a) && !investingAccounts.includes(a));
 
@@ -47,8 +47,8 @@ export default function Assets ({ user, accounts, transactions, signalRefresh }:
             onClick={() => {setCurView(AccountType.Savings); localStorage.setItem('accView', '1')}}><img src='/bank.svg'/>Savings
           </button>
           <button 
-            id={ curView === AccountType.Investing ? 'dynamic-menu-current' : undefined} 
-            onClick={() => {setCurView(AccountType.Investing); localStorage.setItem('accView', '2')}}><img src='/trend.svg'/>Investing
+            id={ curView === AccountType.Investment ? 'dynamic-menu-current' : undefined} 
+            onClick={() => {setCurView(AccountType.Investment); localStorage.setItem('accView', '2')}}><img src='/trend.svg'/>Investing
           </button>
         </div>
 

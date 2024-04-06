@@ -158,7 +158,7 @@ export interface Account {
 export enum AccountType {
   Checking = "Checking",
   Savings = "Savings",
-  Investing = "Investing",
+  Investment = "Investment",
 }
 
 

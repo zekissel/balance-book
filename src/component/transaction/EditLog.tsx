@@ -21,7 +21,7 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
 
   const checkingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Checking), [accounts]);
   const savingsAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Savings), [accounts]);
-  const investingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Investing), [accounts]);
+  const investingAccounts = useMemo(() => accounts.filter(a => a.account_type === AccountType.Investment), [accounts]);
 
   const accountError = useMemo(() => !isIncome ? (checkingAccounts.length === 0 ? '*Expense requires a source account' : '') : (accounts.length === 0 ? '*Income requires a destination account' : ''), [isIncome]);
   const [error, setError] = useState('');
