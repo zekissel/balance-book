@@ -107,6 +107,15 @@ pub async fn read_transaction(account_id_i: Vec<&str>) -> Vec<Transaction> {
   ret
 }
 
+pub async fn read_transaction_by_id(id_i: &str) -> Option<Transaction> {
+  use super::schema::transaction::dsl::*;
+
+  transaction
+    .filter(id.eq(id_i))
+    .first::<Transaction>(&mut establish_connection())
+    .ok()
+}
+
 pub async fn update_transaction(
   id_i: &str,
   company_i: &str, 

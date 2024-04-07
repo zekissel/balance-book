@@ -1,7 +1,6 @@
 use plaid::PlaidClient;
 use plaid::model::*;
 
-use crate::database::models::Transaction;
 use crate::database::models::Token;
 
 pub async fn sync_transactions(access_token: &str, count: i16, cursor: Option<&str>) -> Result<TransactionsSyncResponse, ()> {
@@ -22,7 +21,7 @@ pub async fn sync_transactions(access_token: &str, count: i16, cursor: Option<&s
   Ok(response)
 }
 
-pub async fn fetch_transactions(token: Token, number: i16) -> Result<Vec<Transaction>, ()> {
+pub async fn fetch_transactions(token: Token, number: i16) -> Result<bool, ()> {
   fn format_transaction(
     trans: plaid::model::Transaction
   ) -> (String, String, i32, String, String, String, String) {
@@ -41,7 +40,6 @@ pub async fn fetch_transactions(token: Token, number: i16) -> Result<Vec<Transac
   }
 
   let mut more = true;
-  let mut resp = Vec::new();
   let mut count = 1;
   let mut cursor: String = token.cursor.as_ref().unwrap_or(&"".to_owned()).to_string();
   while more {
@@ -51,13 +49,14 @@ pub async fn fetch_transactions(token: Token, number: i16) -> Result<Vec<Transac
       Ok(d) => {
         for trans in d.added {
           let new_trans = format_transaction(trans);
-          let transaction = crate::database::api::create_transaction(Some(&new_trans.0), &new_trans.1, new_trans.2, &new_trans.3, &new_trans.4, &new_trans.5, &new_trans.6, None).await;
-          resp.push(transaction);
+          let _ = match crate::database::api::read_transaction_by_id(&new_trans.0).await {
+            Some(_tr) => crate::database::api::update_transaction(&new_trans.0, &new_trans.1, new_trans.2, &new_trans.3, &new_trans.4, &new_trans.5, &new_trans.6, None).await,
+            None => crate::database::api::create_transaction(Some(&new_trans.0), &new_trans.1, new_trans.2, &new_trans.3, &new_trans.4, &new_trans.5, &new_trans.6, None).await,
+          };
         };
         for trans in d.modified {
           let mod_trans = format_transaction(trans);
-          let transaction = crate::database::api::update_transaction(&mod_trans.0, &mod_trans.1, mod_trans.2, &mod_trans.3, &mod_trans.4, &mod_trans.5, &mod_trans.6, None).await;
-          resp.push(transaction);
+          let _ = crate::database::api::update_transaction(&mod_trans.0, &mod_trans.1, mod_trans.2, &mod_trans.3, &mod_trans.4, &mod_trans.5, &mod_trans.6, None).await;
         };
         for trans in d.removed {
           let _ = crate::database::api::delete_transaction(&trans.transaction_id.unwrap());
@@ -70,8 +69,7 @@ pub async fn fetch_transactions(token: Token, number: i16) -> Result<Vec<Transac
   };
   let _ = crate::database::api::update_token_cursor(&token.id, &cursor).await;
 
-  print!("{:#?}", resp);
-  Ok(resp)
+  Ok(true)
 }
 
 pub async fn fetch_balance(token: Token) -> Result<bool, ()> {
@@ -119,6 +117,8 @@ pub async fn extract_accounts(user_id: &str, access_token: &str) -> Result<bool,
         None => "Checking".to_owned(),
       },
       "investment" => "Investment".to_owned(),
+      "credit" => "Credit".to_owned(),
+      "loan" => "Loan".to_owned(),
       _ => "Other".to_owned(),
     };
     

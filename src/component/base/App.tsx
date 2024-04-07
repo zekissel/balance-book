@@ -32,7 +32,7 @@ function App() {
   const [signalTrans, setSignalTrans] = useState(false);
   const signalRefreshTrans = () => setSignalTrans(!signalTrans);
 
-  const update = (refresh: () => void) => { setTimeout(() => { refresh() }, 400) };
+  const update = (refresh: () => void) => { setTimeout(() => { refresh() }, 500) };
   const refreshAccounts = async () => { if (user) setAccounts(await getAccounts(user.id)) };
   const refreshTransactions = async () => { setTransactions(await getTransactions(accounts.map(a => a.id))) };
   useEffect(() => { update(refreshAccounts) }, [signalRefreshAcct, user]);

@@ -12,12 +12,18 @@ export default function CreateAccount ({ user, type, toggle, update, setAddAccou
       <span className='new-log-radio'>
         <input type='radio' name='type' value='Expense' id='radio-set-checking' onChange={() => setAddAccount(AccountType.Checking)} defaultChecked={type===AccountType.Checking} />
         <label htmlFor='radio-set-checking'>Checking</label>
+
+        <input type='radio' name='type' value='Expense' id='radio-set-credit' onChange={() => setAddAccount(AccountType.Credit)} defaultChecked={type===AccountType.Credit}/>
+        <label htmlFor='radio-set-credit'>Credit</label>
         
         <input type='radio' name='type' value='Expense' id='radio-set-savings' onChange={() => setAddAccount(AccountType.Savings)} defaultChecked={type===AccountType.Savings}/>
         <label htmlFor='radio-set-savings'>Savings</label>
 
-        <input type='radio' name='type' value='Expense' id='radio-set-investing' onChange={() => setAddAccount(AccountType.Investing)} defaultChecked={type===AccountType.Investing}/>
+        <input type='radio' name='type' value='Expense' id='radio-set-investing' onChange={() => setAddAccount(AccountType.Investment)} defaultChecked={type===AccountType.Investment}/>
         <label htmlFor='radio-set-investing'>Investing</label>
+
+        <input type='radio' name='type' value='Expense' id='radio-set-loan' onChange={() => setAddAccount(AccountType.Loan)} defaultChecked={type===AccountType.Loan}/>
+        <label htmlFor='radio-set-loan'>Loan</label>
       </span>
 
       <EditAccount 
