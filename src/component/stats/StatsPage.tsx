@@ -1,13 +1,14 @@
 import { useMemo, useState } from "react";
-import { Transaction } from "../../typedef";
+import { Transaction, Account } from "../../typedef";
 import TotalGraph from "./TotalGraph";
 import PieGraph from "./PieGraph";
 import LineGraph from "./LineGraph";
 import BarGraph from "./BarGraph";
 import HeatMap from "./HeatMap";
+import Sankey from "./Sankey";
 
-interface StatsPageProps { transactions: Transaction[], upcoming: Transaction[], startDate: Date, endDate: Date, showFilter: boolean }
-export default function StatsPage ({ transactions, upcoming, startDate, endDate, showFilter }: StatsPageProps) {
+interface StatsPageProps { transactions: Transaction[], accounts: Account[], upcoming: Transaction[], startDate: Date, endDate: Date, showFilter: boolean }
+export default function StatsPage ({ transactions, accounts, upcoming, startDate, endDate, showFilter }: StatsPageProps) {
 
   const netBalance = useMemo(() =>  transactions.reduce((acc, t) => acc + t.amount, 0), [transactions]);
   const upcomingTotal = useMemo(() => upcoming.reduce((acc, t) => acc + (t.amount / 100), 0), [upcoming]);
@@ -81,7 +82,10 @@ export default function StatsPage ({ transactions, upcoming, startDate, endDate,
         </div>
       
         <div className='stats-main-box-longer'>
-          <HeatMap transactions={transactions} startDate={startDate} endDate={endDate}/>
+          
+          <Sankey transactions={transactions} accounts={accounts}/>
+
+          { false && <HeatMap transactions={transactions} startDate={startDate} endDate={endDate}/> }
         </div>
       </div>
     </div>

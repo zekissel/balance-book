@@ -26,7 +26,7 @@ export default function AccountPage ({ user, accounts, transactions, updateAccou
             user={user}
             account={a} 
             updateAccount={updateAccounts} 
-            transactions={transactions.filter(t => (t.account_id === a.id || t.secondary_id === a.id))} />
+            transactions={transactions.filter(t => (t.account_id === a.id))} />
         )}
         { accounts.length === 0 && 
           <div className='assets-account-card card-empty'>No accounts found<br/><button onClick={() => addAccount(type)}>Add {type} Account</button></div> 
@@ -41,7 +41,7 @@ export default function AccountPage ({ user, accounts, transactions, updateAccou
 interface AccountCardProps { user: User, account: Account, updateAccount: () => void, transactions: Transaction[] }
 function AccountCard ({ user, account, updateAccount, transactions }: AccountCardProps) {
 
-  const [range, setRange] = useState(account.account_type === AccountType.Checking ? 14 : 91);
+  const [range, setRange] = useState(30);
   const [showEdit, setShowEdit] = useState(false);
   const toggleEdit = () => setShowEdit(!showEdit);
 
@@ -57,7 +57,7 @@ function AccountCard ({ user, account, updateAccount, transactions }: AccountCar
         if (index !== -1) {
           while (index < range) {
             index += 1;
-            totals[index].total += ((trans.account_id === account.id ? -1 : 1) * trans.amount);
+            totals[index].total += ((account.account_type !== AccountType.Credit ? -1 : 1) * trans.amount);
           }
         }
         else if (trans.date.getTime() > today.getTime()) {
@@ -138,9 +138,9 @@ function AccountCard ({ user, account, updateAccount, transactions }: AccountCar
         </div>
         <div>
           <label>Days: </label>
-          <button onClick={() => setRange(account.account_type === AccountType.Checking ? 14 : 91)}>{ account.account_type === AccountType.Checking ? '14' : '91' }</button>
-          <button onClick={() => setRange(account.account_type === AccountType.Checking ? 30 : 180)}>{ account.account_type === AccountType.Checking ? '30' : '180' }</button>
-          <button onClick={() => setRange(account.account_type === AccountType.Checking ? 60 : 365)}>{ account.account_type === AccountType.Checking ? '60' : '365' }</button>
+          <button onClick={() => setRange(30)}>30</button>
+          <button onClick={() => setRange(90)}>90</button>
+          <button onClick={() => setRange(180)}>180</button>
         </div>
       </div>
       <div className='stats-graph'>

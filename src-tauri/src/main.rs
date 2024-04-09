@@ -30,8 +30,8 @@ fn remove_account(id: &str) {
 }
 
 #[tauri::command]
-async fn new_transaction(company: &str, amount: i32, category: &str, date: &str, desc: &str, account_id: &str, secondary_id: Option<&str>) -> Result<Transaction, ()> {
-  Ok(database::api::create_transaction(None, company, amount, category, date, desc, account_id, secondary_id).await)
+async fn new_transaction(company: &str, amount: i32, category: &str, date: &str, desc: &str, account_id: &str) -> Result<Transaction, ()> {
+  Ok(database::api::create_transaction(None, company, amount, category, date, desc, account_id).await)
 }
 
 #[tauri::command]
@@ -40,8 +40,8 @@ async fn get_transactions(account_id: Vec<&str>) -> Result<Vec<Transaction>, ()>
 }
 
 #[tauri::command]
-async fn fix_transaction(id: &str, company: &str, amount: i32, category: &str, date: &str, desc: &str, account_id: &str, secondary_id: Option<&str>) -> Result<Transaction, ()> {
-  Ok(database::api::update_transaction(id, company, amount, category, date, desc, account_id, secondary_id).await)
+async fn fix_transaction(id: &str, company: &str, amount: i32, category: &str, date: &str, desc: &str, account_id: &str) -> Result<Transaction, ()> {
+  Ok(database::api::update_transaction(id, company, amount, category, date, desc, account_id).await)
 }
 
 #[tauri::command]

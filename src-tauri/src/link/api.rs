@@ -46,17 +46,15 @@ pub async fn fetch_transactions(token: Token, number: i16) -> Result<bool, ()> {
     print!("Fetching transactions: {:#?}", count);
     count += 1;
     match sync_transactions(&token.id, number, Some(&cursor)).await {
-      Ok(d) => {
-        for trans in d.added {
+      Ok(mut d) => {
+        let mut list = d.added;
+        list.append(&mut d.modified);
+        for trans in list {
           let new_trans = format_transaction(trans);
           let _ = match crate::database::api::read_transaction_by_id(&new_trans.0).await {
-            Some(_tr) => crate::database::api::update_transaction(&new_trans.0, &new_trans.1, new_trans.2, &new_trans.3, &new_trans.4, &new_trans.5, &new_trans.6, None).await,
-            None => crate::database::api::create_transaction(Some(&new_trans.0), &new_trans.1, new_trans.2, &new_trans.3, &new_trans.4, &new_trans.5, &new_trans.6, None).await,
+            Some(_tr) => crate::database::api::update_transaction(&new_trans.0, &new_trans.1, new_trans.2, &new_trans.3, &new_trans.4, &new_trans.5, &new_trans.6).await,
+            None => crate::database::api::create_transaction(Some(&new_trans.0), &new_trans.1, new_trans.2, &new_trans.3, &new_trans.4, &new_trans.5, &new_trans.6).await,
           };
-        };
-        for trans in d.modified {
-          let mod_trans = format_transaction(trans);
-          let _ = crate::database::api::update_transaction(&mod_trans.0, &mod_trans.1, mod_trans.2, &mod_trans.3, &mod_trans.4, &mod_trans.5, &mod_trans.6, None).await;
         };
         for trans in d.removed {
           let _ = crate::database::api::delete_transaction(&trans.transaction_id.unwrap());

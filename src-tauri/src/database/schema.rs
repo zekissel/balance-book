@@ -7,7 +7,6 @@ diesel::table! {
     date -> Text,
     desc -> Text,
     account_id -> Text,
-    secondary_id -> Nullable<Text>
   }
 }
 

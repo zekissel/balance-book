@@ -19,7 +19,6 @@ pub struct Transaction {
     pub date: String,
     pub desc: String,
     pub account_id: String,
-    pub secondary_id: Option<String>,
 }
 
 #[derive(Insertable)]
@@ -32,7 +31,6 @@ pub struct AddTransaction<'a> {
     pub date: &'a str,
     pub desc: &'a str,
     pub account_id: &'a str,
-    pub secondary_id: Option<&'a str>,
 }
 
 impl Serialize for Transaction {
@@ -40,7 +38,7 @@ impl Serialize for Transaction {
     where
         S: serde::Serializer,
     {
-        let mut state = serializer.serialize_struct("Transaction", 8)?;
+        let mut state = serializer.serialize_struct("Transaction", 7)?;
         state.serialize_field("id", &self.id)?;
         state.serialize_field("company", &self.company)?;
         state.serialize_field("amount", &self.amount)?;
@@ -48,7 +46,6 @@ impl Serialize for Transaction {
         state.serialize_field("date", &self.date)?;
         state.serialize_field("desc", &self.desc)?;
         state.serialize_field("account_id", &self.account_id)?;
-        state.serialize_field("secondary_id", &self.secondary_id)?;
         state.end()
     }
 }

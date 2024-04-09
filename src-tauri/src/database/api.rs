@@ -76,7 +76,6 @@ pub async fn create_transaction(
   date: &str,
   desc: &str,
   account_id: &str,
-  secondary_id: Option<&str>
 ) -> Transaction {
   use super::schema::transaction;
   let mut trans_id = String::new();
@@ -84,7 +83,7 @@ pub async fn create_transaction(
     Some(id) => trans_id = id.to_string(),
     None => trans_id = uuid::Uuid::new_v4().to_string(),
   }
-  let new_transaction = AddTransaction { id: &trans_id, company, amount, category, date, desc, account_id, secondary_id };
+  let new_transaction = AddTransaction { id: &trans_id, company, amount, category, date, desc, account_id };
 
   diesel::insert_into(transaction::table)
     .values(&new_transaction)
@@ -124,12 +123,11 @@ pub async fn update_transaction(
   date_i: &str,
   desc_i: &str,
   account_id_i: &str,
-  secondary_id_i: Option<&str>
 ) -> Transaction {
   use super::schema::transaction::dsl::*;
 
   diesel::update(transaction.find(id_i))
-    .set((company.eq(company_i), amount.eq(amount_i), category.eq(category_i), date.eq(date_i), desc.eq(desc_i), account_id.eq(account_id_i), secondary_id.eq(secondary_id_i)))
+    .set((company.eq(company_i), amount.eq(amount_i), category.eq(category_i), date.eq(date_i), desc.eq(desc_i), account_id.eq(account_id_i)))
     .returning(Transaction::as_returning())
     .get_result(&mut establish_connection())
     .expect("Error updating transaction")

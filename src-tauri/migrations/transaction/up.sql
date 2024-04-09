@@ -6,6 +6,5 @@ CREATE TABLE 'transaction' (
   date          TEXT    NOT NULL,
   desc          TEXT    NOT NULL,
   account_id    TEXT    NOT NULL,
-  secondary_id  TEXT,
   FOREIGN KEY (account_id) REFERENCES account (id)
 );

@@ -89,10 +89,10 @@ export const ExpenseLeaf = {
     'Movies', 'Games', 'Concerts', 'Events', 'Music', 'Other'
   ],
   Travel: [
-    'Transportation', 'Housing', 'Fees', 'Food', 'Other'
+    'Transportation', 'Housing', 'Food', 'Other'
   ],
   Financial: [
-    'Investment', 'Savings', 'Taxes', 'Other'
+    'Transfer', 'Credit', 'Taxes/Fees', 'Other'
   ],
   Other: [
     'Gifts', 'Pets', 'Other'
@@ -114,7 +114,7 @@ export const IncomeLeaf = {
     'Gig', 'Freelance', 'Other'
   ],
   FinanceIncome: [
-    'Investment', 'Savings', 'Interest', 'Dividends', 'Other'
+    'Transer', 'Credit', 'Interest', 'Other'
   ],
   OtherIncome: [
     'Reimbursement', 'Gifts', 'Other'
@@ -131,7 +131,6 @@ export interface Transaction {
   date: Date;
   desc: string;
   account_id: string;
-  secondary_id: string | null;
 }
 
 

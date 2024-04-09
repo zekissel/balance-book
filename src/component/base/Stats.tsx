@@ -86,7 +86,7 @@ export default function Stats ({ transactions, accounts }: StatsProps) {
 
       { showFilter && <FilterGUI accounts={accounts} toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
 
-      <StatsPage transactions={timeFrameTransactions} upcoming={upcomingTransactions} startDate={startDate} endDate={endDate} showFilter={showFilter}/>
+      <StatsPage transactions={timeFrameTransactions} accounts={accounts} upcoming={upcomingTransactions} startDate={startDate} endDate={endDate} showFilter={showFilter}/>
 
     </div>
   )
