@@ -89,7 +89,39 @@ export default function TotalGraph ({ transactions, accounts }: GraphProps) {
         lineStyle: {
           color: 'source',
           curveness: 0.4
-        }
+        },
+        levels: [
+          {
+            depth: 0,
+            itemStyle: {
+              color: '#739d88'
+            },
+            lineStyle: {
+              color: 'source',
+              curveness: 0.4
+            }
+          },
+          {
+            depth: 1,
+            itemStyle: {
+              color: '#a0bacb'
+            },
+            lineStyle: {
+              color: 'target',
+              curveness: 0.4
+            }
+          },
+          {
+            depth: 2,
+            itemStyle: {
+              color: '#f6d6aa'
+            },
+            lineStyle: {
+              color: 'gradient',
+              curveness: 0.4
+            }
+          }
+        ]
       }
     ]
   };
