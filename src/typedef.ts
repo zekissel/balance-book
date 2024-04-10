@@ -77,19 +77,19 @@ export const ExpenseLeaf = {
     'Groceries', 'Restaurants', 'Fast Food', 'Drinks', 'Other'
   ],
   Transport: [
-    'Gas', 'Lease', 'Maintenance', 'Fare/Toll', 'Public', 'Other'
+    'Gas', 'Maintenance', 'Fees', 'Insurance', 'Other'
   ],
   Personal: [
-    'Healthcare', 'Services', 'Textile', 'Toilietries', 'Other'
+    'Healthcare', 'Services', 'Textile', 'Toilietries', 'Insurance', 'Other'
   ],
   Office: [
-    'Supplies', 'Equipment', 'Projects', 'Other'
+    'Supplies', 'Equipment', 'Projects', 'Insurance', 'Other'
   ],
   Entertainment: [
     'Movies', 'Games', 'Concerts', 'Events', 'Music', 'Other'
   ],
   Travel: [
-    'Transportation', 'Housing', 'Food', 'Other'
+    'Transportation', 'Housing', 'Food', 'Insurance', 'Other'
   ],
   Financial: [
     'Transfer', 'Credit', 'Taxes/Fees', 'Other'
@@ -114,7 +114,7 @@ export const IncomeLeaf = {
     'Gig', 'Freelance', 'Other'
   ],
   FinanceIncome: [
-    'Transer', 'Credit', 'Interest', 'Other'
+    'Transfer', 'Credit', 'Interest', 'Other'
   ],
   OtherIncome: [
     'Reimbursement', 'Gifts', 'Other'

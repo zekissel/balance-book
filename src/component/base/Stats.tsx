@@ -25,8 +25,8 @@ export default function Stats ({ transactions, accounts }: StatsProps) {
     accounts: sessionStorage.getItem('filter.accounts')?.split(' ') ?? [],
   });
 
-  const [timeRange, setTimeRange] = useState(2);
-  const [rangeMultiplier, setRangeMultiplier] = useState(7);
+  const [timeRange, setTimeRange] = useState(sessionStorage.getItem('stats.timeRange') ? Number(sessionStorage.getItem('stats.timeRange')) : 2);
+  const [rangeMultiplier, setRangeMultiplier] = useState(sessionStorage.getItem('stats.timeMulti') ? Number(sessionStorage.getItem('stats.timeMulti')) : 7);
 
   /* filters get superior say on date specification (if only one is set then the other side has no limit); otherwise listen to stats menu bar */
   const endDate = useMemo(() => {
@@ -60,11 +60,17 @@ export default function Stats ({ transactions, accounts }: StatsProps) {
     return filteredTransactions.filter(t => t.date.getTime() > endDate.getTime());
   }, [filteredTransactions, endDate]);
 
-  
+  const updateMultiplier = (multi: number) => {
+    setRangeMultiplier(multi);
+    sessionStorage.setItem('stats.timeMulti', multi.toString());
+  }
 
   const updateRangeDays = (e: React.ChangeEvent<HTMLInputElement>) => {
     const am = e.target.value;
-    if (!am || am.match(/^\d{1,}?$/)) setTimeRange(Number(am));
+    if (!am || am.match(/^\d{1,}?$/)) {
+      setTimeRange(Number(am));
+      sessionStorage.setItem('stats.timeRange', am);
+    }
   }
 
   return (
@@ -72,10 +78,10 @@ export default function Stats ({ transactions, accounts }: StatsProps) {
       <menu className='dynamic-menu'>
         <div className='dynamic-menu-main'>
           <button id={ !anyDateFilters() && rangeMultiplier > 0 ? 'dynamic-menu-current' : undefined}><input type='text' value={timeRange} onChange={updateRangeDays}/></button>
-          <button id={ !anyDateFilters() && rangeMultiplier === 1 ? 'dynamic-menu-current' : undefined} onClick={() => setRangeMultiplier(1)}><img src='/cal-day.svg' /> Days</button>
-          <button id={ !anyDateFilters() && rangeMultiplier === 7 ? 'dynamic-menu-current' : undefined} onClick={() => setRangeMultiplier(7)}><img src='/cal-week.svg' /> Weeks</button>
-          <button id={ !anyDateFilters() && rangeMultiplier === 30 ? 'dynamic-menu-current' : undefined} onClick={() => setRangeMultiplier(30)}><img src='/calendar.svg' /> Months</button>
-          <button id={ !anyDateFilters() && rangeMultiplier === 365 ? 'dynamic-menu-current' : undefined} onClick={() => setRangeMultiplier(365)}><img src='/cal-year.svg' /> Years</button>
+          <button id={ !anyDateFilters() && rangeMultiplier === 1 ? 'dynamic-menu-current' : undefined} onClick={() => updateMultiplier(1)}><img src='/cal-day.svg' /> Days</button>
+          <button id={ !anyDateFilters() && rangeMultiplier === 7 ? 'dynamic-menu-current' : undefined} onClick={() => updateMultiplier(7)}><img src='/cal-week.svg' /> Weeks</button>
+          <button id={ !anyDateFilters() && rangeMultiplier === 30 ? 'dynamic-menu-current' : undefined} onClick={() => updateMultiplier(30)}><img src='/calendar.svg' /> Months</button>
+          <button id={ !anyDateFilters() && rangeMultiplier === 365 ? 'dynamic-menu-current' : undefined} onClick={() => updateMultiplier(365)}><img src='/cal-year.svg' /> Years</button>
         </div>
 
         <div className='dynamic-menu-main'>

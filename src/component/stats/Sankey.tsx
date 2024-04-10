@@ -17,14 +17,53 @@ export default function TotalGraph ({ transactions, accounts }: GraphProps) {
 
   const categories = useMemo(() => Object.keys(categoryTotals).sort((a, b) => categoryTotals[a] - categoryTotals[b]), [categoryTotals]);
   
-  const nodes = useMemo(() => accounts.map(a => new Object({name: `${a.account_type}:${a.account_name}`})).concat(categories.map(c => new Object({name: c}))), [accounts, categories]);
-  const links = useMemo(() => {
-    const ret = transactions.map(t => new Object({source: t.amount > 0 ? t.category : `${accounts.find(a => a.id === t.account_id)!.account_type}:${accounts.find(a => a.id === t.account_id)!.account_name}`, target:  t.amount > 0 ? `${accounts.find(a => a.id === t.account_id)!.account_type}:${accounts.find(a => a.id === t.account_id)!.account_name}` : t.category, value: Math.abs(t.amount / 100)}));
-    transactions.forEach(t => {
-      if (t.amount < 0 && t.category.split('>')[0] === 'Financial' && t.category.split('>').length > 1 && (['Transfer', 'Credit'].includes(t.category.split('>')[1]))) ret.push(new Object({source: `${t.category}`, target: `FinanceIncome>${t.category.split('>')[1]}`, value: Math.abs(t.amount / 100)}));
-    })
+  const nodes = useMemo(() => {
+    const ids = transactions.map(t => t.account_id);
+    const accts = accounts.filter(a => ids.includes(a.id));
+
+    const ret = accts.map(a => new Object({
+      name: `${a.account_type}:${a.account_name}`
+    })).concat(categories.filter(c => c.split('>').length > 1 && !['Transfer', 'Credit'].includes(c.split('>')[1])).map(c => new Object({name: c})));
+
     return ret;
-  }, [transactions, categories]);
+  }, [accounts, categories]);
+  const links = useMemo(() => {
+    type Link = { source: string, target: string, value: number }
+
+    const ret: Link[] = transactions.filter(t => t.category.includes('>') && !['Transfer', 'Credit'].includes(t.category.split('>')[1])).map(t => {
+      const acct = accounts.find(a => a.id === t.account_id)!;
+      
+      return new Object({
+        source: t.amount > 0 ? t.category: `${acct.account_type}:${acct.account_name}`, 
+        target: t.amount > 0 ? `${acct.account_type}:${acct.account_name}`: t.category,
+        value: Math.abs(t.amount / 100)
+      }) as Link;
+      
+    });
+
+    const connect: Link[] = transactions.filter(t => (t.category.split('>')[0] === 'Financial') && (t.category.split('>').length > 1) && ['Transfer', 'Credit'].includes(t.category.split('>')[1])).map(t => {
+      const acct = accounts.find(a => a.id === t.account_id)!;
+      return new Object({
+        source: `${acct.account_type}:${acct.account_name}`,
+        target: t.category.split('>')[1],
+        value: Math.abs(t.amount / 100)
+      }) as Link;
+    })
+    transactions.filter(t => (t.category.split('>')[0] === 'FinanceIncome') && (t.category.split('>').length > 1) && ['Transfer', 'Credit'].includes(t.category.split('>')[1])).forEach(t => {
+      const acct = accounts.find(a => a.id === t.account_id)!;
+      
+      const link = connect.find((c: Link) => c.value === Math.abs(t.amount / 100));
+      if (link) link.target = `${acct.account_type}:${acct.account_name}`;
+      else connect.push(new Object({
+        source: t.category.split('>')[1],
+        target: `${acct.account_type}:${acct.account_name}`,
+        value: Math.abs(t.amount / 100)
+      }) as Link);
+
+    });
+
+    return ret.concat(connect);
+  }, [transactions, categories, accounts]);
 
   const option = {
     title: {
