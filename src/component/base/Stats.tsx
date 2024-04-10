@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Transaction, Filter, filterTransactions, anyFiltersActive, Account } from "../../typedef"
+import { Transaction, Filter, filterTransactions, anyFiltersActive, Account, filtersActiveStyle, menuActiveStyle } from "../../typedef"
 import { addDays } from "../../typeassist";
 import StatsPage from "../stats/StatsPage"
 import FilterGUI from "../template/FilterBar";
@@ -86,7 +86,7 @@ export default function Stats ({ transactions, accounts }: StatsProps) {
 
         <div className='dynamic-menu-main'>
           <button onClick={toggleFilter}
-            style={ anyFiltersActive(filters) ? filtersActiveStyle : undefined}><img src='/filter.svg'/> Filter</button>
+            style={ anyFiltersActive(filters) ? filtersActiveStyle : (showFilter ? menuActiveStyle : undefined)}><img src='/filter.svg'/> Filter</button>
         </div>
       </menu>
 
@@ -97,5 +97,3 @@ export default function Stats ({ transactions, accounts }: StatsProps) {
     </div>
   )
 }
-
-const filtersActiveStyle = { backgroundColor: `#a0bacb`}

@@ -163,6 +163,12 @@ export enum AccountType {
 }
 
 
+export const filtersActiveStyle = { backgroundColor: `#a0bacb`}
+export const menuActiveStyle = { 
+  backgroundColor: `#93ceb4`,
+  color: `#191919`,
+};
+
 
 export interface Filter {
   type: string,

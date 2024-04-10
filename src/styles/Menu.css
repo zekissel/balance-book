@@ -30,7 +30,7 @@ div.dynamic-menu-main > button:hover {
   color: #191919;
 }
 
-#dynamic-menu-current {
+button#dynamic-menu-current {
   background-color: #93ceb4;
   color: #191919;
 }

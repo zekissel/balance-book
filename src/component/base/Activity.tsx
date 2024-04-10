@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Transaction, Filter, filterTransactions, anyFiltersActive, Account } from "../../typedef";
+import { Transaction, Filter, filterTransactions, anyFiltersActive, Account, filtersActiveStyle, menuActiveStyle } from "../../typedef";
 import List from "../activity/List";
 import Calendar from "../activity/Calendar";
 import EditLog from "../transaction/CreateLog";
@@ -65,7 +65,7 @@ export default function Activity ({ transactions, accounts, signalRefresh }: Act
           { addLogGUI && <EditLog accounts={accounts} toggle={toggleAddLog} updateLog={signalRefresh} />}
           <button 
             onClick={toggleFilter}
-            style={ anyFiltersActive(filters) ? filtersActiveStyle : undefined}
+            style={ anyFiltersActive(filters) ? filtersActiveStyle : (filterGUI ? menuActiveStyle : undefined)}
             >
               <img src='/filter.svg'/> Filter
           </button>
@@ -83,4 +83,3 @@ export default function Activity ({ transactions, accounts, signalRefresh }: Act
     </div>
   );
 }
-const filtersActiveStyle = { backgroundColor: `#a0bacb`}
