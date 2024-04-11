@@ -125,7 +125,7 @@ div.stats-menu-sep {
   justify-content: space-between;
 }
 
-div.stats-menu-sep > button {
+div.stats-menu-sep  button {
   cursor: pointer;
   background-color: #dfe2e0;
   border: none;
@@ -140,7 +140,7 @@ div.stats-menu-sep > button {
   z-index: 50;
 
 }
-div.stats-menu-sep > button:hover {
+div.stats-menu-sep  button:hover {
   background-color: #93ceb4;
   border-radius: 1vw;
 }

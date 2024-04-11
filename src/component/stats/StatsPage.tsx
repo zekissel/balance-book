@@ -15,17 +15,17 @@ export default function StatsPage ({ transactions, accounts, upcoming, startDate
   const upcomingTotal = useMemo(() => upcoming.reduce((acc, t) => acc + (t.amount / 100), 0), [upcoming]);
 
   const numExpenses = useMemo(() => {
-    return transactions.filter(t => t.amount < 0).length;
+    return transactions.filter(t => t.amount < 0 && !['Credit', 'Transfer'].includes(t.category.split('>')[1])).length;
   }, [transactions]);
   const expenseTotal = useMemo(() => {
-    return transactions.filter(t => t.amount < 0).reduce((acc, t) => acc - t.amount, 0);
+    return transactions.filter(t => t.amount < 0 && !['Credit', 'Transfer'].includes(t.category.split('>')[1])).reduce((acc, t) => acc - t.amount, 0);
   }, [transactions]);
 
   const numIncome = useMemo(() => {
-    return transactions.filter(t => t.amount > 0).length;
+    return transactions.filter(t => t.amount > 0 && !['Credit', 'Transfer'].includes(t.category.split('>')[1])).length;
   }, [transactions]);
   const incomeTotal = useMemo(() => {
-    return transactions.filter(t => t.amount > 0).reduce((acc, t) => acc + t.amount, 0);
+    return transactions.filter(t => t.amount > 0 && !['Credit', 'Transfer'].includes(t.category.split('>')[1])).reduce((acc, t) => acc + t.amount, 0);
   }, [transactions]);
 
   
@@ -34,8 +34,9 @@ export default function StatsPage ({ transactions, accounts, upcoming, startDate
   const [categoryPieTypeIncome, setCatPieTypeIncome] = useState<boolean>(localStorage.getItem('stats.categoryPieIncome') === 'true'? true: false);
 
   const [categoryChartType, setCategoryChartType] = useState(localStorage.getItem('stats.categoryChartType') !== null ? Number(localStorage.getItem('stats.categoryChartType')) : 0);
-  const cycleCategoryChart = () => { 
-    const index = (categoryChartType + 1) % 3;
+  const cycleCategoryChart = (direction: number) => { 
+    let index = (categoryChartType + (direction > 0 ? 1 : - 1)) % 3;
+    if (index < 0) index = 2;
     setCategoryChartType(index);
     localStorage.setItem('stats.categoryChartType', index.toString());
   };
@@ -50,8 +51,8 @@ export default function StatsPage ({ transactions, accounts, upcoming, startDate
           <i>Since { startDate.toDateString() }{ endDate && ',' }</i>
           { endDate && <i>Until { endDate.toDateString() }</i> }
           <div className='stats-main-info'>
-            <p>Total expenses: -${ expenseTotal / 100 } ({ numExpenses } transaction{ numExpenses > 1 ? 's' : '' })</p>
-            <p>Total income: +${ incomeTotal / 100 } ({ numIncome } transaction{ numExpenses > 1 ? 's' : '' })</p>
+            <p>Total expenses: -${ expenseTotal / 100 } ({ numExpenses } transaction{ numExpenses === 1 ? '' : 's' })</p>
+            <p>Total income: +${ incomeTotal / 100 } ({ numIncome } transaction{ numExpenses === 1 ? '' : 's' })</p>
           </div>
           { upcoming.length > 0 && <span>Upcoming: { upcomingTotal > 0 ? '+$' : '-$'}{ Math.abs(upcomingTotal) } ({upcoming.length})</span> }
         </div>
@@ -66,9 +67,8 @@ export default function StatsPage ({ transactions, accounts, upcoming, startDate
           { historyGraphLine && <LineGraph transactions={transactions} range={Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))} endDate={endDate} /> }
           { !historyGraphLine && <BarGraph transactions={transactions} range={Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))} endDate={endDate} /> }
 
-          <div className='stats-category-radio'>
-            <input type='radio' id='radio-history-line' name='line' onChange={() => {setHistoryGraphLine(true); localStorage.setItem('stats.historyGraphLine', 'true')}} defaultChecked={historyGraphLine} /><label htmlFor='radio-history-line'>Line</label>
-            <input type='radio' id='radio-history-heat' name='line' onChange={() => {setHistoryGraphLine(false); localStorage.setItem('stats.historyGraphLine', 'false')}} defaultChecked={!historyGraphLine} /><label htmlFor='radio-history-heat'>Bar</label>
+          <div className='stats-menu-sep'>
+            <button onClick={() => setHistoryGraphLine(!historyGraphLine)}><img src={historyGraphLine ? '/bar.svg' : 'line.svg'} /></button>
           </div>
         </div>
 
@@ -81,7 +81,11 @@ export default function StatsPage ({ transactions, accounts, upcoming, startDate
               <input type='radio' id='radio-category-income' name='type' onChange={() => {setCatPieTypeIncome(true); localStorage.setItem('stats.categoryPieIncome', 'true')}} defaultChecked={categoryPieTypeIncome} /><label htmlFor='radio-category-income'>Income</label>
               <input type='radio' id='radio-category-expense' name='type' onChange={() => {setCatPieTypeIncome(false); localStorage.setItem('stats.categoryPieIncome', 'false')}} defaultChecked={!categoryPieTypeIncome} /><label htmlFor='radio-category-expense'>Expense</label>
             </div>
-            <button onClick={cycleCategoryChart}><img src={ categoryChartType === 0 ? '/tree.svg' : (categoryChartType === 1 ? '/burst.svg' : '/pie.svg') }/></button>
+
+            <span>
+              <button onClick={() => cycleCategoryChart(-1)}><img src={ categoryChartType === 0 ? '/burst.svg' : (categoryChartType === 1 ? '/pie.svg' : '/map.svg') }/></button>
+              <button onClick={() => cycleCategoryChart(1)}><img src={ categoryChartType === 0 ? '/map.svg' : (categoryChartType === 1 ? '/burst.svg' : '/pie.svg') }/></button>
+            </span>
           </div>
         </div>
       </div>

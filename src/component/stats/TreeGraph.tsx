@@ -30,21 +30,21 @@ export default function TreeGraph ({ trans, treemap, income }: GraphProps) {
     return totals;
   }, [transactions, income]);
 
-  type MapData = { name: string, size: number, children: MapData[], value: number, itemStyle: { color: string } }
+  type MapData = { name: string, children: MapData[], value: number, itemStyle: { color: string } }
   const data = useMemo(() => {
     const trunks = Object.keys(trunkTotals).sort((a, b) => trunkTotals[b] - trunkTotals[a]);
 
-    const ret = trunks.map((c, i) => new Object({ name: c, size: trunkTotals[c], value: trunkTotals[c], children: [], itemStyle: {color:generateChartColor(i, income)} }) as MapData);
+    const ret = trunks.map((c, i) => new Object({ name: c, value: trunkTotals[c], children: [], itemStyle: {color:generateChartColor(i, income)} }) as MapData);
 
     Object.keys(categoryTotals).forEach((t) => {
       const index = ret.findIndex(r => r.name === t.split('>')[0]);
       if (index !== -1) {
-        ret[index].children!.push(new Object({ name: t.split('>')[1] === 'Other' ? t : t.split('>')[1], size: categoryTotals[t], value: categoryTotals[t], itemStyle: { color: ret[index].itemStyle.color} }) as MapData);
+        ret[index].children!.push(new Object({ name: t.split('>')[1] === 'Other' ? t : t.split('>')[1], value: categoryTotals[t], itemStyle: { color: ret[index].itemStyle.color } }) as MapData);
       }
-    
     })
 
-    return ret;
+    if (ret.length < 1) return [{ name: 'No Data', value: .01, children: undefined, itemStyle: { color: '#abc' } }];
+    return ret.sort((a, b) => b.value - a.value);
   }, [categoryTotals, trunkTotals]);
 
   const treemapOption = {
