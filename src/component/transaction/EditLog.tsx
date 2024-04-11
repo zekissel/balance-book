@@ -9,7 +9,7 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
   const [company, setCompany] = useState(log ? log.company : '');
   const [amount, setAmount] = useState(log ? String(log.amount / 100) : '0');
   const displayAmount = useMemo(() => `${(Math.abs(Number(amount)))}${amount.charAt(amount.length - 1) === '.' ? '.' : ''}${(amount.charAt(amount.length - 2) === '.' && amount.charAt(amount.length - 1) === '0') ? '.0' : ''}`, [amount]);
-  const [category, setCategory] = useState(log ? log.category : ( isIncome ? `OtherIncome>Other` : `Other>Other`));
+  const [category, setCategory] = useState(log ? log.category : '');
   const [date, setDate] = useState(log ? log.date : new Date(new Date().toDateString()));
   const [desc, setDesc] = useState(log ? log.desc : '');
 
@@ -29,6 +29,7 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
   async function addTransaction() {
     if (company === '') { setError('Source/Payee required'); return;} 
     if (amount === '0' || accountId === '') { setError('Account and amount required'); return; }
+    if (category === '') {setError('Category required'); return; }
 
     const balanceAdjustor = Number(amount) < 0 ? (isIncomeState ? -1 : 1) : (isIncomeState ? 1 : -1);
     const transactionData = {
@@ -72,8 +73,7 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
   }
 
   const handleCategorySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (isIncomeState) setCategory(e.target.value as typeof category);
-    else setCategory(e.target.value as typeof category);
+    setCategory(e.target.value as typeof category);
   }
 
 
@@ -92,6 +92,9 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
 
         { isIncomeState ?
           <select value={`${category}`} onChange={handleCategorySelect}>
+            <option value=''>
+              {`Select Category`}
+            </option>
             {getEnumKeys(IncomeRoot).map((root, index) => (
               <optgroup label={root} key={index}>
               {IncomeLeaf[root].map((leaf, index) => (
@@ -104,6 +107,9 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
           </select>
           :
           <select value={`${category}`} onChange={handleCategorySelect}>
+            <option value=''>
+              {`Select Category`}
+            </option>
             {getEnumKeys(ExpenseRoot).map((root, index) => (
               <optgroup key={index} label={root}>
                 {ExpenseLeaf[root].map((leaf, index) => (

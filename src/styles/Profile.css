@@ -4,6 +4,8 @@ div.profile-personal {
   flex-direction: row;
   justify-content: start;
   align-items: start;
+  width: calc(100% - 2rem);
+  padding: 1rem;
 }
 
 div.profile-personal > menu {

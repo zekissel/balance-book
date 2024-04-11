@@ -24,9 +24,7 @@ export default function Home ({ user, accounts, transactions }: HomeProps) {
       <div className='page-main'>
         <Logo />
 
-        <div>
-          <Preview accounts={accounts} transactions={transactions}/>
-        </div>
+        <Preview accounts={accounts} transactions={transactions}/>
 
         <div>
           financial news/goals
