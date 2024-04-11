@@ -6,6 +6,7 @@ import LineGraph from "./LineGraph";
 import BarGraph from "./BarGraph";
 import HeatMap from "./HeatMap";
 import Sankey from "./Sankey";
+import TreeGraph from "./TreeGraph";
 
 interface StatsPageProps { transactions: Transaction[], accounts: Account[], upcoming: Transaction[], startDate: Date, endDate: Date, showFilter: boolean }
 export default function StatsPage ({ transactions, accounts, upcoming, startDate, endDate, showFilter }: StatsPageProps) {
@@ -32,6 +33,12 @@ export default function StatsPage ({ transactions, accounts, upcoming, startDate
   const [historyGraphLine, setHistoryGraphLine] = useState(localStorage.getItem('stats.historyGraphLine') === 'true' ? true : false);
   const [categoryPieTypeIncome, setCatPieTypeIncome] = useState<boolean>(localStorage.getItem('stats.categoryPieIncome') === 'true'? true: false);
 
+  const [categoryChartType, setCategoryChartType] = useState(localStorage.getItem('stats.categoryChartType') !== null ? Number(localStorage.getItem('stats.categoryChartType')) : 0);
+  const cycleCategoryChart = () => { 
+    const index = (categoryChartType + 1) % 3;
+    setCategoryChartType(index);
+    localStorage.setItem('stats.categoryChartType', index.toString());
+  };
 
   return (
     <div className={ showFilter ? 'main-down-shift page-main' : 'page-main'}>
@@ -67,11 +74,14 @@ export default function StatsPage ({ transactions, accounts, upcoming, startDate
 
         <div className='stats-main-box-shorter'>
           
-          <PieGraph transactions={transactions} isIncome={categoryPieTypeIncome} />
+          { categoryChartType === 0 && <PieGraph transactions={transactions} isIncome={categoryPieTypeIncome} /> }
+          { categoryChartType !== 0 && <TreeGraph trans={transactions} treemap={categoryChartType === 1} income={categoryPieTypeIncome} /> }
 
           <div className='stats-category-radio'>
             <input type='radio' id='radio-category-income' name='type' onChange={() => {setCatPieTypeIncome(true); localStorage.setItem('stats.categoryPieIncome', 'true')}} defaultChecked={categoryPieTypeIncome} /><label htmlFor='radio-category-income'>Income</label>
             <input type='radio' id='radio-category-expense' name='type' onChange={() => {setCatPieTypeIncome(false); localStorage.setItem('stats.categoryPieIncome', 'false')}} defaultChecked={!categoryPieTypeIncome} /><label htmlFor='radio-category-expense'>Expense</label>
+
+            <button onClick={cycleCategoryChart}><img src={ categoryChartType === 0 ? '/tree.svg' : (categoryChartType === 1 ? '/burst.svg' : '/pie.svg') }/></button>
           </div>
         </div>
       </div>

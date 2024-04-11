@@ -41,7 +41,7 @@ function App() {
     localStorage.removeItem('link_token');
     localStorage.removeItem('auth_state');
     if (user) { 
-      invoke('sync_info', { userId: user.id });
+      //invoke('sync_info', { userId: user.id });
       update(refreshTransactions);
     }
   }, [user]);

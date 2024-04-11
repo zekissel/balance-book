@@ -38,8 +38,10 @@ export default function Preview ({ accounts, transactions }: PreviewProps) {
         )}
         <menu>
           <input type='radio' name='home-account' id='check' defaultChecked={curView === AccountType.Checking} onChange={() => handleRadio(AccountType.Checking)} /><label htmlFor="check">Checking</label>
+          <input type='radio' name='home-account' id='credit' defaultChecked={curView === AccountType.Credit} onChange={() => handleRadio(AccountType.Credit)} /><label htmlFor="credit">Credit</label>
           <input type='radio' name='home-account' id='save' defaultChecked={curView === AccountType.Savings} onChange={() => handleRadio(AccountType.Savings)} /><label htmlFor="save">Savings</label>
-          <input type='radio' name='home-account' id='invest' defaultChecked={curView === AccountType.Investing} onChange={() => handleRadio(AccountType.Investing)} /><label htmlFor="invest">Investing</label>
+          <input type='radio' name='home-account' id='invest' defaultChecked={curView === AccountType.Investment} onChange={() => handleRadio(AccountType.Investment)} /><label htmlFor="invest">Investing</label>
+          <input type='radio' name='home-account' id='loan' defaultChecked={curView === AccountType.Loan} onChange={() => handleRadio(AccountType.Loan)} /><label htmlFor="loan">Loan</label>
         </menu>
       </div>
 

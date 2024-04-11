@@ -119,6 +119,17 @@ div.stats-category-radio {
   z-index: 50;
 }
 
+div.stats-category-radio > button {
+  margin-left: 1rem;
+  cursor: pointer;
+  background-color: #dfe2e0;
+  border: none;
+}
+div.stats-category-radio > button:hover {
+  background-color: #93ceb4;
+  border-radius: 1vw;
+}
+
 div.dynamic-menu-main > button > input {
   width: 2.5rem;
   font-size: 20px;
