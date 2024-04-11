@@ -76,11 +76,11 @@ export default function StatsPage ({ transactions, accounts, upcoming, startDate
           
           { categoryChartType === 0 && <PieGraph transactions={transactions} isIncome={categoryPieTypeIncome} /> }
           { categoryChartType !== 0 && <TreeGraph trans={transactions} treemap={categoryChartType === 1} income={categoryPieTypeIncome} /> }
-
-          <div className='stats-category-radio'>
-            <input type='radio' id='radio-category-income' name='type' onChange={() => {setCatPieTypeIncome(true); localStorage.setItem('stats.categoryPieIncome', 'true')}} defaultChecked={categoryPieTypeIncome} /><label htmlFor='radio-category-income'>Income</label>
-            <input type='radio' id='radio-category-expense' name='type' onChange={() => {setCatPieTypeIncome(false); localStorage.setItem('stats.categoryPieIncome', 'false')}} defaultChecked={!categoryPieTypeIncome} /><label htmlFor='radio-category-expense'>Expense</label>
-
+          <div className='stats-menu-sep'>
+            <div className='stats-category-radio'>
+              <input type='radio' id='radio-category-income' name='type' onChange={() => {setCatPieTypeIncome(true); localStorage.setItem('stats.categoryPieIncome', 'true')}} defaultChecked={categoryPieTypeIncome} /><label htmlFor='radio-category-income'>Income</label>
+              <input type='radio' id='radio-category-expense' name='type' onChange={() => {setCatPieTypeIncome(false); localStorage.setItem('stats.categoryPieIncome', 'false')}} defaultChecked={!categoryPieTypeIncome} /><label htmlFor='radio-category-expense'>Expense</label>
+            </div>
             <button onClick={cycleCategoryChart}><img src={ categoryChartType === 0 ? '/tree.svg' : (categoryChartType === 1 ? '/burst.svg' : '/pie.svg') }/></button>
           </div>
         </div>

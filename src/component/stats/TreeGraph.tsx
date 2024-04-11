@@ -1,6 +1,7 @@
 import ReactECharts from "echarts-for-react";
 import { Transaction } from "../../typedef";
 import { useMemo } from "react";
+import { generateChartColor } from "../../typeassist";
 
 interface GraphProps { trans: Transaction[], treemap: boolean, income: boolean }
 export default function TreeGraph ({ trans, treemap, income }: GraphProps) {
@@ -29,16 +30,16 @@ export default function TreeGraph ({ trans, treemap, income }: GraphProps) {
     return totals;
   }, [transactions, income]);
 
-  type MapData = { name: string, size: number, children: MapData[], value: number }
+  type MapData = { name: string, size: number, children: MapData[], value: number, itemStyle: { color: string } }
   const data = useMemo(() => {
-    const trunks = Object.keys(trunkTotals);
+    const trunks = Object.keys(trunkTotals).sort((a, b) => trunkTotals[b] - trunkTotals[a]);
 
-    const ret = trunks.map((c) => new Object({ name: c, size: trunkTotals[c], value: trunkTotals[c], children: [] }) as MapData);
+    const ret = trunks.map((c, i) => new Object({ name: c, size: trunkTotals[c], value: trunkTotals[c], children: [], itemStyle: {color:generateChartColor(i, income)} }) as MapData);
 
     Object.keys(categoryTotals).forEach((t) => {
       const index = ret.findIndex(r => r.name === t.split('>')[0]);
       if (index !== -1) {
-        ret[index].children!.push(new Object({ name: t.split('>')[1] === 'Other' ? t : t.split('>')[1], size: categoryTotals[t], value: categoryTotals[t] }) as MapData);
+        ret[index].children!.push(new Object({ name: t.split('>')[1] === 'Other' ? t : t.split('>')[1], size: categoryTotals[t], value: categoryTotals[t], itemStyle: { color: ret[index].itemStyle.color} }) as MapData);
       }
     
     })
@@ -62,6 +63,7 @@ export default function TreeGraph ({ trans, treemap, income }: GraphProps) {
         universalTransition: true,
         label: {
           show: true,
+          color: '#222',
           formatter: '{b}: ${c}',
         },
         breadcrumb: {
@@ -94,6 +96,7 @@ export default function TreeGraph ({ trans, treemap, income }: GraphProps) {
         },
         label: {
           show: true,
+          rotate: 0,
           formatter: '{b}',
         }
       }

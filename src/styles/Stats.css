@@ -119,13 +119,28 @@ div.stats-category-radio {
   z-index: 50;
 }
 
-div.stats-category-radio > button {
-  margin-left: 1rem;
+div.stats-menu-sep {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+div.stats-menu-sep > button {
   cursor: pointer;
   background-color: #dfe2e0;
   border: none;
+  margin: 0 .1rem;
+  padding: 0 .2rem;
+  border-radius: 1vw;
+  cursor: pointer;
+  background-color: #dfe2e0;
+  border: none;
+  border-bottom: 2px solid #6b6b6b;
+  position: relative;
+  z-index: 50;
+
 }
-div.stats-category-radio > button:hover {
+div.stats-menu-sep > button:hover {
   background-color: #93ceb4;
   border-radius: 1vw;
 }

@@ -21,37 +21,6 @@ export function getEnumKeys<
     return Object.keys(enumVariable) as Array<T>;
 }
 
-/*
-export enum ExpenseCat {
-  Rent = 'Rent',
-  Utilities = 'Utilities',
-  Transportation = 'Transportation',
-  Groceries = 'Groceries',
-  Services = 'Services',
-  Textile = 'Textile',
-  Toilietries = 'Toilietries',
-  Home = 'Home',
-  Office = 'Office',
-  Pet = 'Pet',
-  Gifts = 'Gifts',
-  Entertainment = 'Entertainment',
-  Food = 'Food',
-  Snacks = 'Snacks',
-  Drinks = 'Drinks',
-  Savings = 'Savings',
-  Investment = 'Investment',
-  Other = 'Other',
-  None = '---'
-}
-export enum IncomeCat {
-  Salary = 'Salary',
-  SideJob = 'SideJob',
-  Reimbursement = 'Reimbursement',
-  SavingsIncome = 'SavingsIncome',
-  InvestmentIncome = 'InvestmentIncome',
-  OtherIncome = 'OtherIncome',
-  None = '---',
-}*/
 
 export enum ExpenseRoot {
   Home = 'Home',
