@@ -29,7 +29,7 @@ export default function TotalGraph({ transactions }: GraphProps) {
 						new Object({
 							value: t,
 							itemStyle: { color: t > 0 ? '#739d88' : '#f6d6aa' },
-							label: { show: true, position: t > 0 ? 'top' : 'bottom', formatter: '${c}' },
+							label: { show: true, position: t >= 0 ? 'top' : 'bottom', formatter: '${c}' },
 						}),
 				),
 		[categoryTotals],

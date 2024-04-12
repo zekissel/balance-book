@@ -32,7 +32,7 @@ export const getCategoryColor = (category: Category): string => {
 			color = `#E3AEFF`;
 			break;
 		case ExpenseRoot.Travel:
-			color = `#A6F5F4`;
+			color = `#BEF7F6`;
 			break;
 
 		case IncomeRoot.Salary:
@@ -51,8 +51,22 @@ export const getCategoryColor = (category: Category): string => {
 		default:
 			return '#fff';
 	}
-
-	return `${color}BB`;
+  if (category.split('>')[1] === undefined) return `${color}`;
+  else {
+    switch (category.split('>')[1].length) {
+      case 2: return `${color}77`;
+      case 3: return `${color}88`;
+      case 4: return `${color}99`;
+      case 5: return `${color}AA`;
+      case 6: return `${color}BB`;
+      case 7: return `${color}CC`;
+      case 8: return `${color}DD`;
+      case 9: return `${color}EE`;
+      case 10: return `${color}FF`;
+      
+      default: return `${color}`
+    }
+  }
 };
 
 export function addDays(date: Date, days: number) {

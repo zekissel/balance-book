@@ -80,8 +80,8 @@ export default function StatsPage({
 				<div className="stats-main-box-short">
 					<h3>
 						Net Balance:{' '}
-						<span id="stats-main-net" style={netBalance > 0 ? netStyleProfit : netStyleLoss}>
-							{netBalance > 0
+						<span id="stats-main-net" style={netBalance === 0 ? netNeutral : (netBalance > 0 ? netStyleProfit : netStyleLoss)}>
+							{netBalance >= 0
 								? `+$${(netBalance / 100).toFixed(2)}`
 								: `-$${(netBalance / -100).toFixed(2)}`}
 						</span>
@@ -218,3 +218,4 @@ export default function StatsPage({
 
 const netStyleLoss = { color: '#6d1e1e' };
 const netStyleProfit = { color: '#1e6d58' };
+const netNeutral = { color: '#6a92ba' };
