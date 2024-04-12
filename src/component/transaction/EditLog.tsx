@@ -10,7 +10,7 @@ export function EditLog ({ log, accounts, updateLog, isIncome, toggle, cancel }:
   const [amount, setAmount] = useState(log ? String(log.amount / 100) : '0');
   const displayAmount = useMemo(() => `${(Math.abs(Number(amount)))}${amount.charAt(amount.length - 1) === '.' ? '.' : ''}${(amount.charAt(amount.length - 2) === '.' && amount.charAt(amount.length - 1) === '0') ? '.0' : ''}`, [amount]);
   const [category, setCategory] = useState(log ? log.category : '');
-  const [date, setDate] = useState(log ? log.date : new Date(new Date().toDateString()));
+  const [date, setDate] = useState(log ? log.date : new Date(new Date().toISOString().split('T')[0]));
   const [desc, setDesc] = useState(log ? log.desc : '');
 
   const [accountId, setAccountId] = useState(log ? (String(log.account_id)) : (localStorage.getItem('accountDefault') ?? ''));

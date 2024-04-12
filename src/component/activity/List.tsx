@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Transaction, Account } from "../../typedef";
 import { getCategoryColor, addDays } from "../../typeassist";
 import ViewLog from "../transaction/ViewLog";
 import '../../styles/List.css';
 import EditMultiLog from "../transaction/EditMultiLog";
 
-interface ListProps { logs: Transaction[], accounts: Account[], updateLog: () => void, showFilter: boolean }
-export default function List ({ logs, accounts, updateLog, showFilter }: ListProps) {
+interface ListProps { logs: Transaction[], accounts: Account[], updateLog: () => void, showFilter: boolean, incRange: () => void, signalRefresh: () => void }
+export default function List ({ logs, accounts, updateLog, showFilter, incRange, signalRefresh }: ListProps) {
 
   const futureTransactions = useMemo(() => {
     return logs.filter(t => t.date.getTime() > new Date().getTime());
@@ -44,7 +44,7 @@ export default function List ({ logs, accounts, updateLog, showFilter }: ListPro
     else setSelectedTransactions([...selectedTransactions, transaction]);
   };
 
-  const [showIndices, setShowIndices] = useState(sessionStorage.getItem('list.indices')?.split(' ').map(i => Number(i)) ?? [0, 1, 2, 3, 4]);
+  const [showIndices, setShowIndices] = useState(sessionStorage.getItem('list.indices')?.split(' ').map(i => Number(i)) ?? [0, 1]);
   const handleIndexToggle = (index: number) => {
     if (showIndices.includes(index)) {
       const indices = showIndices.filter(i => i !== index);
@@ -63,7 +63,6 @@ export default function List ({ logs, accounts, updateLog, showFilter }: ListPro
     if (editLogs.includes(id)) setEditLogs(editLogs.filter(e => e !== id));
     else setEditLogs([...editLogs, id]);
   }
-  useEffect(() => { console.log(editLogs) }, [editLogs]);
 
   return (
     <div className={showFilter ? 'main-down-shift page-main' : 'page-main'}>
@@ -75,9 +74,11 @@ export default function List ({ logs, accounts, updateLog, showFilter }: ListPro
       {
         allTransactions.map((transactionCollection, ind) => 
           
-          <ol className={'list-main' + (transactionCollection.length === 0 ? ' list-hide' : '')} key={ind}>
+          <ol className={'list-main' + ((ind !== transactionTitles.length - 1) && transactionCollection.length === 0 ? ' list-hide' : '')} key={ind}>
+
             <h2 onClick={() => handleIndexToggle(ind)}>{ transactionTitles[ind] }<img src={ showIndices.includes(ind) ? '/double-down.svg' : '/double-left.svg'}/></h2>
-            { showIndices.includes(ind) && transactionCollection.map((transaction) => 
+
+            { showIndices.includes(ind) ? (transactionCollection.length > 0 ? transactionCollection.map((transaction) => 
               <li key={transaction.id} className={'item-base' + (editLogs.includes(transaction.id) ? ' edit-list-active' : '')}>
 
                 <input type='checkbox' className='list-checkbox' checked={editLogs.includes(transaction.id)} onChange={() => handleEditSelect(transaction.id)} />
@@ -92,7 +93,15 @@ export default function List ({ logs, accounts, updateLog, showFilter }: ListPro
                 </div>
 
               </li>
-            )}
+            ): <li>No transactions</li>) : null
+            }
+
+            { (ind === transactionTitles.length - 1) && (showIndices.includes(transactionTitles.length - 1)) &&
+              <button 
+                onClick={() => {incRange(); signalRefresh();}}
+                className='fetch-more'>Load 90 Days ({ Number(sessionStorage.getItem('fetchRange') ?? 89) + 91 })</button>
+            }
+
           </ol>
 
         )

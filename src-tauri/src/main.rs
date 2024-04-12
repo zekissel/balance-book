@@ -35,8 +35,8 @@ async fn new_transaction(company: &str, amount: i32, category: &str, date: &str,
 }
 
 #[tauri::command]
-async fn get_transactions(account_id: Vec<&str>) -> Result<Vec<Transaction>, ()> {
-  Ok(database::api::read_transaction(account_id).await)
+async fn get_transactions(account_id: Vec<&str>, start: &str) -> Result<Vec<Transaction>, ()> {
+  Ok(database::api::read_transaction(account_id, start).await)
 }
 
 #[tauri::command]

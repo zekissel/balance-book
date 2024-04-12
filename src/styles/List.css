@@ -18,6 +18,9 @@ ol.list-main {
   border: 1px dashed #739d88;
   border-radius: 1vw;
 
+  display: flex;
+  flex-direction: column;
+
   list-style: none;
   background-color: rgba(223, 226, 225, 0.695);
 }
@@ -26,6 +29,7 @@ ol.list-main > h2 {
   width: 100%;
   display: flex;
   justify-content: space-between;
+  border-bottom: 1px solid #bed1c7;
 }
 ol.list-main > h2:hover { color: #444; }
 ol.list-hide { display: none; }

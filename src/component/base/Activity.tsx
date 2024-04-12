@@ -8,8 +8,8 @@ import "../../styles/Page.css";
 import "../../styles/Menu.css";
 
 
-interface ActivityProps { transactions: Transaction[], accounts: Account[], signalRefresh: () => void }
-export default function Activity ({ transactions, accounts, signalRefresh }: ActivityProps) {
+interface ActivityProps { transactions: Transaction[], accounts: Account[], signalRefresh: () => void, incRange: () => void, setRange: (range: number) => void }
+export default function Activity ({ transactions, accounts, signalRefresh, incRange, setRange }: ActivityProps) {
 
   /* filter transactions by object state (filter function declared in typedef) */
   const [filterGUI, setFilterGUI] = useState(false);
@@ -75,9 +75,9 @@ export default function Activity ({ transactions, accounts, signalRefresh }: Act
       { filterGUI && <FilterGUI accounts={accounts} toggle={toggleFilter} filters={filters} setFilters={setFilters} /> }
 
       { listView ?
-        <List logs={filteredTransactions} accounts={accounts} updateLog={signalRefresh} showFilter={filterGUI} />
+        <List logs={filteredTransactions} accounts={accounts} updateLog={signalRefresh} showFilter={filterGUI} incRange={incRange} signalRefresh={signalRefresh} />
         :
-        <Calendar logs={filteredTransactions} accounts={accounts} updateLog={signalRefresh} showFilter={filterGUI} /> 
+        <Calendar logs={filteredTransactions} accounts={accounts} updateLog={signalRefresh} showFilter={filterGUI} setRange={setRange} signalRefresh={signalRefresh} /> 
       }
       
     </div>

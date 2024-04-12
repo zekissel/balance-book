@@ -24,6 +24,15 @@ function App() {
     dob: localStorage.getItem('dob') ? new Date(localStorage.getItem('dob') as string) : null,
   });
 
+  const [transRange, setTransRange] = useState(sessionStorage.getItem('fetchRange') !== null ? Number(sessionStorage.getItem('fetchRange')) : 89);
+  const incrementRange = () => { setTransRange(transRange + 90); sessionStorage.setItem('fetchRange', String(transRange + 90)); }
+  const setRange = (range: number) => {
+    if (range > transRange) {
+      setTransRange(range);
+      sessionStorage.setItem('fetchRange', String(range));
+    }
+  }
+
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   
@@ -32,11 +41,12 @@ function App() {
   const [signalTrans, setSignalTrans] = useState(false);
   const signalRefreshTrans = () => setSignalTrans(!signalTrans);
 
-  const update = (refresh: () => void) => { setTimeout(() => { refresh() }, 500) };
+  
+  const update = (refresh: () => void) => { setTimeout(() => { refresh() }, 400); };
   const refreshAccounts = async () => { if (user) setAccounts(await getAccounts(user.id)) };
-  const refreshTransactions = async () => { setTransactions(await getTransactions(accounts.map(a => a.id))) };
-  useEffect(() => { update(refreshAccounts) }, [signalRefreshAcct, user]);
-  useEffect(() => { update(refreshTransactions) }, [signalRefreshTrans, accounts]);
+  const refreshTransactions = async () => { setTransactions(await getTransactions(accounts.map(a => a.id), transRange)) };
+  useEffect(() => { update(refreshAccounts) }, [signalRefreshAcct]);
+  useEffect(() => { update(refreshTransactions) }, [signalRefreshTrans]);
   useEffect(() => { 
     localStorage.removeItem('link_token');
     localStorage.removeItem('auth_state');
@@ -79,11 +89,11 @@ function App() {
           <Route element={<Nav />} >
 
             <Route path='/home' element={<Home user={user!} accounts={accounts} transactions={transactions} />} />
-            <Route path='/activity' element={<Activity transactions={transactions} accounts={accounts} signalRefresh={signalRefreshTrans} />} />
-            <Route path='/stats' element={<Stats transactions={transactions} accounts={accounts} />} />
+            <Route path='/activity' element={<Activity transactions={transactions} accounts={accounts} signalRefresh={signalRefreshTrans} incRange={incrementRange} setRange={setRange} />} />
+            <Route path='/stats' element={<Stats transactions={transactions} accounts={accounts} signalRefresh={signalRefreshTrans} setRange={setRange}/>} />
             <Route path='/assets' element={<Assets user={user!} accounts={accounts} transactions={transactions} signalRefresh={signalRefreshAcct} />} />
             <Route path='/market' element={<>work in progress</>} />
-            <Route path='/profile' element={<Profile user={user!} setUser={setUser} logout={logout} refreshAcct={refreshAccounts} refreshTrans={refreshTransactions} />} />
+            <Route path='/profile' element={<Profile user={user!} setUser={setUser} logout={logout} refreshAcct={signalRefreshAcct} refreshTrans={signalRefreshTrans} />} />
             <Route path='/settings' element={<>work in progress</>} />
             
           </Route>

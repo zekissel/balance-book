@@ -6,8 +6,8 @@ import ViewDay from "./ViewDay";
 import '../../styles/Calendar.css';
 
 
-interface CalendarProps { logs: Transaction[], accounts: Account[], updateLog: () => void, showFilter: boolean }
-export default function Calendar ({ logs, accounts, updateLog, showFilter }: CalendarProps) {
+interface CalendarProps { logs: Transaction[], accounts: Account[], updateLog: () => void, showFilter: boolean, setRange: (range: number) => void, signalRefresh: () => void }
+export default function Calendar ({ logs, accounts, updateLog, showFilter, setRange, signalRefresh }: CalendarProps) {
 
   const curDate = useRef(new Date());
   const calDate = useRef(new Date(curDate.current.setHours(0,0,0,0)));
@@ -75,8 +75,13 @@ export default function Calendar ({ logs, accounts, updateLog, showFilter }: Cal
 
   useEffect(() => {
     initWeeks();
-    
-  }, [logs, curDate.current]);
+  }, [logs, calDate.current]);
+
+  useEffect(() => {
+    const range = Math.floor((new Date().getTime() + (7 * (1000 * 60 * 60 * 24)) - calDate.current.getTime()) / (1000 * 60 * 60 * 24))
+    setRange(range);
+    signalRefresh();
+  }, [calDate.current]);
 
   const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([]);
   const [selectedDay, setSelectedDay] = useState<Day[]>([]);

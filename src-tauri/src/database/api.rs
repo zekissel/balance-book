@@ -92,13 +92,14 @@ pub async fn create_transaction(
     .expect("Error saving new transaction")
 }
 
-pub async fn read_transaction(account_id_i: Vec<&str>) -> Vec<Transaction> {
+pub async fn read_transaction(account_id_i: Vec<&str>, start: &str) -> Vec<Transaction> {
   use super::schema::transaction::dsl::*;
 
   let mut ret = Vec::new();
   for a_id in account_id_i {
     let trans = transaction
       .filter(account_id.eq(a_id))
+      .filter(date.ge(start))
       .load::<Transaction>(&mut establish_connection())
       .expect("Error loading transactions");
     for t in trans { ret.push(t); }

@@ -34,3 +34,19 @@ button#dynamic-menu-current {
   background-color: #93ceb4;
   color: #191919;
 }
+
+
+/* potentially needed for calendar and list */
+button.fetch-more {
+  width: 20%;
+  margin: 0 auto;
+  border-radius: 1vw;
+  background-color: #dfe2e0;
+  border: none;
+  border-bottom: 2px solid #6b6b6b;
+}
+
+button.fetch-more:hover {
+  background-color: #93ceb4;
+  color: #191919;
+}

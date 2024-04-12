@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Transaction, Filter, filterTransactions, anyFiltersActive, Account, filtersActiveStyle, menuActiveStyle } from "../../typedef"
 import { addDays } from "../../typeassist";
 import StatsPage from "../stats/StatsPage"
@@ -7,8 +7,8 @@ import "../../styles/Stats.css"
 import '../../styles/Page.css'
 import "../../styles/Menu.css"
 
-interface StatsProps { transactions: Transaction[], accounts: Account[] }
-export default function Stats ({ transactions, accounts }: StatsProps) {
+interface StatsProps { transactions: Transaction[], accounts: Account[], signalRefresh: () => void, setRange: (range: number) => void }
+export default function Stats ({ transactions, accounts, signalRefresh, setRange }: StatsProps) {
   
   /* filter transactions before being sent to page */
   const anyDateFilters = () => (filters.startDate !== null || filters.endDate !== null)
@@ -41,8 +41,20 @@ export default function Stats ({ transactions, accounts }: StatsProps) {
     else if (filters.endDate !== null && filters.startDate === null) {
       return addDays(transactions.reduce((min, p) => p.date < min ? p.date : min, new Date()), -1);
     }
-    else return new Date((new Date(endDate.getTime() - (((timeRange * rangeMultiplier) - 1) * 24 * 60 * 60 * 1000))).toDateString())
+    else {
+      const ret = new Date((new Date(endDate.getTime() - (((timeRange * rangeMultiplier) - 1) * 24 * 60 * 60 * 1000))).toDateString());
+      return ret;
+    }
   }, [filters.startDate, filters.endDate, endDate, timeRange, rangeMultiplier, transactions]);
+
+  useEffect(() => {
+    let range = timeRange * rangeMultiplier;
+    if (filters.startDate !== null) {
+      range = Math.floor((new Date().getTime() - filters.startDate.getTime()) / (1000 * 60 * 60 * 24));
+    }
+    setRange(range);
+    signalRefresh();
+  }, [startDate, timeRange, rangeMultiplier]);
   
   /* transactions after filters are applied */
   const filteredTransactions = useMemo(() => {
