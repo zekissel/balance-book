@@ -76,6 +76,17 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 		sessionStorage.setItem('filter.end', date.toDateString());
 	};
 
+	const excludeCategory = () => {
+		if (filters.category.includes('X')) {
+			const no_ex = filters.category.filter((c) => c !== 'X');
+			setFilters({ ...filters, category: no_ex });
+			sessionStorage.setItem('filter.category', no_ex.join(' '));
+		} else {
+			const ex = [...filters.category, 'X'];
+			setFilters({ ...filters, category: ex });
+			sessionStorage.setItem('filter.category', ex.join(' '));
+		}
+	};
 	const voidCategory = () => {
 		toggleCategory();
 		setFilters({ ...filters, category: [] });
@@ -113,6 +124,17 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 			const newAccounts = [...filters.accounts, e.target.value];
 			setFilters({ ...filters, accounts: newAccounts });
 			sessionStorage.setItem('filter.accounts', newAccounts.join(' '));
+		}
+	};
+	const excludeAccounts = () => {
+		if (filters.accounts.includes('X')) {
+			const no_ex = filters.accounts.filter((c) => c !== 'X');
+			setFilters({ ...filters, accounts: no_ex });
+			sessionStorage.setItem('filter.accounts', no_ex.join(' '));
+		} else {
+			const ex = [...filters.accounts, 'X'];
+			setFilters({ ...filters, accounts: ex });
+			sessionStorage.setItem('filter.accounts', ex.join(' '));
 		}
 	};
 
@@ -194,8 +216,11 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 					>
 						Categories:{' '}
 					</label>
-					<span id="category-img" onClick={toggleCategory}>
+					<span className="category-img" onClick={toggleCategory}>
 						{showCategory ? <img src="/close-up.svg" /> : <img src="/open-down.svg" />}
+					</span>
+					<span className="category-img" onClick={excludeCategory}>
+						{filters.category.includes('X') ? <img src="/include.svg" /> : <img src="/exclude.svg" />}
 					</span>
 				</span>
 				{showCategory && (
@@ -240,7 +265,7 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 				)}
 				{!showCategory &&
 					(filters.category.length > 0 ? (
-						<div id="filter-category-list">{filters.category.map((c) => c.toString() + ' ')}</div>
+						<div id="filter-category-list">{filters.category.filter(c => c !== 'X').map((c) => c.toString() + ' ')}</div>
 					) : (
 						<span>None</span>
 					))}
@@ -274,6 +299,9 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 					</label>
 					<span id="category-img" onClick={toggleAccounts}>
 						{showAccounts ? <img src="/close-up.svg" /> : <img src="/open-down.svg" />}
+					</span>
+					<span className="category-img" onClick={excludeAccounts}>
+						{filters.accounts.includes('X') ? <img src="/include.svg" /> : <img src="/exclude.svg" />}
 					</span>
 				</span>
 				{showAccounts && (

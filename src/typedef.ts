@@ -157,8 +157,11 @@ export function filterTransactions({
 	if (filters.endDate !== null)
 		ret = ret.filter((t) => t.date.getTime() <= filters.endDate!.getTime());
 
-	if (filters.category.length > 0)
-		ret = ret.filter((t) => filters.category.includes(t.category.toString()));
+	if (filters.category.length > 0) {
+    const exclude = filters.category.includes('X');
+		if (!exclude) ret = ret.filter((t) => filters.category.includes(t.category.toString()));
+    else ret = ret.filter((t) => !filters.category.includes(t.category.toString()));
+  }
 
 	if (filters.source[0].length > 0)
 		ret = ret.filter((t) => {
@@ -172,7 +175,11 @@ export function filterTransactions({
 	if (Number(filters.highAmount) > 0)
 		ret = ret.filter((t) => t.amount - Number(filters.highAmount) * 100 <= 0);
 
-	if (filters.accounts.length > 0) ret = ret.filter((t) => filters.accounts.includes(t.account_id));
+	if (filters.accounts.length > 0) {
+    const exclude = filters.accounts.includes('X');
+    if (!exclude) ret = ret.filter((t) => filters.accounts.includes(t.account_id))
+    else ret = ret.filter((t) => !filters.accounts.includes(t.account_id));
+  };
 
 	return ret.sort((a, b) => b.date.getTime() - a.date.getTime());
 }

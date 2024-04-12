@@ -102,7 +102,7 @@ export default function TreeGraph({ trans, treemap, income }: GraphProps) {
 			{
 				type: 'sunburst',
 				radius: ['15%', '82%'],
-				center: ['50%', '60%'],
+				center: ['50%', '56%'],
 				animationDurationUpdate: 1000,
 				nodeClick: 'rootToNode',
 				data: data,

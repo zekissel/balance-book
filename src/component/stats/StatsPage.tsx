@@ -93,12 +93,10 @@ export default function StatsPage({
 					{endDate && <i>Until {endDate.toDateString()}</i>}
 					<div className="stats-main-info">
 						<p>
-							Total expenses: -${expenseTotal / 100} ({numExpenses} transaction
-							{numExpenses === 1 ? '' : 's'})
+							Total expense: -${expenseTotal / 100} ({numExpenses})
 						</p>
 						<p>
-							Total income: +${incomeTotal / 100} ({numIncome} transaction
-							{numExpenses === 1 ? '' : 's'})
+							Total income: +${incomeTotal / 100} ({numIncome})
 						</p>
 					</div>
 					{upcoming.length > 0 && (
