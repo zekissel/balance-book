@@ -176,7 +176,7 @@ export default function List({
 										<span
 											className="list-item-category"
 											style={{ backgroundColor: getCategoryColor(transaction.category) }}
-										>{`${transaction.category.slice(0, 18)}`}</span>
+										>{transaction.category.split('>')[1] ? `${transaction.category.split('>')[0].slice(0, 5)}>${transaction.category.split('>')[1].slice(0,9)}` : `${transaction.category.slice(0,18)}`}</span>
 										<span className="list-item-desc"> - {transaction.desc}</span>
 										<span className="list-item-account">{`${accounts.find((a) => a.id === transaction.account_id)?.account_type.slice(0, 5)}:${accounts.find((a) => a.id === transaction.account_id)?.account_name}`}</span>
 									</div>

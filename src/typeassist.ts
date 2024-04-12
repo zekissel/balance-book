@@ -2,25 +2,29 @@ import { invoke } from '@tauri-apps/api/tauri'
 import { ExpenseRoot, IncomeRoot, Transaction, Account, Category } from './typedef'
 
 export const getCategoryColor = (category: Category): string => {
-	/*
-  switch (category) {
+	
+  let color = '#fff';
+  switch (category.split('>')[0]) {
+    case ExpenseRoot.Home: color = `#F5E890`; break;
+    case ExpenseRoot.Utilities: color = `#C2F3FA`; break;
+    case ExpenseRoot.Entertainment: color = `#F9C9C9`; break;
+    case ExpenseRoot.Financial: color = `#E6C9F9`; break;
+    case ExpenseRoot.Food: color = `#F9C9ED`; break;
+    case ExpenseRoot.Office: color = `#B0CCF0`; break;
+    case ExpenseRoot.Other: color = `#C9F9E6`; break;
+    case ExpenseRoot.Personal: color = `#F9E6C9`; break;
+    case ExpenseRoot.Transport: color = `#E3AEFF`; break;
+    case ExpenseRoot.Travel: color = `#A6F5F4`; break;
     
-    case category.root == typeof ExpenseRoot: return '#F5E890';
-    case ExpenseCat.Other: case IncomeCat.OtherIncome: return '#F5E890';
-    case ExpenseCat.Savings: case IncomeCat.SavingsIncome: return '#C2F3FA';
-    case ExpenseCat.Investment: case IncomeCat.InvestmentIncome: return '#F9C9C9';
-    case ExpenseCat.Groceries: return '#E6C9F9'; case ExpenseCat.Food: return '#F9C9ED';
-    case ExpenseCat.Rent: return '#B0CCF0'; case ExpenseCat.Utilities: return '#C9F9E6';
-    case ExpenseCat.Transportation: return '#F9E6C9'; case ExpenseCat.Entertainment: return '#F9F0C9';
-    case ExpenseCat.Home: return '#A6F5F4'; case ExpenseCat.Office: return '#F5C0DB';
-    case ExpenseCat.Services: return '#BAF5DB'; case ExpenseCat.Gifts: return '#E0ABFC';
-    case ExpenseCat.Textile: return '#F0A2B2'; case ExpenseCat.Toilietries: return '#CFBAF9';
-    case ExpenseCat.Drinks: return '#F9C9B6'; case ExpenseCat.Snacks: return '#ECF9BA';
-    case IncomeCat.Salary: return '#C9F9E6'; case IncomeCat.SideJob: return '#F8CDF9';
-    case IncomeCat.Reimbursement: return '#C9CBC7'; case ExpenseCat.Pet: return '#FAD49F';
+    case IncomeRoot.Salary: color = `#F5C0DB`; break;
+    case IncomeRoot.SideJob: color = `#BAF5DB`; break;
+    case IncomeRoot.FinanceIncome: color = `#E0ABFC`; break;
+    case IncomeRoot.OtherIncome: color = `#F0A2B2`; break;
+    
     default: return '#fff';
-  }*/
-	return '#fff'
+  }
+
+  return `${color}BB`;
 }
 
 export function addDays(date: Date, days: number) {

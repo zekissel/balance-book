@@ -53,8 +53,7 @@ li.item-base > input {
 }
 
 li.edit-list-active {
-	border: 2px dashed #abc;
-	background-color: #abc;
+	background-color: #aabbcc98;
 	border-radius: 1vw;
 }
 
