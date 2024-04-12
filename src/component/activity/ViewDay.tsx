@@ -1,20 +1,21 @@
-import Draggable from 'react-draggable'
-import { useMemo } from 'react'
-import { Day } from '../../typedef'
-import '../../styles/ViewDay.css'
+import Draggable from 'react-draggable';
+import { useMemo, useRef } from 'react';
+import { Day } from '../../typedef';
+import '../../styles/ViewDay.css';
 
 interface ViewDayProps {
-	day: Day
-	toggle: () => void
+	day: Day;
+	toggle: () => void;
 }
 export default function ViewDay({ day, toggle }: ViewDayProps) {
 	const netTransaction = useMemo(() => {
-		return day.transactions.reduce((acc, t) => acc + t.amount, 0)
-	}, [day.transactions])
+		return day.transactions.reduce((acc, t) => acc + t.amount, 0);
+	}, [day.transactions]);
 
+	const box = useRef<HTMLDivElement>(null);
 	return (
-		<Draggable handle=".handle">
-			<div id="view-day-root">
+		<Draggable handle=".handle" nodeRef={box}>
+			<div id="view-day-root" ref={box}>
 				<h4>{day.date.toDateString()}</h4>
 
 				{netTransaction !== 0 && (
@@ -44,5 +45,5 @@ export default function ViewDay({ day, toggle }: ViewDayProps) {
 				</span>
 			</div>
 		</Draggable>
-	)
+	);
 }

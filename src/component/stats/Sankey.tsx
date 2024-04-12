@@ -1,30 +1,30 @@
-import ReactECharts from 'echarts-for-react'
-import { Transaction, Account } from '../../typedef'
-import { useMemo } from 'react'
+import ReactECharts from 'echarts-for-react';
+import { Transaction, Account } from '../../typedef';
+import { useMemo } from 'react';
 
 interface GraphProps {
-	transactions: Transaction[]
-	accounts: Account[]
+	transactions: Transaction[];
+	accounts: Account[];
 }
 export default function TotalGraph({ transactions, accounts }: GraphProps) {
 	const categoryTotals = useMemo(() => {
-		const totals: { [key: string]: number } = {}
+		const totals: { [key: string]: number } = {};
 		transactions.forEach((t) => {
-			if (totals[t.category] === undefined) totals[t.category] = 0
-			totals[t.category] += Math.round(t.amount / 100)
-		})
-		totals
-		return totals
-	}, [transactions])
+			if (totals[t.category] === undefined) totals[t.category] = 0;
+			totals[t.category] += Math.round(t.amount / 100);
+		});
+		totals;
+		return totals;
+	}, [transactions]);
 
 	const categories = useMemo(
 		() => Object.keys(categoryTotals).sort((a, b) => categoryTotals[a] - categoryTotals[b]),
 		[categoryTotals],
-	)
+	);
 
 	const nodes = useMemo(() => {
-		const ids = transactions.map((t) => t.account_id)
-		const accts = accounts.filter((a) => ids.includes(a.id))
+		const ids = transactions.map((t) => t.account_id);
+		const accts = accounts.filter((a) => ids.includes(a.id));
 
 		const ret = accts
 			.map(
@@ -39,12 +39,12 @@ export default function TotalGraph({ transactions, accounts }: GraphProps) {
 						(c) => c.split('>').length > 1 && !['Transfer', 'Credit'].includes(c.split('>')[1]),
 					)
 					.map((c) => new Object({ name: c })),
-			)
+			);
 
-		return ret
-	}, [accounts, categories])
+		return ret;
+	}, [accounts, categories]);
 	const links = useMemo(() => {
-		type Link = { source: string; target: string; value: number }
+		type Link = { source: string; target: string; value: number };
 
 		const ret: Link[] = transactions
 			.filter(
@@ -52,14 +52,14 @@ export default function TotalGraph({ transactions, accounts }: GraphProps) {
 					t.category.includes('>') && !['Transfer', 'Credit'].includes(t.category.split('>')[1]),
 			)
 			.map((t) => {
-				const acct = accounts.find((a) => a.id === t.account_id)!
+				const acct = accounts.find((a) => a.id === t.account_id)!;
 
 				return new Object({
 					source: t.amount > 0 ? t.category : `${acct.account_type}:${acct.account_name}`,
 					target: t.amount > 0 ? `${acct.account_type}:${acct.account_name}` : t.category,
 					value: Math.abs(t.amount / 100),
-				}) as Link
-			})
+				}) as Link;
+			});
 
 		const connect: Link[] = transactions
 			.filter(
@@ -69,13 +69,13 @@ export default function TotalGraph({ transactions, accounts }: GraphProps) {
 					['Transfer', 'Credit'].includes(t.category.split('>')[1]),
 			)
 			.map((t) => {
-				const acct = accounts.find((a) => a.id === t.account_id)!
+				const acct = accounts.find((a) => a.id === t.account_id)!;
 				return new Object({
 					source: `${acct.account_type}:${acct.account_name}`,
 					target: t.category.split('>')[1],
 					value: Math.abs(t.amount / 100),
-				}) as Link
-			})
+				}) as Link;
+			});
 		transactions
 			.filter(
 				(t) =>
@@ -84,10 +84,10 @@ export default function TotalGraph({ transactions, accounts }: GraphProps) {
 					['Transfer', 'Credit'].includes(t.category.split('>')[1]),
 			)
 			.forEach((t) => {
-				const acct = accounts.find((a) => a.id === t.account_id)!
+				const acct = accounts.find((a) => a.id === t.account_id)!;
 
-				const link = connect.find((c: Link) => c.value === Math.abs(t.amount / 100))
-				if (link) link.target = `${acct.account_type}:${acct.account_name}`
+				const link = connect.find((c: Link) => c.value === Math.abs(t.amount / 100));
+				if (link) link.target = `${acct.account_type}:${acct.account_name}`;
 				else
 					connect.push(
 						new Object({
@@ -95,11 +95,11 @@ export default function TotalGraph({ transactions, accounts }: GraphProps) {
 							target: `${acct.account_type}:${acct.account_name}`,
 							value: Math.abs(t.amount / 100),
 						}) as Link,
-					)
-			})
+					);
+			});
 
-		return ret.concat(connect)
-	}, [transactions, categories, accounts])
+		return ret.concat(connect);
+	}, [transactions, categories, accounts]);
 
 	const option = {
 		title: {
@@ -160,11 +160,11 @@ export default function TotalGraph({ transactions, accounts }: GraphProps) {
 				],
 			},
 		],
-	}
+	};
 
 	return (
 		<div className="stats-graph">
 			<ReactECharts option={option} />
 		</div>
-	)
+	);
 }

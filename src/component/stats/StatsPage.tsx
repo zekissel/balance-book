@@ -1,20 +1,20 @@
-import { useMemo, useState } from 'react'
-import { Transaction, Account } from '../../typedef'
-import TotalGraph from './TotalGraph'
-import PieGraph from './PieGraph'
-import LineGraph from './LineGraph'
-import BarGraph from './BarGraph'
-import HeatMap from './HeatMap'
-import Sankey from './Sankey'
-import TreeGraph from './TreeGraph'
+import { useMemo, useState } from 'react';
+import { Transaction, Account } from '../../typedef';
+import TotalGraph from './TotalGraph';
+import PieGraph from './PieGraph';
+import LineGraph from './LineGraph';
+import BarGraph from './BarGraph';
+import HeatMap from './HeatMap';
+import Sankey from './Sankey';
+import TreeGraph from './TreeGraph';
 
 interface StatsPageProps {
-	transactions: Transaction[]
-	accounts: Account[]
-	upcoming: Transaction[]
-	startDate: Date
-	endDate: Date
-	showFilter: boolean
+	transactions: Transaction[];
+	accounts: Account[];
+	upcoming: Transaction[];
+	startDate: Date;
+	endDate: Date;
+	showFilter: boolean;
 }
 export default function StatsPage({
 	transactions,
@@ -27,52 +27,52 @@ export default function StatsPage({
 	const netBalance = useMemo(
 		() => transactions.reduce((acc, t) => acc + t.amount, 0),
 		[transactions],
-	)
+	);
 	const upcomingTotal = useMemo(
 		() => upcoming.reduce((acc, t) => acc + t.amount / 100, 0),
 		[upcoming],
-	)
+	);
 
 	const numExpenses = useMemo(() => {
 		return transactions.filter(
 			(t) => t.amount < 0 && !['Credit', 'Transfer'].includes(t.category.split('>')[1]),
-		).length
-	}, [transactions])
+		).length;
+	}, [transactions]);
 	const expenseTotal = useMemo(() => {
 		return transactions
 			.filter((t) => t.amount < 0 && !['Credit', 'Transfer'].includes(t.category.split('>')[1]))
-			.reduce((acc, t) => acc - t.amount, 0)
-	}, [transactions])
+			.reduce((acc, t) => acc - t.amount, 0);
+	}, [transactions]);
 
 	const numIncome = useMemo(() => {
 		return transactions.filter(
 			(t) => t.amount > 0 && !['Credit', 'Transfer'].includes(t.category.split('>')[1]),
-		).length
-	}, [transactions])
+		).length;
+	}, [transactions]);
 	const incomeTotal = useMemo(() => {
 		return transactions
 			.filter((t) => t.amount > 0 && !['Credit', 'Transfer'].includes(t.category.split('>')[1]))
-			.reduce((acc, t) => acc + t.amount, 0)
-	}, [transactions])
+			.reduce((acc, t) => acc + t.amount, 0);
+	}, [transactions]);
 
 	const [historyGraphLine, setHistoryGraphLine] = useState(
 		localStorage.getItem('stats.historyGraphLine') === 'true' ? true : false,
-	)
+	);
 	const [categoryPieTypeIncome, setCatPieTypeIncome] = useState<boolean>(
 		localStorage.getItem('stats.categoryPieIncome') === 'true' ? true : false,
-	)
+	);
 
 	const [categoryChartType, setCategoryChartType] = useState(
 		localStorage.getItem('stats.categoryChartType') !== null
 			? Number(localStorage.getItem('stats.categoryChartType'))
 			: 0,
-	)
+	);
 	const cycleCategoryChart = (direction: number) => {
-		let index = (categoryChartType + (direction > 0 ? 1 : -1)) % 3
-		if (index < 0) index = 2
-		setCategoryChartType(index)
-		localStorage.setItem('stats.categoryChartType', index.toString())
-	}
+		let index = (categoryChartType + (direction > 0 ? 1 : -1)) % 3;
+		if (index < 0) index = 2;
+		setCategoryChartType(index);
+		localStorage.setItem('stats.categoryChartType', index.toString());
+	};
 
 	return (
 		<div className={showFilter ? 'main-down-shift page-main' : 'page-main'}>
@@ -156,8 +156,8 @@ export default function StatsPage({
 								id="radio-category-income"
 								name="type"
 								onChange={() => {
-									setCatPieTypeIncome(true)
-									localStorage.setItem('stats.categoryPieIncome', 'true')
+									setCatPieTypeIncome(true);
+									localStorage.setItem('stats.categoryPieIncome', 'true');
 								}}
 								defaultChecked={categoryPieTypeIncome}
 							/>
@@ -167,8 +167,8 @@ export default function StatsPage({
 								id="radio-category-expense"
 								name="type"
 								onChange={() => {
-									setCatPieTypeIncome(false)
-									localStorage.setItem('stats.categoryPieIncome', 'false')
+									setCatPieTypeIncome(false);
+									localStorage.setItem('stats.categoryPieIncome', 'false');
 								}}
 								defaultChecked={!categoryPieTypeIncome}
 							/>
@@ -213,8 +213,8 @@ export default function StatsPage({
 				</div>
 			</div>
 		</div>
-	)
+	);
 }
 
-const netStyleLoss = { color: '#6d1e1e' }
-const netStyleProfit = { color: '#1e6d58' }
+const netStyleLoss = { color: '#6d1e1e' };
+const netStyleProfit = { color: '#1e6d58' };

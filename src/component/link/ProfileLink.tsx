@@ -1,14 +1,14 @@
-import { User } from '../../typedef'
-import { useState } from 'react'
-import PlaidLink from './PlaidLink'
+import { User } from '../../typedef';
+import { useState } from 'react';
+import PlaidLink from './PlaidLink';
 
 interface ProfileLinkProps {
-	user: User
-	refreshAcct: () => void
-	refreshTrans: () => void
+	user: User;
+	refreshAcct: () => void;
+	refreshTrans: () => void;
 }
 export default function ProfileLink({ user, refreshAcct, refreshTrans }: ProfileLinkProps) {
-	const [showLink, setShowLink] = useState(localStorage.getItem('auth_state') !== null)
+	const [showLink, setShowLink] = useState(localStorage.getItem('auth_state') !== null);
 
 	return (
 		<div className="profile-financial">
@@ -18,5 +18,5 @@ export default function ProfileLink({ user, refreshAcct, refreshTrans }: Profile
 			</button>
 			{showLink && <PlaidLink user={user} refreshAcct={refreshAcct} refreshTrans={refreshTrans} />}
 		</div>
-	)
+	);
 }

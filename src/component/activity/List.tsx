@@ -1,17 +1,17 @@
-import { useMemo, useState } from 'react'
-import { Transaction, Account } from '../../typedef'
-import { getCategoryColor, addDays } from '../../typeassist'
-import ViewLog from '../transaction/ViewLog'
-import '../../styles/List.css'
-import EditMultiLog from '../transaction/EditMultiLog'
+import { useMemo, useState } from 'react';
+import { Transaction, Account } from '../../typedef';
+import { getCategoryColor, addDays } from '../../typeassist';
+import ViewLog from '../transaction/ViewLog';
+import '../../styles/List.css';
+import EditMultiLog from '../transaction/EditMultiLog';
 
 interface ListProps {
-	logs: Transaction[]
-	accounts: Account[]
-	updateLog: () => void
-	showFilter: boolean
-	incRange: () => void
-	signalRefresh: () => void
+	logs: Transaction[];
+	accounts: Account[];
+	updateLog: () => void;
+	showFilter: boolean;
+	incRange: () => void;
+	signalRefresh: () => void;
 }
 export default function List({
 	logs,
@@ -22,36 +22,36 @@ export default function List({
 	signalRefresh,
 }: ListProps) {
 	const futureTransactions = useMemo(() => {
-		return logs.filter((t) => t.date.getTime() > new Date().getTime())
-	}, [logs])
+		return logs.filter((t) => t.date.getTime() > new Date().getTime());
+	}, [logs]);
 
 	const pastWeekTransactions = useMemo(() => {
-		const weekAgo = addDays(new Date(), -6)
+		const weekAgo = addDays(new Date(), -6);
 		return logs.filter(
 			(t) => t.date.getTime() >= weekAgo.getTime() && !futureTransactions.includes(t),
-		)
-	}, [logs, futureTransactions])
+		);
+	}, [logs, futureTransactions]);
 
 	const pastMonthTransactions = useMemo(() => {
-		const monthAgo = addDays(new Date(), -29)
+		const monthAgo = addDays(new Date(), -29);
 		return logs.filter(
 			(t) =>
 				t.date.getTime() >= monthAgo.getTime() &&
 				!futureTransactions.includes(t) &&
 				!pastWeekTransactions.includes(t),
-		)
-	}, [logs, futureTransactions, pastWeekTransactions])
+		);
+	}, [logs, futureTransactions, pastWeekTransactions]);
 
 	const past90DTransactions = useMemo(() => {
-		const yearAgo = addDays(new Date(), -89)
+		const yearAgo = addDays(new Date(), -89);
 		return logs.filter(
 			(t) =>
 				t.date.getTime() >= yearAgo.getTime() &&
 				!futureTransactions.includes(t) &&
 				!pastMonthTransactions.includes(t) &&
 				!pastWeekTransactions.includes(t),
-		)
-	}, [logs, futureTransactions, pastWeekTransactions, pastMonthTransactions])
+		);
+	}, [logs, futureTransactions, pastWeekTransactions, pastMonthTransactions]);
 
 	const otherTransactions = useMemo(() => {
 		return logs.filter(
@@ -60,8 +60,8 @@ export default function List({
 				!futureTransactions.includes(t) &&
 				!pastWeekTransactions.includes(t) &&
 				!past90DTransactions.includes(t),
-		)
-	}, [logs, futureTransactions, pastWeekTransactions, pastMonthTransactions, past90DTransactions])
+		);
+	}, [logs, futureTransactions, pastWeekTransactions, pastMonthTransactions, past90DTransactions]);
 
 	/* recombine subsections of transactions into one array */
 	const allTransactions: Transaction[][] = useMemo(
@@ -79,41 +79,41 @@ export default function List({
 			past90DTransactions,
 			otherTransactions,
 		],
-	)
+	);
 
-	const transactionTitles = ['Upcoming', '7 Days', '30 Days', '90 Days', 'Previous']
-	const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([])
+	const transactionTitles = ['Upcoming', '7 Days', '30 Days', '90 Days', 'Previous'];
+	const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([]);
 	const updateSelected = (transaction: Transaction) => {
 		if (selectedTransactions.includes(transaction))
 			setSelectedTransactions(
 				selectedTransactions.filter((t) => JSON.stringify(t) !== JSON.stringify(transaction)),
-			)
-		else setSelectedTransactions([...selectedTransactions, transaction])
-	}
+			);
+		else setSelectedTransactions([...selectedTransactions, transaction]);
+	};
 
 	const [showIndices, setShowIndices] = useState(
 		sessionStorage
 			.getItem('list.indices')
 			?.split(' ')
 			.map((i) => Number(i)) ?? [0, 1],
-	)
+	);
 	const handleIndexToggle = (index: number) => {
 		if (showIndices.includes(index)) {
-			const indices = showIndices.filter((i) => i !== index)
-			setShowIndices(indices)
-			sessionStorage.setItem('list.indices', indices.join(' '))
+			const indices = showIndices.filter((i) => i !== index);
+			setShowIndices(indices);
+			sessionStorage.setItem('list.indices', indices.join(' '));
 		} else {
-			const indices = [...showIndices, index]
-			setShowIndices(indices)
-			sessionStorage.setItem('list.indices', indices.join(' '))
+			const indices = [...showIndices, index];
+			setShowIndices(indices);
+			sessionStorage.setItem('list.indices', indices.join(' '));
 		}
-	}
+	};
 
-	const [editLogs, setEditLogs] = useState<string[]>([]) // list of transaction ids to edit
+	const [editLogs, setEditLogs] = useState<string[]>([]); // list of transaction ids to edit
 	const handleEditSelect = (id: string) => {
-		if (editLogs.includes(id)) setEditLogs(editLogs.filter((e) => e !== id))
-		else setEditLogs([...editLogs, id])
-	}
+		if (editLogs.includes(id)) setEditLogs(editLogs.filter((e) => e !== id));
+		else setEditLogs([...editLogs, id]);
+	};
 
 	return (
 		<div className={showFilter ? 'main-down-shift page-main' : 'page-main'}>
@@ -176,7 +176,11 @@ export default function List({
 										<span
 											className="list-item-category"
 											style={{ backgroundColor: getCategoryColor(transaction.category) }}
-										>{transaction.category.split('>')[1] ? `${transaction.category.split('>')[0].slice(0, 5)}>${transaction.category.split('>')[1].slice(0,9)}` : `${transaction.category.slice(0,18)}`}</span>
+										>
+											{transaction.category.split('>')[1]
+												? `${transaction.category.split('>')[0].slice(0, 5)}>${transaction.category.split('>')[1].slice(0, 9)}`
+												: `${transaction.category.slice(0, 18)}`}
+										</span>
 										<span className="list-item-desc"> - {transaction.desc}</span>
 										<span className="list-item-account">{`${accounts.find((a) => a.id === transaction.account_id)?.account_type.slice(0, 5)}:${accounts.find((a) => a.id === transaction.account_id)?.account_name}`}</span>
 									</div>
@@ -191,8 +195,8 @@ export default function List({
 						showIndices.includes(transactionTitles.length - 1) && (
 							<button
 								onClick={() => {
-									incRange()
-									signalRefresh()
+									incRange();
+									signalRefresh();
 								}}
 								className="fetch-more"
 							>
@@ -223,5 +227,5 @@ export default function List({
 					/>
 				))}
 		</div>
-	)
+	);
 }

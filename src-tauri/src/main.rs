@@ -77,10 +77,10 @@ async fn fix_user(id: &str, password: &str, new_pass: Option<&str>, email: Optio
 }
 
 #[tauri::command]
-async fn sync_info (user_id: &str) -> Result<bool, ()> {
+async fn sync_info (user_id: &str, balance: bool) -> Result<bool, ()> {
   let tokens = database::api::read_user_tokens(user_id).await;
   for token in tokens { 
-    let _ = link::api::fetch_balance(token.clone()).await;
+    if balance { let _ = link::api::fetch_balance(token.clone()).await; }
     let _ = link::api::fetch_transactions(token, 30).await;
   }
   Ok(true)

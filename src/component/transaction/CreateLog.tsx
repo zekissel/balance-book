@@ -1,15 +1,15 @@
-import { useState } from 'react'
-import { EditLog } from './EditLog'
-import { Account } from '../../typedef'
-import '../../styles/Log.css'
+import { useState } from 'react';
+import { EditLog } from './EditLog';
+import { Account } from '../../typedef';
+import '../../styles/Log.css';
 
 interface CreateLogProps {
-	accounts: Account[]
-	toggle: () => void
-	updateLog: () => void
+	accounts: Account[];
+	toggle: () => void;
+	updateLog: () => void;
 }
 export default function CreateLog({ accounts, toggle, updateLog }: CreateLogProps) {
-	const [addIncome, setAddIncome] = useState(false)
+	const [addIncome, setAddIncome] = useState(false);
 
 	return (
 		<menu className="new-log">
@@ -43,5 +43,5 @@ export default function CreateLog({ accounts, toggle, updateLog }: CreateLogProp
 				isIncome={addIncome}
 			/>
 		</menu>
-	)
+	);
 }

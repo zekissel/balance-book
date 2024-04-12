@@ -1,4 +1,4 @@
-import ReactECharts from 'echarts-for-react'
+import ReactECharts from 'echarts-for-react';
 
 const option = {
 	graphic: {
@@ -32,12 +32,12 @@ const option = {
 			},
 		],
 	},
-}
+};
 
 export default function Logo() {
 	return (
 		<div className="logo">
 			<ReactECharts option={option} />
 		</div>
-	)
+	);
 }

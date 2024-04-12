@@ -1,38 +1,38 @@
-import { useState, useMemo } from 'react'
-import { Account, AccountType, Transaction } from '../../typedef'
-import { addDays } from '../../typeassist'
+import { useState, useMemo } from 'react';
+import { Account, AccountType, Transaction } from '../../typedef';
+import { addDays } from '../../typeassist';
 
 interface PreviewProps {
-	accounts: Account[]
-	transactions: Transaction[]
+	accounts: Account[];
+	transactions: Transaction[];
 }
 export default function Preview({ accounts, transactions }: PreviewProps) {
-	const [curView, setCurView] = useState(AccountType.Checking)
-	const [curID, setCurID] = useState(localStorage.getItem('accountDefault') ?? '')
+	const [curView, setCurView] = useState(AccountType.Checking);
+	const [curID, setCurID] = useState(localStorage.getItem('accountDefault') ?? '');
 
 	const recentTransactions = useMemo(() => {
-		const minDate = addDays(new Date(), -3)
+		const minDate = addDays(new Date(), -3);
 		const ret = transactions.filter(
 			(t) => accounts.find((a) => a.id === t.account_id)?.account_type === curView,
-		)
-		return ret.filter((t) => t.date >= minDate).sort((a, b) => b.date.getTime() - a.date.getTime())
-	}, [transactions, curView])
+		);
+		return ret.filter((t) => t.date >= minDate).sort((a, b) => b.date.getTime() - a.date.getTime());
+	}, [transactions, curView]);
 
 	const focusAccounts = useMemo(() => {
-		return accounts.filter((a) => a.account_type === curView)
-	}, [curView])
+		return accounts.filter((a) => a.account_type === curView);
+	}, [curView]);
 	const curIndex = useMemo(() => {
-		return focusAccounts.findIndex((a) => a.id === curID)
-	}, [focusAccounts, curID])
+		return focusAccounts.findIndex((a) => a.id === curID);
+	}, [focusAccounts, curID]);
 
 	const handleRadio = (view: AccountType) => {
-		setCurView(view)
-		setCurID(accounts.find((a) => a.account_type === view)?.id ?? '')
-	}
+		setCurView(view);
+		setCurID(accounts.find((a) => a.account_type === view)?.id ?? '');
+	};
 	const seekAccount = (positive: boolean) => {
-		const nextIndex = positive ? curIndex + 1 : curIndex - 1
-		setCurID(focusAccounts[nextIndex].id)
-	}
+		const nextIndex = positive ? curIndex + 1 : curIndex - 1;
+		setCurID(focusAccounts[nextIndex].id);
+	};
 
 	return (
 		<div className="home-preview">
@@ -103,5 +103,5 @@ export default function Preview({ accounts, transactions }: PreviewProps) {
 					))}
 			</ol>
 		</div>
-	)
+	);
 }

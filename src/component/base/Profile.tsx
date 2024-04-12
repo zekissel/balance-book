@@ -1,17 +1,17 @@
-import { invoke } from '@tauri-apps/api'
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { User } from '../../typedef'
-import { addDays } from '../../typeassist'
-import ProfileLink from '../link/ProfileLink'
-import '../../styles/Profile.css'
+import { invoke } from '@tauri-apps/api';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { User } from '../../typedef';
+import { addDays } from '../../typeassist';
+import ProfileLink from '../link/ProfileLink';
+import '../../styles/Profile.css';
 
 interface ProfileProps {
-	user: User
-	setUser: React.Dispatch<React.SetStateAction<User | null>>
-	logout: () => void
-	refreshAcct: () => void
-	refreshTrans: () => void
+	user: User;
+	setUser: React.Dispatch<React.SetStateAction<User | null>>;
+	logout: () => void;
+	refreshAcct: () => void;
+	refreshTrans: () => void;
 }
 export default function Profile({
 	user,
@@ -20,23 +20,23 @@ export default function Profile({
 	refreshAcct,
 	refreshTrans,
 }: ProfileProps) {
-	const [email, setEmail] = useState(localStorage.getItem('useremail') ?? '')
-	const [password, setPassword] = useState('')
-	const [pass2, setPass2] = useState('')
-	const [fname, setFname] = useState(localStorage.getItem('userf') ?? '')
-	const [lname, setLname] = useState(localStorage.getItem('userl') ?? '')
+	const [email, setEmail] = useState(localStorage.getItem('useremail') ?? '');
+	const [password, setPassword] = useState('');
+	const [pass2, setPass2] = useState('');
+	const [fname, setFname] = useState(localStorage.getItem('userf') ?? '');
+	const [lname, setLname] = useState(localStorage.getItem('userl') ?? '');
 	const [dob, setDob] = useState(
 		localStorage.getItem('dob') ? new Date(localStorage.getItem('dob') as string) : null,
-	)
+	);
 
-	const [oldPass, setOldPass] = useState('')
+	const [oldPass, setOldPass] = useState('');
 
-	const [error, setError] = useState('')
+	const [error, setError] = useState('');
 
 	const updateUser = async () => {
 		if (password !== pass2) {
-			setError('Passwords do not match')
-			return
+			setError('Passwords do not match');
+			return;
 		}
 
 		const data = {
@@ -47,17 +47,17 @@ export default function Profile({
 			fname: fname,
 			lname: lname,
 			dob: dob ? new Date(dob.toDateString()) : undefined,
-		}
+		};
 		await invoke('fix_user', data)
 			.then((data) => {
-				if (data !== null) setUser(data as User)
-				else setError('Incorrect password')
+				if (data !== null) setUser(data as User);
+				else setError('Incorrect password');
 			})
-			.catch((err) => setError(err))
-	}
+			.catch((err) => setError(err));
+	};
 
-	const navigate = useNavigate()
-	const [stateFinancial, setStateFinancial] = useState(true)
+	const navigate = useNavigate();
+	const [stateFinancial, setStateFinancial] = useState(true);
 
 	return (
 		<div className="page-root">
@@ -80,8 +80,8 @@ export default function Profile({
 				<div className="dynamic-menu-main">
 					<button
 						onClick={() => {
-							navigate('/')
-							logout()
+							navigate('/');
+							logout();
 						}}
 					>
 						Logout
@@ -168,5 +168,5 @@ export default function Profile({
 				)}
 			</div>
 		</div>
-	)
+	);
 }

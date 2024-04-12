@@ -1,21 +1,21 @@
-import { invoke } from '@tauri-apps/api/tauri'
-import React, { useState } from 'react'
-import { AccountType, Account, User } from '../../typedef'
+import { invoke } from '@tauri-apps/api/tauri';
+import React, { useState } from 'react';
+import { AccountType, Account, User } from '../../typedef';
 
 interface EditAccountProps {
-	log: Account | null
-	user: User
-	type: AccountType
-	toggle: () => void
-	cancel: () => void
-	updateAccounts: () => void
+	log: Account | null;
+	user: User;
+	type: AccountType;
+	toggle: () => void;
+	cancel: () => void;
+	updateAccounts: () => void;
 }
 export function EditAccount({ log, user, type, toggle, cancel, updateAccounts }: EditAccountProps) {
-	const [name, setName] = useState(log ? log.account_name : '')
-	const [balance, setBalance] = useState(log ? String(log.balance / 100) : '0')
+	const [name, setName] = useState(log ? log.account_name : '');
+	const [balance, setBalance] = useState(log ? String(log.balance / 100) : '0');
 
 	async function addAccount() {
-		if (name === '' || user.id.length === 0) return
+		if (name === '' || user.id.length === 0) return;
 
 		const data = {
 			id: log ? log.id : undefined,
@@ -24,34 +24,34 @@ export function EditAccount({ log, user, type, toggle, cancel, updateAccounts }:
 			accountId: name,
 			balance: Math.round((Number(balance) + Number.EPSILON) * 100),
 			date: new Date().toISOString(),
-		}
+		};
 
 		if (log) {
-			await invoke('fix_account', data)
+			await invoke('fix_account', data);
 		} else {
-			const account: Account = await invoke('new_account', data)
+			const account: Account = await invoke('new_account', data);
 			switch (type) {
 				case AccountType.Checking:
 					if (!localStorage.getItem('accountDefault'))
-						localStorage.setItem('accountDefault', account.id.toString())
-					break
+						localStorage.setItem('accountDefault', account.id.toString());
+					break;
 				case AccountType.Savings:
 					if (!localStorage.getItem('accountSavings'))
-						localStorage.setItem('accountSavings', account.id.toString())
-					break
+						localStorage.setItem('accountSavings', account.id.toString());
+					break;
 				case AccountType.Investing:
 					if (!localStorage.getItem('accountInvesting'))
-						localStorage.setItem('accountInvesting', account.id.toString())
-					break
+						localStorage.setItem('accountInvesting', account.id.toString());
+					break;
 			}
 		}
 
-		updateAccounts()
-		toggle()
+		updateAccounts();
+		toggle();
 	}
 
 	const deleteAccount = () => {
-		invoke('remove_account', { id: log!.id })
+		invoke('remove_account', { id: log!.id });
 		if (
 			[
 				localStorage.getItem('accountDefault'),
@@ -61,26 +61,26 @@ export function EditAccount({ log, user, type, toggle, cancel, updateAccounts }:
 		) {
 			switch (log!.account_type) {
 				case AccountType.Checking:
-					localStorage.removeItem('accountDefault')
-					break
+					localStorage.removeItem('accountDefault');
+					break;
 				case AccountType.Savings:
-					localStorage.removeItem('accountSavings')
-					break
+					localStorage.removeItem('accountSavings');
+					break;
 				case AccountType.Investing:
-					localStorage.removeItem('accountInvesting')
-					break
+					localStorage.removeItem('accountInvesting');
+					break;
 			}
 		}
-		updateAccounts()
-		toggle()
-	}
+		updateAccounts();
+		toggle();
+	};
 
 	const updateBalance = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const am = e.target.value
+		const am = e.target.value;
 		if (!am || am.match(/^\d{1,}(\.\d{0,2})?$/)) {
-			setBalance(am)
+			setBalance(am);
 		}
-	}
+	};
 
 	return (
 		<fieldset className={'new-trans'}>
@@ -124,5 +124,5 @@ export function EditAccount({ log, user, type, toggle, cancel, updateAccounts }:
 				)}
 			</li>
 		</fieldset>
-	)
+	);
 }

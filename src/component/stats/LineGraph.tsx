@@ -1,44 +1,44 @@
-import ReactECharts from 'echarts-for-react'
-import { Transaction } from '../../typedef'
-import { useMemo } from 'react'
-import { addDays } from '../../typeassist'
+import ReactECharts from 'echarts-for-react';
+import { Transaction } from '../../typedef';
+import { useMemo } from 'react';
+import { addDays } from '../../typeassist';
 
 interface GraphProps {
-	transactions: Transaction[]
-	range: number
-	endDate: Date
+	transactions: Transaction[];
+	range: number;
+	endDate: Date;
 }
 export default function TotalGraph({ transactions, range, endDate }: GraphProps) {
 	interface SeriesDay {
-		date: Date
-		total: number
+		date: Date;
+		total: number;
 	}
 
 	const timeFrameTotals = useMemo(() => {
-		const today = new Date(endDate.toDateString())
+		const today = new Date(endDate.toDateString());
 		const totals: SeriesDay[] = Array.from({ length: range + 1 }, (_, i) => {
-			return { date: addDays(today, -i), total: 0 }
-		})
+			return { date: addDays(today, -i), total: 0 };
+		});
 		transactions.forEach((t) => {
-			const index = Math.ceil((endDate.getTime() - t.date.getTime()) / (24 * 60 * 60 * 1000))
+			const index = Math.ceil((endDate.getTime() - t.date.getTime()) / (24 * 60 * 60 * 1000));
 			if (index <= range) {
-				totals[index].total += Math.round(t.amount / 100)
+				totals[index].total += Math.round(t.amount / 100);
 			}
-		})
+		});
 
-		return totals.sort((a, b) => a.date.getTime() - b.date.getTime())
-	}, [transactions, range, endDate])
+		return totals.sort((a, b) => a.date.getTime() - b.date.getTime());
+	}, [transactions, range, endDate]);
 
 	const xAxisInterval: number = useMemo(() => {
-		if (range <= 14) return 0
-		else if (range <= 30) return 1
-		else if (range <= 60) return 3
-		else if (range <= 90) return 8
-		else if (range <= 180) return 18
-		else if (range <= 365) return 30
-		else if (range <= 730) return 50
-		else return 80
-	}, [range])
+		if (range <= 14) return 0;
+		else if (range <= 30) return 1;
+		else if (range <= 60) return 3;
+		else if (range <= 90) return 8;
+		else if (range <= 180) return 18;
+		else if (range <= 365) return 30;
+		else if (range <= 730) return 50;
+		else return 80;
+	}, [range]);
 
 	const option = {
 		color: [transactions.length === 0 ? '#abc' : '#739d88'],
@@ -90,11 +90,11 @@ export default function TotalGraph({ transactions, range, endDate }: GraphProps)
 		width: '87%',
 		height: range >= 100 ? '64%' : '70%',
 		dataZoom: { type: 'inside' },
-	}
+	};
 
 	return (
 		<div className="stats-graph">
 			<ReactECharts option={option} />
 		</div>
-	)
+	);
 }

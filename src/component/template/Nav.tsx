@@ -1,15 +1,15 @@
-import { useState } from 'react'
-import '../../styles/Nav.css'
-import { Outlet } from 'react-router'
-import { Link } from 'react-router-dom'
+import { useState } from 'react';
+import '../../styles/Nav.css';
+import { Outlet } from 'react-router';
+import { Link } from 'react-router-dom';
 
 //export interface NavProps { state: State, setState: React.Dispatch<React.SetStateAction<State>> }
 export default function Nav() {
-	const [fullNav, setFullNav] = useState(true)
-	const toggleNav = () => setFullNav(!fullNav)
+	const [fullNav, setFullNav] = useState(true);
+	const toggleNav = () => setFullNav(!fullNav);
 
 	const curPageStyle = (path: string) =>
-		new URL(window.location.href).pathname === path ? 'nav-current' : undefined
+		new URL(window.location.href).pathname === path ? 'nav-current' : undefined;
 
 	return (
 		<>
@@ -70,5 +70,5 @@ export default function Nav() {
 				<Outlet />
 			</main>
 		</>
-	)
+	);
 }

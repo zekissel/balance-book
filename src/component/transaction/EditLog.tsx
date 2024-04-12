@@ -1,5 +1,5 @@
-import { invoke } from '@tauri-apps/api/tauri'
-import React, { useState, useMemo, useEffect } from 'react'
+import { invoke } from '@tauri-apps/api/tauri';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
 	Transaction,
 	IncomeRoot,
@@ -8,36 +8,36 @@ import {
 	ExpenseLeaf,
 	getEnumKeys,
 	Account,
-} from '../../typedef'
+} from '../../typedef';
 
 interface EditLogProps {
-	log: Transaction | null
-	accounts: Account[]
-	toggle: () => void
-	cancel: () => void
-	isIncome: boolean
-	updateLog: () => void
+	log: Transaction | null;
+	accounts: Account[];
+	toggle: () => void;
+	cancel: () => void;
+	isIncome: boolean;
+	updateLog: () => void;
 }
 export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: EditLogProps) {
-	const [company, setCompany] = useState(log ? log.company : '')
-	const [amount, setAmount] = useState(log ? String(log.amount / 100) : '0')
+	const [company, setCompany] = useState(log ? log.company : '');
+	const [amount, setAmount] = useState(log ? String(log.amount / 100) : '0');
 	const displayAmount = useMemo(
 		() =>
 			`${Math.abs(Number(amount))}${amount.charAt(amount.length - 1) === '.' ? '.' : ''}${amount.charAt(amount.length - 2) === '.' && amount.charAt(amount.length - 1) === '0' ? '.0' : ''}`,
 		[amount],
-	)
-	const [category, setCategory] = useState(log ? log.category : '')
+	);
+	const [category, setCategory] = useState(log ? log.category : '');
 	const [date, setDate] = useState(
 		log ? log.date : new Date(new Date().toISOString().split('T')[0]),
-	)
-	const [desc, setDesc] = useState(log ? log.desc : '')
+	);
+	const [desc, setDesc] = useState(log ? log.desc : '');
 
 	const [accountId, setAccountId] = useState(
 		log ? String(log.account_id) : localStorage.getItem('accountDefault') ?? '',
-	)
+	);
 
-	const [isIncomeState, setIsIncomeState] = useState(isIncome)
-	useEffect(() => setIsIncomeState(isIncome), [isIncome])
+	const [isIncomeState, setIsIncomeState] = useState(isIncome);
+	useEffect(() => setIsIncomeState(isIncome), [isIncome]);
 
 	const accountError = useMemo(
 		() =>
@@ -49,28 +49,28 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 					? '*Income requires a destination account'
 					: '',
 		[isIncome],
-	)
-	const [error, setError] = useState('')
+	);
+	const [error, setError] = useState('');
 	useEffect(() => {
-		const timer = setTimeout(() => setError(''), 5000)
-		return () => clearTimeout(timer)
-	}, [error])
+		const timer = setTimeout(() => setError(''), 5000);
+		return () => clearTimeout(timer);
+	}, [error]);
 
 	async function addTransaction() {
 		if (company === '') {
-			setError('Source/Payee required')
-			return
+			setError('Source/Payee required');
+			return;
 		}
 		if (amount === '0' || accountId === '') {
-			setError('Account and amount required')
-			return
+			setError('Account and amount required');
+			return;
 		}
 		if (category === '') {
-			setError('Category required')
-			return
+			setError('Category required');
+			return;
 		}
 
-		const balanceAdjustor = Number(amount) < 0 ? (isIncomeState ? -1 : 1) : isIncomeState ? 1 : -1
+		const balanceAdjustor = Number(amount) < 0 ? (isIncomeState ? -1 : 1) : isIncomeState ? 1 : -1;
 		const transactionData = {
 			id: log ? log.id : undefined,
 			company: company,
@@ -79,20 +79,20 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 			date: new Date(date.toDateString()),
 			desc: desc,
 			accountId: accountId,
-		}
+		};
 
-		if (log !== null) await invoke('fix_transaction', transactionData)
-		else await invoke('new_transaction', transactionData)
+		if (log !== null) await invoke('fix_transaction', transactionData);
+		else await invoke('new_transaction', transactionData);
 
-		updateLog()
-		toggle()
+		updateLog();
+		toggle();
 	}
 
 	const deleteTransaction = () => {
-		if (!log) return
+		if (!log) return;
 
-		invoke('remove_transaction', { id: log.id })
-		updateLog()
+		invoke('remove_transaction', { id: log.id });
+		updateLog();
 
 		const accountData = {
 			id: Number(accountId),
@@ -102,20 +102,20 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 				accounts.find((a) => a.id === accountId)!.balance +
 				(isIncomeState ? -1 : 1) * Math.round((Number(amount) + Number.EPSILON) * 100),
 			date: new Date().toISOString(),
-		}
-		invoke('fix_account', accountData)
-	}
+		};
+		invoke('fix_account', accountData);
+	};
 
 	const updateAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const am = e.target.value
+		const am = e.target.value;
 		if (!am || am.match(/^\d{1,}(\.\d{0,2})?$/)) {
-			setAmount(am)
+			setAmount(am);
 		}
-	}
+	};
 
 	const handleCategorySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		setCategory(e.target.value as typeof category)
-	}
+		setCategory(e.target.value as typeof category);
+	};
 
 	return (
 		<fieldset
@@ -176,7 +176,7 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 					onChange={(e) => {
 						setDate(
 							new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')),
-						)
+						);
 					}}
 				/>
 			</li>
@@ -185,7 +185,7 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 				<select
 					value={accountId}
 					onChange={(e) => {
-						setAccountId(e.target.value)
+						setAccountId(e.target.value);
 					}}
 				>
 					<option value="">Select Account</option>
@@ -230,5 +230,5 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 				</li>
 			)}
 		</fieldset>
-	)
+	);
 }

@@ -1,13 +1,13 @@
-import { User, Account, Transaction } from '../../typedef'
-import Logo from '../home/Logo'
-import Preview from '../home/Preview'
-import '../../styles/Page.css'
-import '../../styles/Menu.css'
+import { User, Account, Transaction } from '../../typedef';
+import Logo from '../home/Logo';
+import Preview from '../home/Preview';
+import '../../styles/Page.css';
+import '../../styles/Menu.css';
 
 interface HomeProps {
-	user: User
-	accounts: Account[]
-	transactions: Transaction[]
+	user: User;
+	accounts: Account[];
+	transactions: Transaction[];
 }
 export default function Home({ user, accounts, transactions }: HomeProps) {
 	return (
@@ -36,5 +36,5 @@ export default function Home({ user, accounts, transactions }: HomeProps) {
 				<div>financial news/goals</div>
 			</div>
 		</div>
-	)
+	);
 }

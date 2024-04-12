@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect } from 'react';
 import {
 	Transaction,
 	Filter,
@@ -7,25 +7,25 @@ import {
 	Account,
 	filtersActiveStyle,
 	menuActiveStyle,
-} from '../../typedef'
-import { addDays } from '../../typeassist'
-import StatsPage from '../stats/StatsPage'
-import FilterGUI from '../template/FilterBar'
-import '../../styles/Stats.css'
-import '../../styles/Page.css'
-import '../../styles/Menu.css'
+} from '../../typedef';
+import { addDays } from '../../typeassist';
+import StatsPage from '../stats/StatsPage';
+import FilterGUI from '../template/FilterBar';
+import '../../styles/Stats.css';
+import '../../styles/Page.css';
+import '../../styles/Menu.css';
 
 interface StatsProps {
-	transactions: Transaction[]
-	accounts: Account[]
-	signalRefresh: () => void
-	setRange: (range: number) => void
+	transactions: Transaction[];
+	accounts: Account[];
+	signalRefresh: () => void;
+	setRange: (range: number) => void;
 }
 export default function Stats({ transactions, accounts, signalRefresh, setRange }: StatsProps) {
 	/* filter transactions before being sent to page */
-	const anyDateFilters = () => filters.startDate !== null || filters.endDate !== null
-	const [showFilter, setFilterGUI] = useState(false)
-	const toggleFilter = () => setFilterGUI(!showFilter)
+	const anyDateFilters = () => filters.startDate !== null || filters.endDate !== null;
+	const [showFilter, setFilterGUI] = useState(false);
+	const toggleFilter = () => setFilterGUI(!showFilter);
 	const [filters, setFilters] = useState<Filter>({
 		type: sessionStorage.getItem('filter.type') ?? `all`,
 		startDate: sessionStorage.getItem('filter.start')
@@ -39,88 +39,88 @@ export default function Stats({ transactions, accounts, signalRefresh, setRange 
 		lowAmount: sessionStorage.getItem('filter.low') ?? '0',
 		highAmount: sessionStorage.getItem('filter.high') ?? '0',
 		accounts: sessionStorage.getItem('filter.accounts')?.split(' ') ?? [],
-	})
+	});
 
 	const [timeRange, setTimeRange] = useState(
 		sessionStorage.getItem('stats.timeRange')
 			? Number(sessionStorage.getItem('stats.timeRange'))
 			: 2,
-	)
+	);
 	const [rangeMultiplier, setRangeMultiplier] = useState(
 		sessionStorage.getItem('stats.timeMulti')
 			? Number(sessionStorage.getItem('stats.timeMulti'))
 			: 7,
-	)
+	);
 
 	/* filters get superior say on date specification (if only one is set then the other side has no limit); otherwise listen to stats menu bar */
 	const endDate = useMemo(() => {
-		if (filters.endDate !== null) return filters.endDate
+		if (filters.endDate !== null) return filters.endDate;
 		else if (filters.startDate !== null && filters.endDate === null) {
 			return addDays(
 				transactions.reduce((max, p) => (p.date > max ? p.date : max), new Date()),
 				1,
-			)
-		} else return addDays(new Date(), 0)
-	}, [filters.endDate, filters.startDate, transactions])
+			);
+		} else return addDays(new Date(), 0);
+	}, [filters.endDate, filters.startDate, transactions]);
 	const startDate = useMemo(() => {
-		if (filters.startDate !== null) return filters.startDate
+		if (filters.startDate !== null) return filters.startDate;
 		else if (filters.endDate !== null && filters.startDate === null) {
 			return addDays(
 				transactions.reduce((min, p) => (p.date < min ? p.date : min), new Date()),
 				-1,
-			)
+			);
 		} else {
 			const ret = new Date(
 				new Date(
 					endDate.getTime() - (timeRange * rangeMultiplier - 1) * 24 * 60 * 60 * 1000,
 				).toDateString(),
-			)
-			return ret
+			);
+			return ret;
 		}
-	}, [filters.startDate, filters.endDate, endDate, timeRange, rangeMultiplier, transactions])
+	}, [filters.startDate, filters.endDate, endDate, timeRange, rangeMultiplier, transactions]);
 
 	useEffect(() => {
-		let range = timeRange * rangeMultiplier
+		let range = timeRange * rangeMultiplier;
 		if (filters.startDate !== null) {
 			range = Math.floor(
 				(new Date().getTime() - filters.startDate.getTime()) / (1000 * 60 * 60 * 24),
-			)
+			);
 		}
-		setRange(range)
-		signalRefresh()
-	}, [startDate, timeRange, rangeMultiplier])
+		setRange(range);
+		signalRefresh();
+	}, [startDate, timeRange, rangeMultiplier]);
 
 	/* transactions after filters are applied */
 	const filteredTransactions = useMemo(() => {
-		return filterTransactions({ transactions, filters })
-	}, [transactions, filters])
+		return filterTransactions({ transactions, filters });
+	}, [transactions, filters]);
 
 	/* transactions within timeframe set by stats menu bar (void if filter dates are set) */
 	const timeFrameTransactions = useMemo(() => {
-		if (anyDateFilters()) return filteredTransactions
+		if (anyDateFilters()) return filteredTransactions;
 		return filteredTransactions.filter(
 			(t) =>
 				t.date.getTime() - startDate.getTime() >= 0 && endDate.getTime() - t.date.getTime() >= 0,
-		)
-	}, [filteredTransactions, startDate, endDate])
+		);
+	}, [filteredTransactions, startDate, endDate]);
 
 	/* future transactions, after endDate (whether set by filters or automatically) */
 	const upcomingTransactions = useMemo(() => {
-		return filteredTransactions.filter((t) => t.date.getTime() > endDate.getTime())
-	}, [filteredTransactions, endDate])
+		return filteredTransactions.filter((t) => t.date.getTime() > endDate.getTime());
+	}, [filteredTransactions, endDate]);
 
 	const updateMultiplier = (multi: number) => {
-		setRangeMultiplier(multi)
-		sessionStorage.setItem('stats.timeMulti', multi.toString())
-	}
+		setRangeMultiplier(multi);
+		sessionStorage.setItem('stats.timeMulti', multi.toString());
+	};
 
 	const updateRangeDays = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const am = e.target.value
+		const am = e.target.value;
 		if (!am || am.match(/^\d{1,}?$/)) {
-			setTimeRange(Number(am))
-			sessionStorage.setItem('stats.timeRange', am)
+			setTimeRange(Number(am));
+			sessionStorage.setItem('stats.timeRange', am);
 		}
-	}
+	};
 
 	return (
 		<div className="page-root">
@@ -191,5 +191,5 @@ export default function Stats({ transactions, accounts, signalRefresh, setRange 
 				showFilter={showFilter}
 			/>
 		</div>
-	)
+	);
 }

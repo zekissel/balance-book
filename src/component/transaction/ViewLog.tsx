@@ -1,23 +1,24 @@
-import { Transaction, Account } from '../../typedef'
-import { getCategoryColor } from '../../typeassist'
-import Draggable from 'react-draggable'
-import { useState } from 'react'
-import { EditLog } from './EditLog'
-import '../../styles/Log.css'
+import { Transaction, Account } from '../../typedef';
+import { getCategoryColor } from '../../typeassist';
+import Draggable from 'react-draggable';
+import { useState, useRef } from 'react';
+import { EditLog } from './EditLog';
+import '../../styles/Log.css';
 
 interface ViewLogProps {
-	transaction: Transaction
-	accounts: Account[]
-	toggle: () => void
-	updateLog: () => void
+	transaction: Transaction;
+	accounts: Account[];
+	toggle: () => void;
+	updateLog: () => void;
 }
 export default function ViewLog({ transaction, accounts, toggle, updateLog }: ViewLogProps) {
-	const [editsActive, setEditsActive] = useState(false)
-	const toggleEdits = () => setEditsActive(!editsActive)
+	const [editsActive, setEditsActive] = useState(false);
+	const toggleEdits = () => setEditsActive(!editsActive);
 
+	const box = useRef<HTMLDivElement>(null);
 	return (
-		<Draggable handle=".handle">
-			<div className="view-log">
+		<Draggable handle=".handle" nodeRef={box}>
+			<div className="view-log" ref={box}>
 				<li className="view-log-meta">
 					<button onClick={toggleEdits}>
 						<img src="/edit.svg" />
@@ -60,5 +61,5 @@ export default function ViewLog({ transaction, accounts, toggle, updateLog }: Vi
 				)}
 			</div>
 		</Draggable>
-	)
+	);
 }

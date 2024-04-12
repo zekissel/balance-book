@@ -1,13 +1,13 @@
-import { AccountType, User } from '../../typedef'
-import '../../styles/Log.css'
-import { EditAccount } from './EditAccount'
+import { AccountType, User } from '../../typedef';
+import '../../styles/Log.css';
+import { EditAccount } from './EditAccount';
 
 interface CreateAccountProps {
-	user: User
-	type: AccountType
-	toggle: () => void
-	update: () => void
-	setAddAccount: React.Dispatch<React.SetStateAction<AccountType | null>>
+	user: User;
+	type: AccountType;
+	toggle: () => void;
+	update: () => void;
+	setAddAccount: React.Dispatch<React.SetStateAction<AccountType | null>>;
 }
 export default function CreateAccount({
 	user,
@@ -79,5 +79,5 @@ export default function CreateAccount({
 				updateAccounts={update}
 			/>
 		</menu>
-	)
+	);
 }

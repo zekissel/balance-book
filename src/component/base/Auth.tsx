@@ -1,93 +1,93 @@
-import { invoke } from '@tauri-apps/api'
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import ReactECharts from 'echarts-for-react'
-import { User, DataState } from '../../typedef'
+import { invoke } from '@tauri-apps/api';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ReactECharts from 'echarts-for-react';
+import { User, DataState } from '../../typedef';
 
 interface AuthProps {
-	verify: (user: User) => void
-	logout: () => void
+	verify: (user: User) => void;
+	logout: () => void;
 }
 export default function Auth({ verify, logout }: AuthProps) {
-	const [dataState, setDataState] = useState(DataState.Success)
-	const [error, setError] = useState('')
+	const [dataState, setDataState] = useState(DataState.Success);
+	const [error, setError] = useState('');
 	useEffect(() => {
-		const timer = setTimeout(() => setError(''), 5000)
-		return () => clearTimeout(timer)
-	}, [error])
+		const timer = setTimeout(() => setError(''), 5000);
+		return () => clearTimeout(timer);
+	}, [error]);
 	useEffect(() => {
-		const timer = setTimeout(() => setDataState(DataState.Success), 5000)
-		return () => clearTimeout(timer)
-	}, [dataState])
+		const timer = setTimeout(() => setDataState(DataState.Success), 5000);
+		return () => clearTimeout(timer);
+	}, [dataState]);
 	useEffect(() => {
-		localStorage.removeItem('userid')
-		localStorage.removeItem('username')
-		localStorage.removeItem('useremail')
-		localStorage.removeItem('userf')
-		localStorage.removeItem('userl')
-		localStorage.removeItem('dob')
-	}, [])
+		localStorage.removeItem('userid');
+		localStorage.removeItem('username');
+		localStorage.removeItem('useremail');
+		localStorage.removeItem('userf');
+		localStorage.removeItem('userl');
+		localStorage.removeItem('dob');
+	}, []);
 
-	const [name, setName] = useState(localStorage.getItem('username') ?? '')
-	const [pass, setPass] = useState(localStorage.getItem('pass') ?? '')
-	const [confirmPass, setConfirmPass] = useState('')
-	const navigate = useNavigate()
+	const [name, setName] = useState(localStorage.getItem('username') ?? '');
+	const [pass, setPass] = useState(localStorage.getItem('pass') ?? '');
+	const [confirmPass, setConfirmPass] = useState('');
+	const navigate = useNavigate();
 
 	const enterLogin = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === 'Enter') login()
-	}
+		if (e.key === 'Enter') login();
+	};
 	const login = async () => {
-		setDataState(DataState.Loading)
+		setDataState(DataState.Loading);
 		await invoke('login', { name: name, password: pass })
 			.then((data) => {
 				if (data === null) {
-					logout()
-					setError('Invalid credentials')
-					setDataState(DataState.Error)
+					logout();
+					setError('Invalid credentials');
+					setDataState(DataState.Error);
 				} else {
-					setDataState(DataState.Success)
-					confirmUser(data as User)
+					setDataState(DataState.Success);
+					confirmUser(data as User);
 				}
 			})
-			.catch(() => setDataState(DataState.Error))
-	}
-	const [showRegister, setShowRegister] = useState(false)
-	const toggleRegister = () => setShowRegister(!showRegister)
+			.catch(() => setDataState(DataState.Error));
+	};
+	const [showRegister, setShowRegister] = useState(false);
+	const toggleRegister = () => setShowRegister(!showRegister);
 	const register = async () => {
 		if (pass === confirmPass) {
-			setDataState(DataState.Loading)
+			setDataState(DataState.Loading);
 			await invoke('register', { name: name, password: pass })
 				.then((data) => {
 					if (data === null) {
-						logout()
-						setError('Username already in use')
-						setDataState(DataState.Error)
+						logout();
+						setError('Username already in use');
+						setDataState(DataState.Error);
 					} else {
-						setDataState(DataState.Success)
-						confirmUser(data as User)
+						setDataState(DataState.Success);
+						confirmUser(data as User);
 					}
 				})
-				.catch(() => setDataState(DataState.Error))
-		} else setError('Passwords do not match')
-	}
+				.catch(() => setDataState(DataState.Error));
+		} else setError('Passwords do not match');
+	};
 
 	const confirmUser = (data: User) => {
-		const user = data as User
-		user.dob = user.dob ? new Date(user.dob) : null
-		verify(user)
-		navigate('/home')
-	}
+		const user = data as User;
+		user.dob = user.dob ? new Date(user.dob) : null;
+		verify(user);
+		navigate('/home');
+	};
 
 	const handleRegister = () => {
 		if (!showRegister) {
-			toggleRegister()
-			return
+			toggleRegister();
+			return;
 		}
 		if (name.length > 0 && pass.length > 0 && confirmPass.length > 0) {
-			register()
-			return
+			register();
+			return;
 		}
-	}
+	};
 
 	return (
 		<div className="no-auth">
@@ -131,7 +131,7 @@ export default function Auth({ verify, logout }: AuthProps) {
 				)}
 			</div>
 		</div>
-	)
+	);
 }
 
 const option = {
@@ -174,4 +174,4 @@ const option = {
 			},
 		],
 	},
-}
+};

@@ -1,25 +1,25 @@
-import ReactECharts from 'echarts-for-react'
-import { Transaction } from '../../typedef'
-import { useMemo } from 'react'
+import ReactECharts from 'echarts-for-react';
+import { Transaction } from '../../typedef';
+import { useMemo } from 'react';
 
 interface GraphProps {
-	transactions: Transaction[]
+	transactions: Transaction[];
 }
 export default function TotalGraph({ transactions }: GraphProps) {
 	const categoryTotals = useMemo(() => {
-		const totals: { [key: string]: number } = {}
+		const totals: { [key: string]: number } = {};
 		transactions.forEach((t) => {
-			if (totals[t.category] === undefined) totals[t.category] = 0
-			totals[t.category] += Math.round(t.amount / 100)
-		})
-		totals
-		return totals
-	}, [transactions])
+			if (totals[t.category] === undefined) totals[t.category] = 0;
+			totals[t.category] += Math.round(t.amount / 100);
+		});
+		totals;
+		return totals;
+	}, [transactions]);
 
 	const categories = useMemo(
 		() => Object.keys(categoryTotals).sort((a, b) => categoryTotals[a] - categoryTotals[b]),
 		[categoryTotals],
-	)
+	);
 	const totals = useMemo(
 		() =>
 			Object.values(categoryTotals)
@@ -33,7 +33,7 @@ export default function TotalGraph({ transactions }: GraphProps) {
 						}),
 				),
 		[categoryTotals],
-	)
+	);
 
 	const option = {
 		xAxis: {
@@ -65,11 +65,11 @@ export default function TotalGraph({ transactions }: GraphProps) {
 			axisPointer: { type: 'shadow' },
 			formatter: '{b}: <b>${c}</b>',
 		},
-	}
+	};
 
 	return (
 		<div className="stats-graph">
 			<ReactECharts option={option} />
 		</div>
-	)
+	);
 }

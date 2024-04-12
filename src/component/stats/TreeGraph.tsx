@@ -1,40 +1,40 @@
-import ReactECharts from 'echarts-for-react'
-import { Transaction } from '../../typedef'
-import { useMemo } from 'react'
-import { generateChartColor } from '../../typeassist'
+import ReactECharts from 'echarts-for-react';
+import { Transaction } from '../../typedef';
+import { useMemo } from 'react';
+import { generateChartColor } from '../../typeassist';
 
 interface GraphProps {
-	trans: Transaction[]
-	treemap: boolean
-	income: boolean
+	trans: Transaction[];
+	treemap: boolean;
+	income: boolean;
 }
 export default function TreeGraph({ trans, treemap, income }: GraphProps) {
 	const transactions = useMemo(() => {
-		return trans.filter((t) => t.category.includes('>'))
-	}, [trans])
+		return trans.filter((t) => t.category.includes('>'));
+	}, [trans]);
 
 	const trunkTotals = useMemo(() => {
-		const totals: { [key: string]: number } = {}
+		const totals: { [key: string]: number } = {};
 		transactions.forEach((t) => {
-			if (totals[t.category.split('>')[0]] === undefined) totals[t.category.split('>')[0]] = 0
-			totals[t.category.split('>')[0]] += Math.round(((income ? 1 : -1) * t.amount) / 100)
-		})
-		return totals
-	}, [transactions, income])
+			if (totals[t.category.split('>')[0]] === undefined) totals[t.category.split('>')[0]] = 0;
+			totals[t.category.split('>')[0]] += Math.round(((income ? 1 : -1) * t.amount) / 100);
+		});
+		return totals;
+	}, [transactions, income]);
 
 	const categoryTotals = useMemo(() => {
-		const totals: { [key: string]: number } = {}
+		const totals: { [key: string]: number } = {};
 		transactions.forEach((t) => {
-			if (totals[t.category] === undefined) totals[t.category] = 0
-			totals[t.category] += Math.round(((income ? 1 : -1) * t.amount) / 100)
-		})
-		totals
-		return totals
-	}, [transactions, income])
+			if (totals[t.category] === undefined) totals[t.category] = 0;
+			totals[t.category] += Math.round(((income ? 1 : -1) * t.amount) / 100);
+		});
+		totals;
+		return totals;
+	}, [transactions, income]);
 
-	type MapData = { name: string; children: MapData[]; value: number; itemStyle: { color: string } }
+	type MapData = { name: string; children: MapData[]; value: number; itemStyle: { color: string } };
 	const data = useMemo(() => {
-		const trunks = Object.keys(trunkTotals).sort((a, b) => trunkTotals[b] - trunkTotals[a])
+		const trunks = Object.keys(trunkTotals).sort((a, b) => trunkTotals[b] - trunkTotals[a]);
 
 		const ret = trunks.map(
 			(c, i) =>
@@ -44,10 +44,10 @@ export default function TreeGraph({ trans, treemap, income }: GraphProps) {
 					children: [],
 					itemStyle: { color: generateChartColor(i, income) },
 				}) as MapData,
-		)
+		);
 
 		Object.keys(categoryTotals).forEach((t) => {
-			const index = ret.findIndex((r) => r.name === t.split('>')[0])
+			const index = ret.findIndex((r) => r.name === t.split('>')[0]);
 			if (index !== -1) {
 				ret[index].children!.push(
 					new Object({
@@ -55,14 +55,14 @@ export default function TreeGraph({ trans, treemap, income }: GraphProps) {
 						value: categoryTotals[t],
 						itemStyle: { color: ret[index].itemStyle.color },
 					}) as MapData,
-				)
+				);
 			}
-		})
+		});
 
 		if (ret.length < 1)
-			return [{ name: 'No Data', value: 0.01, children: undefined, itemStyle: { color: '#abc' } }]
-		return ret.sort((a, b) => b.value - a.value)
-	}, [categoryTotals, trunkTotals])
+			return [{ name: 'No Data', value: 0.01, children: undefined, itemStyle: { color: '#abc' } }];
+		return ret.sort((a, b) => b.value - a.value);
+	}, [categoryTotals, trunkTotals]);
 
 	const treemapOption = {
 		title: {
@@ -92,7 +92,7 @@ export default function TreeGraph({ trans, treemap, income }: GraphProps) {
 			trigger: 'item',
 			formatter: '{b}: <b>${c}</b>',
 		},
-	}
+	};
 	const sunburstOption = {
 		title: {
 			text: `${income ? 'Income' : 'Expense'} Totals by Category`,
@@ -122,15 +122,15 @@ export default function TreeGraph({ trans, treemap, income }: GraphProps) {
 			trigger: 'item',
 			formatter: '{b}: <b>${c}</b>',
 		},
-	}
+	};
 
 	const option = useMemo(() => {
-		return treemap ? treemapOption : sunburstOption
-	}, [treemap, income, trans])
+		return treemap ? treemapOption : sunburstOption;
+	}, [treemap, income, trans]);
 
 	return (
 		<div className="stats-graph">
 			<ReactECharts option={option} />
 		</div>
-	)
+	);
 }

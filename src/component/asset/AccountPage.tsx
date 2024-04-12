@@ -1,17 +1,17 @@
-import { useState, useMemo } from 'react'
-import { Account, Transaction, AccountType, User } from '../../typedef'
-import { addDays } from '../../typeassist'
-import '../../styles/AccountPage.css'
-import ReactECharts from 'echarts-for-react'
-import { EditAccount } from './EditAccount'
+import { useState, useMemo } from 'react';
+import { Account, Transaction, AccountType, User } from '../../typedef';
+import { addDays } from '../../typeassist';
+import '../../styles/AccountPage.css';
+import ReactECharts from 'echarts-for-react';
+import { EditAccount } from './EditAccount';
 
 interface AccountPageProps {
-	user: User
-	accounts: Account[]
-	transactions: Transaction[]
-	updateAccounts: () => void
-	type: AccountType
-	addAccount: React.Dispatch<React.SetStateAction<AccountType | null>>
+	user: User;
+	accounts: Account[];
+	transactions: Transaction[];
+	updateAccounts: () => void;
+	type: AccountType;
+	addAccount: React.Dispatch<React.SetStateAction<AccountType | null>>;
 }
 export default function AccountPage({
 	user,
@@ -42,57 +42,57 @@ export default function AccountPage({
 				)}
 			</ul>
 		</div>
-	)
+	);
 }
 
 interface AccountCardProps {
-	user: User
-	account: Account
-	updateAccount: () => void
-	transactions: Transaction[]
+	user: User;
+	account: Account;
+	updateAccount: () => void;
+	transactions: Transaction[];
 }
 function AccountCard({ user, account, updateAccount, transactions }: AccountCardProps) {
-	const [range, setRange] = useState(30)
-	const [showEdit, setShowEdit] = useState(false)
-	const toggleEdit = () => setShowEdit(!showEdit)
+	const [range, setRange] = useState(30);
+	const [showEdit, setShowEdit] = useState(false);
+	const toggleEdit = () => setShowEdit(!showEdit);
 
 	interface SeriesDay {
-		date: Date
-		total: number
+		date: Date;
+		total: number;
 	}
 	const timeFrameTotals = useMemo(() => {
-		const today = new Date(new Date().toDateString())
+		const today = new Date(new Date().toDateString());
 		const totals: SeriesDay[] = Array.from({ length: range + 1 }, (_, i) => {
-			return { date: addDays(today, -i), total: account.balance }
-		})
-		const minTime = addDays(today, -range).getTime()
+			return { date: addDays(today, -i), total: account.balance };
+		});
+		const minTime = addDays(today, -range).getTime();
 
 		transactions.forEach((trans) => {
 			if (trans.date.getTime() >= minTime) {
-				let index = totals.findIndex((t) => t.date.toDateString() === trans.date.toDateString())
+				let index = totals.findIndex((t) => t.date.toDateString() === trans.date.toDateString());
 				if (index !== -1) {
 					while (index < range) {
-						index += 1
+						index += 1;
 						totals[index].total +=
-							(account.account_type !== AccountType.Credit ? -1 : 1) * trans.amount
+							(account.account_type !== AccountType.Credit ? -1 : 1) * trans.amount;
 					}
 				} else if (trans.date.getTime() > today.getTime()) {
-					index = range
+					index = range;
 					while (index > -1) {
-						totals[index].total += (trans.account_id === account.id ? -1 : 1) * trans.amount
-						index -= 1
+						totals[index].total += (trans.account_id === account.id ? -1 : 1) * trans.amount;
+						index -= 1;
 					}
 				}
 			}
-		})
+		});
 
-		return totals.sort((a, b) => a.date.getTime() - b.date.getTime())
-	}, [transactions, range, account.balance])
+		return totals.sort((a, b) => a.date.getTime() - b.date.getTime());
+	}, [transactions, range, account.balance]);
 
 	const upcomingTransactions = useMemo(() => {
-		const now = new Date().getTime()
-		return transactions.filter((t) => t.date.getTime() > now)
-	}, [transactions])
+		const now = new Date().getTime();
+		return transactions.filter((t) => t.date.getTime() > now);
+	}, [transactions]);
 
 	const option = {
 		color: ['#739d88'],
@@ -141,7 +141,7 @@ function AccountCard({ user, account, updateAccount, transactions }: AccountCard
 		width: '87%',
 		height: '70%',
 		dataZoom: { type: 'inside' },
-	}
+	};
 
 	return (
 		<div className="assets-account-card">
@@ -191,5 +191,5 @@ function AccountCard({ user, account, updateAccount, transactions }: AccountCard
 				<ReactECharts option={option} />
 			</div>
 		</div>
-	)
+	);
 }

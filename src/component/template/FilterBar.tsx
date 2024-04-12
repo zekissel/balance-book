@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import {
 	Filter,
 	ExpenseRoot,
@@ -7,114 +7,114 @@ import {
 	IncomeLeaf,
 	getEnumKeys,
 	Account,
-} from '../../typedef'
-import { addDays } from '../../typeassist'
-import '../../styles/Filter.css'
+} from '../../typedef';
+import { addDays } from '../../typeassist';
+import '../../styles/Filter.css';
 
 interface FilterProps {
-	accounts: Account[]
-	toggle: () => void
-	filters: Filter
-	setFilters: React.Dispatch<React.SetStateAction<Filter>>
+	accounts: Account[];
+	toggle: () => void;
+	filters: Filter;
+	setFilters: React.Dispatch<React.SetStateAction<Filter>>;
 }
 export default function FilterGUI({ accounts, toggle, filters, setFilters }: FilterProps) {
-	const [showStartDate, setShowStartDate] = useState(filters.startDate !== null)
-	const toggleStartDate = () => setShowStartDate(!showStartDate)
-	const [showEndDate, setShowEndDate] = useState(filters.endDate !== null)
-	const toggleEndDate = () => setShowEndDate(!showEndDate)
-	const [showCategory, setShowCategory] = useState(false)
-	const toggleCategory = () => setShowCategory(!showCategory)
+	const [showStartDate, setShowStartDate] = useState(filters.startDate !== null);
+	const toggleStartDate = () => setShowStartDate(!showStartDate);
+	const [showEndDate, setShowEndDate] = useState(filters.endDate !== null);
+	const toggleEndDate = () => setShowEndDate(!showEndDate);
+	const [showCategory, setShowCategory] = useState(false);
+	const toggleCategory = () => setShowCategory(!showCategory);
 
-	const [showAccounts, setShowAccounts] = useState(false)
-	const toggleAccounts = () => setShowAccounts(!showAccounts)
+	const [showAccounts, setShowAccounts] = useState(false);
+	const toggleAccounts = () => setShowAccounts(!showAccounts);
 
 	const handleLowAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const am = e.target.value
+		const am = e.target.value;
 		if (!am || am.match(/^\d{1,}(\.\d{0,2})?$/)) {
-			setFilters({ ...filters, lowAmount: am })
-			sessionStorage.setItem('filter.low', am)
+			setFilters({ ...filters, lowAmount: am });
+			sessionStorage.setItem('filter.low', am);
 		}
-	}
+	};
 	const handleHighAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const am = e.target.value
+		const am = e.target.value;
 		if (!am || am.match(/^\d{1,}(\.\d{0,2})?$/)) {
-			setFilters({ ...filters, highAmount: am })
-			sessionStorage.setItem('filter.high', am)
+			setFilters({ ...filters, highAmount: am });
+			sessionStorage.setItem('filter.high', am);
 		}
-	}
+	};
 
 	const handleType = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		setFilters({ ...filters, type: e.target.value as string })
-		sessionStorage.setItem('filter.type', e.target.value)
-	}
+		setFilters({ ...filters, type: e.target.value as string });
+		sessionStorage.setItem('filter.type', e.target.value);
+	};
 
 	const voidStartDate = () => {
-		toggleStartDate()
-		setFilters({ ...filters, startDate: null })
-		sessionStorage.removeItem('filter.start')
-	}
+		toggleStartDate();
+		setFilters({ ...filters, startDate: null });
+		sessionStorage.removeItem('filter.start');
+	};
 	const handleStartDate = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const date = addDays(
 			new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')),
 			0,
-		)
-		setFilters({ ...filters, startDate: date })
-		sessionStorage.setItem('filter.start', date.toDateString())
-	}
+		);
+		setFilters({ ...filters, startDate: date });
+		sessionStorage.setItem('filter.start', date.toDateString());
+	};
 
 	const voidEndDate = () => {
-		toggleEndDate()
-		setFilters({ ...filters, endDate: null })
-		sessionStorage.removeItem('filter.end')
-	}
+		toggleEndDate();
+		setFilters({ ...filters, endDate: null });
+		sessionStorage.removeItem('filter.end');
+	};
 	const handleEndDate = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const date = addDays(
 			new Date(new Date(e.target.value).toUTCString().split(' ').slice(0, 4).join(' ')),
 			0,
-		)
-		setFilters({ ...filters, endDate: date })
-		sessionStorage.setItem('filter.end', date.toDateString())
-	}
+		);
+		setFilters({ ...filters, endDate: date });
+		sessionStorage.setItem('filter.end', date.toDateString());
+	};
 
 	const voidCategory = () => {
-		toggleCategory()
-		setFilters({ ...filters, category: [] })
-		sessionStorage.removeItem('filter.category')
-	}
+		toggleCategory();
+		setFilters({ ...filters, category: [] });
+		sessionStorage.removeItem('filter.category');
+	};
 	const handleCategory = (e: any) => {
 		if (filters.category.includes(e.target.value)) {
-			const newCategories = filters.category.filter((c) => c !== e.target.value)
-			setFilters({ ...filters, category: newCategories })
-			sessionStorage.setItem('filter.category', newCategories.join(' '))
+			const newCategories = filters.category.filter((c) => c !== e.target.value);
+			setFilters({ ...filters, category: newCategories });
+			sessionStorage.setItem('filter.category', newCategories.join(' '));
 		} else {
-			const newCategories = [...filters.category, e.target.value]
-			setFilters({ ...filters, category: newCategories })
-			sessionStorage.setItem('filter.category', newCategories.join(' '))
+			const newCategories = [...filters.category, e.target.value];
+			setFilters({ ...filters, category: newCategories });
+			sessionStorage.setItem('filter.category', newCategories.join(' '));
 		}
-	}
+	};
 
 	const handleSource = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const sources = e.target.value.split(',')
-		setFilters({ ...filters, source: sources })
-		sessionStorage.setItem('filter.source', sources.join(' '))
-	}
+		const sources = e.target.value.split(',');
+		setFilters({ ...filters, source: sources });
+		sessionStorage.setItem('filter.source', sources.join(' '));
+	};
 
 	const voidAccounts = () => {
-		toggleAccounts()
-		setFilters({ ...filters, accounts: [] })
-		sessionStorage.removeItem('filter.accounts')
-	}
+		toggleAccounts();
+		setFilters({ ...filters, accounts: [] });
+		sessionStorage.removeItem('filter.accounts');
+	};
 	const handleAccounts = (e: any) => {
 		if (filters.accounts.includes(e.target.value)) {
-			const newAccounts = filters.accounts.filter((a) => a !== e.target.value)
-			setFilters({ ...filters, accounts: newAccounts })
-			sessionStorage.setItem('filter.accounts', newAccounts.join(' '))
+			const newAccounts = filters.accounts.filter((a) => a !== e.target.value);
+			setFilters({ ...filters, accounts: newAccounts });
+			sessionStorage.setItem('filter.accounts', newAccounts.join(' '));
 		} else {
-			const newAccounts = [...filters.accounts, e.target.value]
-			setFilters({ ...filters, accounts: newAccounts })
-			sessionStorage.setItem('filter.accounts', newAccounts.join(' '))
+			const newAccounts = [...filters.accounts, e.target.value];
+			setFilters({ ...filters, accounts: newAccounts });
+			sessionStorage.setItem('filter.accounts', newAccounts.join(' '));
 		}
-	}
+	};
 
 	const resetFilters = () => {
 		setFilters({
@@ -126,19 +126,19 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 			lowAmount: '0',
 			highAmount: '0',
 			accounts: [],
-		})
-		setShowStartDate(false)
-		setShowEndDate(false)
-		setShowCategory(false)
-		sessionStorage.removeItem('filter.type')
-		sessionStorage.removeItem('filter.start')
-		sessionStorage.removeItem('filter.end')
-		sessionStorage.removeItem('filter.category')
-		sessionStorage.removeItem('filter.source')
-		sessionStorage.removeItem('filter.low')
-		sessionStorage.removeItem('filter.high')
-		sessionStorage.removeItem('filter.accounts')
-	}
+		});
+		setShowStartDate(false);
+		setShowEndDate(false);
+		setShowCategory(false);
+		sessionStorage.removeItem('filter.type');
+		sessionStorage.removeItem('filter.start');
+		sessionStorage.removeItem('filter.end');
+		sessionStorage.removeItem('filter.category');
+		sessionStorage.removeItem('filter.source');
+		sessionStorage.removeItem('filter.low');
+		sessionStorage.removeItem('filter.high');
+		sessionStorage.removeItem('filter.accounts');
+	};
 
 	return (
 		<menu className="filter-menu">
@@ -315,5 +315,5 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 				<button onClick={toggle}>Hide</button>
 			</li>
 		</menu>
-	)
+	);
 }
