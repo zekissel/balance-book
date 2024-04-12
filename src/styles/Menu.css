@@ -1,52 +1,50 @@
-
 menu.dynamic-menu {
-  background-color: #dfe2e0;
-  height: 3rem;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  border-bottom: 2px solid #739d88;
+	background-color: #dfe2e0;
+	height: 3rem;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	border-bottom: 2px solid #739d88;
 
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
 }
 
 div.dynamic-menu-main > button {
-  font-size: 20px;
-  font-weight: 540;
-  margin: .2rem;
-  padding: .2rem .5rem;
-  border-radius: 1vw;
-  cursor: pointer;
-  background-color: #dfe2e0;
-  border: none;
-  border-bottom: 2px solid #6b6b6b;
+	font-size: 20px;
+	font-weight: 540;
+	margin: 0.2rem;
+	padding: 0.2rem 0.5rem;
+	border-radius: 1vw;
+	cursor: pointer;
+	background-color: #dfe2e0;
+	border: none;
+	border-bottom: 2px solid #6b6b6b;
 }
 
 div.dynamic-menu-main > button:hover {
-  background-color: #93ceb4;
-  color: #191919;
+	background-color: #93ceb4;
+	color: #191919;
 }
 
 button#dynamic-menu-current {
-  background-color: #93ceb4;
-  color: #191919;
+	background-color: #93ceb4;
+	color: #191919;
 }
-
 
 /* potentially needed for calendar and list */
 button.fetch-more {
-  width: 20%;
-  margin: 0 auto;
-  border-radius: 1vw;
-  background-color: #dfe2e0;
-  border: none;
-  border-bottom: 2px solid #6b6b6b;
+	width: 20%;
+	margin: 0 auto;
+	border-radius: 1vw;
+	background-color: #dfe2e0;
+	border: none;
+	border-bottom: 2px solid #6b6b6b;
 }
 
 button.fetch-more:hover {
-  background-color: #93ceb4;
-  color: #191919;
+	background-color: #93ceb4;
+	color: #191919;
 }

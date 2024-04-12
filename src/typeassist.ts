@@ -1,8 +1,8 @@
-import { invoke } from "@tauri-apps/api/tauri";
-import { ExpenseRoot, IncomeRoot, Transaction, Account, Category } from './typedef';
+import { invoke } from '@tauri-apps/api/tauri'
+import { ExpenseRoot, IncomeRoot, Transaction, Account, Category } from './typedef'
 
 export const getCategoryColor = (category: Category): string => {
-  /*
+	/*
   switch (category) {
     
     case category.root == typeof ExpenseRoot: return '#F5E890';
@@ -20,47 +20,44 @@ export const getCategoryColor = (category: Category): string => {
     case IncomeCat.Reimbursement: return '#C9CBC7'; case ExpenseCat.Pet: return '#FAD49F';
     default: return '#fff';
   }*/
-  return '#fff';
+	return '#fff'
 }
 
 export function addDays(date: Date, days: number) {
-  return new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate() + days,
-    0, 0, 0, 0
-  );
+	return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days, 0, 0, 0, 0)
 }
 
-export async function getTransactions(account_ids: string[], range: number): Promise<Transaction[]> {
-  const startDate = addDays(new Date(), -range).toISOString().split('T')[0];
-  return await invoke("get_transactions", { 'accountId': account_ids, 'start': startDate })
-    .then(data => {
-      const trans = data as Transaction[];
-      trans.forEach(t => {
-        t.date = addDays(new Date(new Date(t.date).toUTCString().split(' ').slice(0, 4).join(' ')), 0);
-      });
-      return trans.sort((a, b) => a.date > b.date ? -1 : 1);
-    })
+export async function getTransactions(
+	account_ids: string[],
+	range: number,
+): Promise<Transaction[]> {
+	const startDate = addDays(new Date(), -range).toISOString().split('T')[0]
+	return await invoke('get_transactions', { accountId: account_ids, start: startDate }).then(
+		(data) => {
+			const trans = data as Transaction[]
+			trans.forEach((t) => {
+				t.date = addDays(
+					new Date(new Date(t.date).toUTCString().split(' ').slice(0, 4).join(' ')),
+					0,
+				)
+			})
+			return trans.sort((a, b) => (a.date > b.date ? -1 : 1))
+		},
+	)
 }
-
 
 export async function getAccounts(user_id: string): Promise<Account[]> {
-  return await invoke("get_accounts", { 'userId': user_id })
-    .then(data => {
-      const acc = data as Account[];
-      acc.forEach(e => e.date = new Date(e.date));
-      return acc.sort((a, b) => a.date > b.date ? -1 : 1);
-    })
+	return await invoke('get_accounts', { userId: user_id }).then((data) => {
+		const acc = data as Account[]
+		acc.forEach((e) => (e.date = new Date(e.date)))
+		return acc.sort((a, b) => (a.date > b.date ? -1 : 1))
+	})
 }
 
-
 export function generateChartColor(index: number, isIncome: boolean) {
-  const incomeColors = [
-    '#739d88', '#86C4A5', '#9CFACB', '#BADACA', '#50A47A', '#42C483'
-  ];
-  const expenseColors = [
-    '#f6d6aa', '#D8AA69', '#AB8755', '#E8AD5A', '#DAC25F', '#FADC65'
-  ];
-  return isIncome ? incomeColors[index % incomeColors.length] : expenseColors[index % expenseColors.length];
+	const incomeColors = ['#739d88', '#86C4A5', '#9CFACB', '#BADACA', '#50A47A', '#42C483']
+	const expenseColors = ['#f6d6aa', '#D8AA69', '#AB8755', '#E8AD5A', '#DAC25F', '#FADC65']
+	return isIncome
+		? incomeColors[index % incomeColors.length]
+		: expenseColors[index % expenseColors.length]
 }

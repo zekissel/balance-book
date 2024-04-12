@@ -1,191 +1,277 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Account, Day, Month, Transaction } from "../../typedef";
-import { addDays } from "../../typeassist";
-import ViewLog from "../transaction/ViewLog";
-import ViewDay from "./ViewDay";
-import '../../styles/Calendar.css';
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Account, Day, Month, Transaction } from '../../typedef'
+import { addDays } from '../../typeassist'
+import ViewLog from '../transaction/ViewLog'
+import ViewDay from './ViewDay'
+import '../../styles/Calendar.css'
 
+interface CalendarProps {
+	logs: Transaction[]
+	accounts: Account[]
+	updateLog: () => void
+	showFilter: boolean
+	setRange: (range: number) => void
+	signalRefresh: () => void
+}
+export default function Calendar({
+	logs,
+	accounts,
+	updateLog,
+	showFilter,
+	setRange,
+	signalRefresh,
+}: CalendarProps) {
+	const curDate = useRef(new Date())
+	const calDate = useRef(new Date(curDate.current.setHours(0, 0, 0, 0)))
 
-interface CalendarProps { logs: Transaction[], accounts: Account[], updateLog: () => void, showFilter: boolean, setRange: (range: number) => void, signalRefresh: () => void }
-export default function Calendar ({ logs, accounts, updateLog, showFilter, setRange, signalRefresh }: CalendarProps) {
+	const [week1, setWeek1] = useState<Day[]>([])
+	const [week2, setWeek2] = useState<Day[]>([])
+	const [week3, setWeek3] = useState<Day[]>([])
+	const [week4, setWeek4] = useState<Day[]>([])
+	const [week5, setWeek5] = useState<Day[]>([])
 
-  const curDate = useRef(new Date());
-  const calDate = useRef(new Date(curDate.current.setHours(0,0,0,0)));
+	const weeks = useMemo(
+		() => [week1, week2, week3, week4, week5],
+		[week1, week2, week3, week4, week5],
+	)
+	const yearRange = useMemo(() => {
+		if (logs.length === 0)
+			return Array.from({ length: 8 }, (_, i) => curDate.current.getFullYear() - 3 + i)
+		const minYear =
+			logs
+				.reduce((min, log) => {
+					const logYear = new Date(log.date).getFullYear()
+					return logYear < min.date.getFullYear() ? log : min
+				})
+				.date.getFullYear() - 3
+		const maxYear =
+			Math.max(
+				logs
+					.reduce((max, log) => {
+						const logYear = new Date(log.date).getFullYear()
+						return logYear > max.date.getFullYear() ? log : max
+					})
+					.date.getFullYear(),
+				curDate.current.getFullYear(),
+			) + 5
+		return Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i)
+	}, [logs])
 
-  const [week1, setWeek1] = useState<Day[]>([]);
-  const [week2, setWeek2] = useState<Day[]>([]);
-  const [week3, setWeek3] = useState<Day[]>([]);
-  const [week4, setWeek4] = useState<Day[]>([]);
-  const [week5, setWeek5] = useState<Day[]>([]);
+	function fillDay(week: Day[], dayIndex: number) {
+		week[dayIndex].transactions = logs.filter((exp) => {
+			const expDate = new Date(exp.date)
+			const dayDate = week[dayIndex].date
+			return expDate.toDateString() == dayDate.toDateString()
+		})
+	}
 
-  const weeks = useMemo(() => [week1, week2, week3, week4, week5], [week1, week2, week3, week4, week5]);
-  const yearRange = useMemo(() => {
-    if (logs.length === 0) return Array.from({ length: 8 }, (_, i) => (curDate.current.getFullYear() - 3) + i);
-    const minYear = logs.reduce((min, log) => {
-      const logYear = new Date(log.date).getFullYear();
-      return logYear < min.date.getFullYear() ? log : min;
-    }).date.getFullYear() - 3;
-    const maxYear = Math.max(logs.reduce((max, log) => {
-      const logYear = new Date(log.date).getFullYear();
-      return logYear > max.date.getFullYear() ? log : max;
-    }).date.getFullYear(), curDate.current.getFullYear()) + 5;
-    return Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
-  }, [logs]);
+	function fillWeek(offset: number = 0) {
+		const week: Day[] = [0, 1, 2, 3, 4, 5, 6].map((i) => ({
+			date: addDays(calDate.current, i - calDate.current.getDay() + offset),
+			transactions: [],
+		}))
 
-  function fillDay (week: Day[], dayIndex: number) {
-    week[dayIndex].transactions = logs.filter(exp => {
-      const expDate = new Date(exp.date);
-      const dayDate = week[dayIndex].date;
-      return expDate.toDateString() == dayDate.toDateString();
-    });
-  }
+		for (let i = 0; i < calDate.current.getDay(); i++) fillDay(week, i)
+		for (let i = calDate.current.getDay(); i < 7; i++) fillDay(week, i)
+		for (let i = 0; i < 7; i++) {
+			week[i].transactions = week[i].transactions.sort((a, b) => {
+				return a.amount > b.amount ? -1 : 1
+			})
+		}
 
-  function fillWeek (offset: number = 0) {
-    const week: Day[] = [0, 1, 2, 3, 4, 5, 6].map((i) => ({ date: addDays(calDate.current, i - calDate.current.getDay() + offset), transactions: [] }));
+		return week
+	}
 
-    for (let i = 0; i < calDate.current.getDay(); i++) fillDay(week, i);
-    for (let i = calDate.current.getDay(); i < 7; i++) fillDay(week, i);
-    for (let i = 0; i < 7; i++) {
-      week[i].transactions = week[i].transactions.sort((a, b) => {
-        return a.amount > b.amount ? -1 : 1;
-      });
-    }
+	const initWeeks = () => {
+		setWeek1(fillWeek(-14))
+		setWeek2(fillWeek(-7))
+		setWeek3(fillWeek())
+		setWeek4(fillWeek(7))
+		setWeek5(fillWeek(14))
+	}
 
-    return week;
-  }
+	const shiftWeeks = (direction: number) => {
+		calDate.current = addDays(calDate.current, direction * 7)
+		initWeeks()
+	}
 
-  const initWeeks = () => {
-    setWeek1(fillWeek(-14));
-    setWeek2(fillWeek(-7));
-    setWeek3(fillWeek());
-    setWeek4(fillWeek(7));
-    setWeek5(fillWeek(14));
-  }
+	const processWheel = (e: React.WheelEvent) => {
+		e.preventDefault()
+		if (e.deltaY > 0) shiftWeeks(1)
+		else shiftWeeks(-1)
+	}
 
-  const shiftWeeks = (direction: number) => {
-    calDate.current = addDays(calDate.current, direction * 7);
-    initWeeks();
-  }
+	useEffect(() => {
+		initWeeks()
+	}, [logs, calDate.current])
 
-  const processWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    if (e.deltaY > 0) shiftWeeks(1);
-    else shiftWeeks(-1);
-  }
+	useEffect(() => {
+		const range = Math.floor(
+			(new Date().getTime() + 7 * (1000 * 60 * 60 * 24) - calDate.current.getTime()) /
+				(1000 * 60 * 60 * 24),
+		)
+		setRange(range)
+		signalRefresh()
+	}, [calDate.current])
 
-  useEffect(() => {
-    initWeeks();
-  }, [logs, calDate.current]);
+	const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([])
+	const [selectedDay, setSelectedDay] = useState<Day[]>([])
+	const updateSelectedTransactions = (transaction: Transaction) => {
+		if (selectedTransactions.includes(transaction)) {
+			setSelectedTransactions(
+				selectedTransactions.filter((t) => JSON.stringify(t) !== JSON.stringify(transaction)),
+			)
+		} else {
+			setSelectedTransactions([...selectedTransactions, transaction])
+		}
+	}
+	const updateSelectedDays = (day: Day) => {
+		if (selectedDay.includes(day)) {
+			setSelectedDay(selectedDay.filter((d) => JSON.stringify(d) !== JSON.stringify(day)))
+		} else {
+			setSelectedDay([...selectedDay, day])
+		}
+	}
 
-  useEffect(() => {
-    const range = Math.floor((new Date().getTime() + (7 * (1000 * 60 * 60 * 24)) - calDate.current.getTime()) / (1000 * 60 * 60 * 24))
-    setRange(range);
-    signalRefresh();
-  }, [calDate.current]);
+	return (
+		<div className={showFilter ? 'main-down-shift page-main' : 'page-main'}>
+			<menu className="calendar-menu">
+				<span
+					className="calendar-menu-today"
+					onClick={() => {
+						calDate.current = curDate.current
+						initWeeks()
+					}}
+				>
+					{curDate.current.toDateString()}
+				</span>
 
-  const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([]);
-  const [selectedDay, setSelectedDay] = useState<Day[]>([]);
-  const updateSelectedTransactions = (transaction: Transaction) => {
-    if (selectedTransactions.includes(transaction)) {
-      setSelectedTransactions(selectedTransactions.filter(t => JSON.stringify(t) !== JSON.stringify(transaction)));
-    } else {
-      setSelectedTransactions([...selectedTransactions, transaction]);
-    }
-  }
-  const updateSelectedDays = (day: Day) => {
-    if (selectedDay.includes(day)) {
-      setSelectedDay(selectedDay.filter(d => JSON.stringify(d) !== JSON.stringify(day)));
-    } else {
-      setSelectedDay([...selectedDay, day]);
-    }
-  }
+				<span className="calendar-shift" onWheel={processWheel}>
+					<button onClick={() => shiftWeeks(-1)}>
+						<img src="/left-arrow.svg" />
+					</button>
 
-  return (
-    <div className={showFilter ? 'main-down-shift page-main': 'page-main'}>
-      <menu className="calendar-menu">
+					<select
+						value={calDate.current.getMonth()}
+						onChange={(e) => {
+							calDate.current = new Date(
+								new Date(calDate.current.setMonth(Number(e.target.value))).setDate(7),
+							)
+							initWeeks()
+						}}
+					>
+						{Month.map((month, index) => (
+							<option key={index} value={index}>
+								{month}
+							</option>
+						))}
+					</select>
 
-        <span className='calendar-menu-today' onClick={() => {calDate.current = curDate.current; initWeeks()}}>{ curDate.current.toDateString() }</span>
+					<select
+						value={calDate.current.getFullYear()}
+						onChange={(e) => {
+							calDate.current = new Date(calDate.current.setFullYear(Number(e.target.value)))
+							initWeeks()
+						}}
+					>
+						{yearRange.map((year, index) => (
+							<option key={index} value={year}>
+								{year}
+							</option>
+						))}
+					</select>
 
-        <span className='calendar-shift' onWheel={processWheel}>
-          <button onClick={() => shiftWeeks(-1)}><img src='left-arrow.svg' /></button>
+					<button onClick={() => shiftWeeks(1)}>
+						<img src="/right-arrow.svg" />
+					</button>
+				</span>
+			</menu>
 
-          <select value={calDate.current.getMonth()} onChange={(e) => { calDate.current = new Date(new Date(calDate.current.setMonth(Number(e.target.value))).setDate(7)); initWeeks();}}>
-            { Month.map((month, index) => <option key={index} value={index}>{month}</option>)}
-          </select>
+			<table>
+				<thead>
+					<tr>
+						<th>Sun</th>
+						<th>Mon</th>
+						<th>Tue</th>
+						<th>Wed</th>
+						<th>Thu</th>
+						<th>Fri</th>
+						<th>Sat</th>
+					</tr>
+				</thead>
 
-          <select value={calDate.current.getFullYear()} onChange={(e) => { calDate.current = new Date(calDate.current.setFullYear(Number(e.target.value))); initWeeks(); }}>
-            { yearRange.map((year, index) => <option key={index} value={year}>{year}</option>)}
-          </select>
+				<tbody>
+					{weeks.map((week, i) => (
+						<tr key={i}>
+							{week.map((day, index) => (
+								<td key={index} onClick={() => updateSelectedDays(day)}>
+									<div className="calendar-day">
+										<span
+											className="day-tag"
+											style={
+												day.date.toDateString() === curDate.current.toDateString()
+													? todayStyle
+													: undefined
+											}
+										>
+											{day.date.getDate()}
+										</span>
+										<div className="day-items">
+											{day.transactions.map((trans, index) => (
+												<span
+													className={trans.amount < 0 ? 'cal-exp' : 'cal-inc'}
+													key={index}
+													onClick={(e) => {
+														updateSelectedTransactions(trans)
+														e.stopPropagation()
+													}}
+												>
+													{' '}
+													{trans.amount < 0 ? '-' : '+'} ${Math.abs(trans.amount / 100)}{' '}
+													{trans.company}
+												</span>
+											))}
+										</div>
+									</div>
+								</td>
+							))}
+						</tr>
+					))}
+				</tbody>
+			</table>
 
-          <button onClick={() => shiftWeeks(1)}><img src='right-arrow.svg' /></button>
-        </span>
-      </menu>
-      
-      <table>
+			{selectedTransactions.length > 0 &&
+				selectedTransactions.map((trans, index) => (
+					<ViewLog
+						key={index}
+						transaction={trans}
+						accounts={accounts}
+						toggle={() =>
+							setSelectedTransactions(
+								selectedTransactions.filter((t) => JSON.stringify(t) !== JSON.stringify(trans)),
+							)
+						}
+						updateLog={updateLog}
+					/>
+				))}
 
-        <thead>
-          <tr>
-            <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>  
-          </tr>
-        </thead>
-
-        <tbody>
-          { weeks.map((week, i) => (
-            <tr key={i}>
-              {week.map((day, index) => (
-                <td key={index} onClick={() => updateSelectedDays(day)}>
-
-                  <div className='calendar-day'>
-                    <span className='day-tag' style={day.date.toDateString() === curDate.current.toDateString() ? todayStyle : undefined}>
-                      { day.date.getDate() }
-                    </span>
-                    <div className='day-items'>
-                      { day.transactions.map((trans, index) => 
-                        <span 
-                          className={ trans.amount < 0 ? 'cal-exp' : 'cal-inc'}
-                          key={index} 
-                          onClick={(e) => {updateSelectedTransactions(trans); e.stopPropagation();}}
-                          > {trans.amount < 0 ?'-':'+'} ${Math.abs(trans.amount / 100)} { trans.company }</span>
-                      )}
-                    </div>
-                  </div>
-
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      { selectedTransactions.length > 0 && 
-        selectedTransactions.map((trans, index) => (
-          <ViewLog 
-            key={index} 
-            transaction={trans} 
-            accounts={accounts}
-            toggle={() => setSelectedTransactions(selectedTransactions.filter(t => JSON.stringify(t) !== JSON.stringify(trans)))}
-            updateLog={updateLog}
-          />
-        ))
-      }
-
-      { selectedDay.length > 0 && 
-        selectedDay.map((day, index) => (
-          <ViewDay 
-            key={index}
-            day={day}
-            toggle={() => setSelectedDay(selectedDay.filter(d => JSON.stringify(d) !== JSON.stringify(day)))}
-          />
-        ))
-      }
-
-    </div>
-  )
+			{selectedDay.length > 0 &&
+				selectedDay.map((day, index) => (
+					<ViewDay
+						key={index}
+						day={day}
+						toggle={() =>
+							setSelectedDay(selectedDay.filter((d) => JSON.stringify(d) !== JSON.stringify(day)))
+						}
+					/>
+				))}
+		</div>
+	)
 }
 
-const todayStyle = { 
-  backgroundColor: '#69a6c1', 
-  border: `2px solid rgb(106, 146, 185)`,
-  fontWeight: '600',
-  color: '#fff',
-};
+const todayStyle = {
+	backgroundColor: '#69a6c1',
+	border: `2px solid rgb(106, 146, 185)`,
+	fontWeight: '600',
+	color: '#fff',
+}

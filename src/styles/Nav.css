@@ -1,65 +1,79 @@
-
 nav {
-  /* VERTICAL NAV ON LEFT SIDE OF SCREEN (TOP TO BOTTOM) */
-  /* COLLAPSABLE */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
+	/* VERTICAL NAV ON LEFT SIDE OF SCREEN (TOP TO BOTTOM) */
+	/* COLLAPSABLE */
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
 
-  height: 100vh;
-  width: fit-content;
+	height: 100vh;
+	width: fit-content;
 
-  margin: 0;
-  padding: 0;
-  position: relative;
-  z-index: 10;
-  background-color: #dfe2e0;
-  border-right: 2px solid #739d88;
+	margin: 0;
+	padding: 0;
+	position: relative;
+	z-index: 10;
+	background-color: #dfe2e0;
+	border-right: 2px solid #739d88;
 
-  user-select: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -o-user-select: none;
+	user-select: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
 }
 
-.nav-core, .nav-extra, .nav-top{
-  margin: 0;
-  padding: 2vh 0;
-  width: 100%;
+.nav-core,
+.nav-extra,
+.nav-top {
+	margin: 0;
+	padding: 2vh 0;
+	width: 100%;
 }
 
-.nav-core li, .nav-extra li, .nav-top li {
-  list-style: none;
-  text-decoration: none;
-  padding: .4vh .5vw;
-  margin: 1vh .3vw;
+.nav-core li,
+.nav-extra li,
+.nav-top li {
+	list-style: none;
+	text-decoration: none;
+	padding: 0.4vh 0.5vw;
+	margin: 1vh 0.3vw;
 
-  font-size: 20px;
-  font-weight: 550;
+	font-size: 20px;
+	font-weight: 550;
 
-  color: #191919;
-  background-color: #dfe2e0;
-  border-bottom: 2px solid #6b6b6b;
-  border-radius: 1vw;
+	color: #191919;
+	background-color: #dfe2e0;
+	border-bottom: 2px solid #6b6b6b;
+	border-radius: 1vw;
 }
 
 a {
-  text-decoration: none;
+	text-decoration: none;
 }
 
-.nav-top { text-align: center; }
-.nav-extra { background-color: #191919;}
-.nav-top > li { background-color: #acacac; }
-.nav-inverse > li { background-color: #dfe2e0; }
-
-.nav-core li:hover, .nav-extra li:hover, .nav-top li:hover {
-  background-color: #93ceb4;
-  color: #191919;
+.nav-top {
+	text-align: center;
+}
+.nav-extra {
+	background-color: #191919;
+}
+.nav-top > li {
+	background-color: #acacac;
+}
+.nav-inverse > li {
+	background-color: #dfe2e0;
 }
 
-#nav-current, .nav-core li:active {
-  background-color: #93ceb4;
-  color: #191919;
+.nav-core li:hover,
+.nav-extra li:hover,
+.nav-top li:hover {
+	background-color: #93ceb4;
+	color: #191919;
+}
+
+#nav-current,
+.nav-core li:active {
+	background-color: #93ceb4;
+	color: #191919;
 }
