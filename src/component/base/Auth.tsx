@@ -90,7 +90,7 @@ export default function Auth({ verify, logout }: AuthProps) {
 	};
 
 	return (
-		<div className="no-auth">
+		<div className='no-auth'>
 			<div className="auth-field">
 				<input
 					type="text"

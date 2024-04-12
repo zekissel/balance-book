@@ -33,6 +33,13 @@ div.logo {
 	background-color: #f1f1f1;
 }
 
+@keyframes bg-glow {
+  0%   {background-color: #bce2d0;}
+  33%  {background-color: #c7d4cd;}
+  66%  {background-color: #a7cdbb;}
+  100% {background-color: #bce2d0;}
+}
+
 div.no-auth {
 	display: flex;
 	flex-direction: column;
@@ -46,6 +53,10 @@ div.no-auth {
 	margin: 0;
 	padding: 0;
 	background-color: #9a9a9a;
+
+	animation-name: bg-glow;
+  animation-duration: 12s;
+	animation-iteration-count: infinite;
 }
 
 div.auth-field {
