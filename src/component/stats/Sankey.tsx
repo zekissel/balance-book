@@ -141,6 +141,7 @@ export default function TotalGraph({ transactions, accounts }: GraphProps) {
 			formatter: '<em>{b}</em> : <b>${c}</b>',
 		},
 		width: '75%',
+		height: '87%',
 		series: [
 			{
 				type: 'sankey',

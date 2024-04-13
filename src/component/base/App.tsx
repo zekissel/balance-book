@@ -96,7 +96,6 @@ function App() {
       if (syncTrans) localStorage.setItem('sync.t.date', new Date().toISOString().split('.')[0]);
 
       const refreshTransactions = async () => {
-        console.log('trans')
         const trans = await getTransactions(accounts.map((a) => a.id), transRange);
         if (!ignore) setTransactions(trans);
       };

@@ -42,7 +42,7 @@ export default function TotalGraph({ transactions, range, endDate }: GraphProps)
 
 	const option = {
 		color: [transactions.length === 0 ? '#abc' : '#739d88'],
-		grid: { show: true },
+		grid: { show: true, top: '13%', bottom: '5%', },
 		tooltip: {
 			trigger: 'axis',
 			axisPointer: { type: 'line' },
@@ -86,9 +86,10 @@ export default function TotalGraph({ transactions, range, endDate }: GraphProps)
 		],
 		title: {
 			text: 'Net Balance by Day',
+			top: 5,
 		},
 		width: '87%',
-		height: range >= 100 ? '64%' : '70%',
+		height: range >= 100 ? '71%' : '77%',
 		dataZoom: { type: 'inside' },
 	};
 

@@ -59,6 +59,10 @@ export default function TotalGraph({ transactions }: GraphProps) {
 			text: 'Total Balance by Category',
 		},
 		width: '87%',
+		height: '74%',
+		grid: {
+			top: 30,
+		},
 		dataZoom: { type: 'inside' },
 		tooltip: {
 			trigger: 'axis',

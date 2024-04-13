@@ -7,6 +7,7 @@ import BarGraph from './BarGraph';
 import HeatMap from './HeatMap';
 import Sankey from './Sankey';
 import TreeGraph from './TreeGraph';
+import BoxPlot from './BoxPlot';
 
 interface StatsPageProps {
 	transactions: Transaction[];
@@ -60,6 +61,9 @@ export default function StatsPage({
 	);
 	const [categoryPieTypeIncome, setCatPieTypeIncome] = useState<boolean>(
 		localStorage.getItem('stats.categoryPieIncome') === 'true' ? true : false,
+	);
+	const [boxTypeInc, setBoxTypeInc] = useState<boolean>(
+		localStorage.getItem('stats.boxTypeInc') === 'true' ? true : false,
 	);
 
 	const [categoryChartType, setCategoryChartType] = useState(
@@ -202,7 +206,33 @@ export default function StatsPage({
 			</div>
 
 			<div className="stats-main-row">
-				<div className="stats-main-box-shorter">graph</div>
+				<div className="stats-main-box-shorter">
+					<BoxPlot trans={transactions} isIncome={boxTypeInc} />
+					<div className="stats-category-radio">
+						<input
+							type="radio"
+							id="radio-box-income"
+							name="box"
+							onChange={() => {
+								setBoxTypeInc(true);
+								localStorage.setItem('stats.boxTypeInc', 'true');
+							}}
+							defaultChecked={boxTypeInc}
+						/>
+						<label htmlFor="radio-box-income">Income</label>
+						<input
+							type="radio"
+							id="radio-box-expense"
+							name="box"
+							onChange={() => {
+								setBoxTypeInc(false);
+								localStorage.setItem('stats.boxTypeInc', 'false');
+							}}
+							defaultChecked={!boxTypeInc}
+						/>
+						<label htmlFor="radio-box-expense">Expense</label>
+					</div>
+				</div>
 
 				<div className="stats-main-box-longer">
 					<Sankey transactions={transactions} accounts={accounts} />
