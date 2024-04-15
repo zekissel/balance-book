@@ -70,6 +70,8 @@ div.stats-main-box-longer {
 	align-items: start;
 }
 
+div.longer-flip { align-items: end; }
+
 div.stats-main-box-shorter {
 	height: 17.8rem;
 	width: 29rem;
@@ -142,6 +144,8 @@ div.stats-menu-sep button:hover {
 	background-color: #93ceb4;
 	border-radius: 1vw;
 }
+
+
 
 div.dynamic-menu-main > button > input {
 	width: 2.5rem;

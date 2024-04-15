@@ -45,9 +45,6 @@ function App() {
 	const signalRefreshAcct = () => setSignalAcct((signalAcct + 1) % 255);
 	const [signalTrans, setSignalTrans] = useState(false);
 	const signalRefreshTrans = () => setSignalTrans(!signalTrans);
-
-	
-	
 	
   const update = (refresh: () => void): (() => void) => {
 		const timeout = setTimeout(() => {
@@ -91,7 +88,7 @@ function App() {
     const syncBalance = balSyncDate ? new Date(balSyncDate) < new Date(new Date().toISOString().split('T')[0]) : true;
 
 		if (user) {
-			//if (syncTrans) invoke('sync_info', { userId: user.id, balance: syncBalance });
+			if (syncTrans) invoke('sync_info', { userId: user.id, balance: syncBalance });
       if (syncBalance) localStorage.setItem('sync.b.date', new Date().toISOString().split('T')[0]);
       if (syncTrans) localStorage.setItem('sync.t.date', new Date().toISOString().split('.')[0]);
 
@@ -128,6 +125,7 @@ function App() {
 		clearUserLocalStorage();
 	};
 
+	// MARK: - RENDER
 	return (
 		<div className="app">
 			<BrowserRouter>

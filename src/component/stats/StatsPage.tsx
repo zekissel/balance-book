@@ -56,6 +56,10 @@ export default function StatsPage({
 			.reduce((acc, t) => acc + t.amount, 0);
 	}, [transactions]);
 
+
+	const [sankey, setSankey] = useState(
+		localStorage.getItem('stats.sankey') === 'false' ? false : true,
+	);
 	const [historyGraphLine, setHistoryGraphLine] = useState(
 		localStorage.getItem('stats.historyGraphLine') === 'true' ? true : false,
 	);
@@ -134,7 +138,7 @@ export default function StatsPage({
 					)}
 
 					<div className="stats-menu-sep">
-						<button onClick={() => setHistoryGraphLine(!historyGraphLine)}>
+						<button onClick={() => {setHistoryGraphLine(!historyGraphLine)}}>
 							<img src={historyGraphLine ? '/bar.svg' : 'line.svg'} />
 						</button>
 					</div>
@@ -234,8 +238,16 @@ export default function StatsPage({
 					</div>
 				</div>
 
-				<div className="stats-main-box-longer">
-					<Sankey transactions={transactions} accounts={accounts} />
+				<div className="stats-main-box-longer longer-flip">
+					{sankey && <Sankey transactions={transactions} accounts={accounts} />}
+					{!sankey && 'list'}
+
+					<div className="stats-menu-sep">
+						<span></span>
+						<button onClick={() => setSankey(!sankey)}>
+							<img src={sankey ? '/list.svg' : 'line.svg'} />
+						</button>
+					</div>
 
 					{false && <HeatMap transactions={transactions} startDate={startDate} endDate={endDate} />}
 				</div>

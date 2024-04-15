@@ -39,7 +39,7 @@ export const ExpenseLeaf = {
 	Transport: ['Gas', 'Maintenance', 'Fees', 'Insurance', 'Other'],
 	Personal: ['Healthcare', 'Services', 'Textile', 'Toilietries', 'Insurance', 'Other'],
 	Office: ['Supplies', 'Equipment', 'Projects', 'Insurance', 'Other'],
-	Entertainment: ['Movies', 'Games', 'Concerts', 'Events', 'Music', 'Other'],
+	Entertainment: ['Movies', 'Games', 'Events', 'Music', 'Other'],
 	Travel: ['Transportation', 'Housing', 'Food', 'Insurance', 'Other'],
 	Financial: ['Transfer', 'Credit', 'Taxes/Fees', 'Other'],
 	Other: ['Gifts', 'Pets', 'Other'],

@@ -33,7 +33,7 @@ label.filter-menu-togglable:hover,
 .category-img:hover,
 label.filter-menu-togglable-nonempty:hover {
 	border: 2px solid #6e9684;
-	padding: 0.1rem;
+	
 	border-radius: 1vw;
 }
 label.filter-menu-togglable,

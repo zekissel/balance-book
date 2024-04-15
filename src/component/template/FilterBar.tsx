@@ -10,6 +10,7 @@ import {
 } from '../../typedef';
 import { addDays } from '../../typeassist';
 import '../../styles/Filter.css';
+import TreeSelect from './TreeSelect';
 
 interface FilterProps {
 	accounts: Account[];
@@ -91,7 +92,7 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 		toggleCategory();
 		setFilters({ ...filters, category: [] });
 		sessionStorage.removeItem('filter.category');
-	};
+	};/*
 	const handleCategory = (e: any) => {
 		if (filters.category.includes(e.target.value)) {
 			const newCategories = filters.category.filter((c) => c !== e.target.value);
@@ -102,7 +103,11 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 			setFilters({ ...filters, category: newCategories });
 			sessionStorage.setItem('filter.category', newCategories.join(' '));
 		}
-	};
+	};*/
+	const handleCategory = (e: string[]) => {
+		setFilters({ ...filters, category: e });
+		sessionStorage.setItem('filter.category', e.join(' '));
+	}
 
 	const handleSource = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const sources = e.target.value.split(',');
@@ -111,10 +116,10 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 	};
 
 	const voidAccounts = () => {
-		toggleAccounts();
+		//toggleAccounts();
 		setFilters({ ...filters, accounts: [] });
 		sessionStorage.removeItem('filter.accounts');
-	};
+	};/*
 	const handleAccounts = (e: any) => {
 		if (filters.accounts.includes(e.target.value)) {
 			const newAccounts = filters.accounts.filter((a) => a !== e.target.value);
@@ -125,7 +130,11 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 			setFilters({ ...filters, accounts: newAccounts });
 			sessionStorage.setItem('filter.accounts', newAccounts.join(' '));
 		}
-	};
+	};*/
+	const handleAccounts = (e: string[]) => {
+		setFilters({ ...filters, accounts: e });
+		sessionStorage.setItem('filter.accounts', e.join(' '));
+	}
 	const excludeAccounts = () => {
 		if (filters.accounts.includes('X')) {
 			const no_ex = filters.accounts.filter((c) => c !== 'X');
@@ -206,69 +215,18 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 
 			<li>
 				<span className="filter-menu-heading">
-					<label
-						className={
-							filters.category.length === 0
-								? 'filter-menu-togglable'
-								: 'filter-menu-togglable-nonempty'
-						}
-						onClick={voidCategory}
-					>
+					<label>
 						Categories:{' '}
 					</label>
-					<span className="category-img" onClick={toggleCategory}>
-						{showCategory ? <img src="/close-up.svg" /> : <img src="/open-down.svg" />}
+					<span className="category-img" onClick={voidCategory}>
+						<img src="/x.svg" />
 					</span>
 					<span className="category-img" onClick={excludeCategory}>
 						{filters.category.includes('X') ? <img src="/include.svg" /> : <img src="/exclude.svg" />}
 					</span>
 				</span>
-				{showCategory && (
-					<select multiple size={10} value={filters.category} onChange={handleCategory}>
-						{getEnumKeys(ExpenseRoot).map((key, index) => (
-							<optgroup key={index} label={key}>
-								{ExpenseLeaf[key].map((leaf, ind) => (
-									<option
-										key={ind}
-										value={`${key}>${leaf}`}
-										style={
-											filters.category.includes(`${key}>${leaf}`)
-												? { backgroundColor: `#abc` }
-												: undefined
-										}
-										onClick={handleCategory}
-									>
-										{`> ${leaf}`}
-									</option>
-								))}
-							</optgroup>
-						))}
-
-						{getEnumKeys(IncomeRoot).map((key, index) => (
-							<optgroup key={index} onClick={handleCategory}>
-								{IncomeLeaf[key].map((leaf, ind) => (
-									<option
-										key={ind}
-										value={`${key}>${leaf}`}
-										style={
-											filters.category.includes(`${key}>${leaf}`)
-												? { backgroundColor: `#abc` }
-												: undefined
-										}
-									>
-										{`> ${leaf}`}
-									</option>
-								))}
-							</optgroup>
-						))}
-					</select>
-				)}
-				{!showCategory &&
-					(filters.category.length > 0 ? (
-						<div id="filter-category-list">{filters.category.filter(c => c !== 'X').map((c) => c.toString() + ' ')}</div>
-					) : (
-						<span>None</span>
-					))}
+				
+				<TreeSelect value={filters.category} options={ExpenseLeaf} onChange={handleCategory} multi={true} option2={IncomeLeaf} />
 			</li>
 
 			<li>
@@ -287,53 +245,18 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 
 			<li>
 				<span className="filter-menu-heading">
-					<label
-						className={
-							filters.accounts.length === 0
-								? 'filter-menu-togglable'
-								: 'filter-menu-togglable-nonempty'
-						}
-						onClick={voidAccounts}
-					>
+					<label>
 						Accounts:{' '}
 					</label>
-					<span id="category-img" onClick={toggleAccounts}>
-						{showAccounts ? <img src="/close-up.svg" /> : <img src="/open-down.svg" />}
+					<span className="category-img" onClick={voidAccounts}>
+						<img src="/x.svg" />
 					</span>
 					<span className="category-img" onClick={excludeAccounts}>
 						{filters.accounts.includes('X') ? <img src="/include.svg" /> : <img src="/exclude.svg" />}
 					</span>
 				</span>
-				{showAccounts && (
-					<select
-						className="filter-account-select"
-						multiple
-						size={5}
-						value={filters.accounts.map((a) => String(a))}
-						onChange={handleAccounts}
-					>
-						{accounts.map((acc, index) => (
-							<option
-								style={filters.accounts.includes(acc.id) ? { backgroundColor: `#abc` } : undefined}
-								key={index}
-								value={acc.id}
-								onClick={handleAccounts}
-							>
-								{`${acc.account_type}:${acc.account_name}`}
-							</option>
-						))}
-					</select>
-				)}
-				{!showAccounts &&
-					(filters.accounts.length > 0 ? (
-						<div id="filter-category-list">
-							{accounts
-								.filter((a) => filters.accounts.includes(a.id))
-								.map((a) => String(`${a.account_type.slice(0, 4)}:${a.account_name} `))}
-						</div>
-					) : (
-						<span>None</span>
-					))}
+				
+				<TreeSelect value={filters.accounts} options={accounts} onChange={handleAccounts} multi={true} />
 			</li>
 
 			<li className="filter-menu-meta">

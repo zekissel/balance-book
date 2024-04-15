@@ -8,7 +8,7 @@ interface GraphProps {
 	treemap: boolean;
 	income: boolean;
 }
-export default function TreeGraph({ trans, treemap, income }: GraphProps) {
+export default function TreeMap({ trans, treemap, income }: GraphProps) {
 	const transactions = useMemo(() => {
 		return trans.filter((t) => t.category.includes('>'));
 	}, [trans]);
@@ -66,7 +66,7 @@ export default function TreeGraph({ trans, treemap, income }: GraphProps) {
 
 	const treemapOption = {
 		title: {
-			text: `${income ? 'Income' : 'Expense'} Totals by Category`,
+			text: `${income ? 'Income' : 'Expense'} Total by Category`,
 			y: 10,
 		},
 		series: [
@@ -95,7 +95,7 @@ export default function TreeGraph({ trans, treemap, income }: GraphProps) {
 	};
 	const sunburstOption = {
 		title: {
-			text: `${income ? 'Income' : 'Expense'} Totals by Category`,
+			text: `${income ? 'Income' : 'Expense'} Total by Category`,
 			y: 10,
 		},
 		series: [

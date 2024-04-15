@@ -6,7 +6,7 @@ interface GraphProps {
 	transactions: Transaction[];
 	accounts: Account[];
 }
-export default function TotalGraph({ transactions, accounts }: GraphProps) {
+export default function Sankey({ transactions, accounts }: GraphProps) {
 	const categoryTotals = useMemo(() => {
 		const totals: { [key: string]: number } = {};
 		transactions.forEach((t) => {
@@ -18,9 +18,8 @@ export default function TotalGraph({ transactions, accounts }: GraphProps) {
 	}, [transactions]);
 
 	const categories = useMemo(
-		() => Object.keys(categoryTotals).sort((a, b) => categoryTotals[a] - categoryTotals[b]),
-		[categoryTotals],
-	);
+		() => Object.keys(categoryTotals).sort((a, b) => categoryTotals[a] - categoryTotals[b]
+	), [categoryTotals]);
 
 	const isCycle = useMemo(() => {
 		let ret = false;

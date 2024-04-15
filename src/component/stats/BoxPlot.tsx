@@ -27,6 +27,7 @@ export default function BoxPlot({ trans, isIncome }: GraphProps) {
 
   const source = useMemo(() => {
     setOutliers([]);
+    const out: number[][] = [];
     const ret = Array.from({ length: categories.length }, (_, i) => {
       const relevant = transactions.filter((t) => t.category.split('>')[0] === categories[i]).map(t => Math.abs(t.amount / 100)).sort((a, b) => a - b);
 
@@ -40,17 +41,15 @@ export default function BoxPlot({ trans, isIncome }: GraphProps) {
       //const min = Math.min(...relevant);
       //const max = Math.max(...relevant);
       
-      const out = relevant.filter((r) => r < low || r > high).map(r => [r, categories.findIndex(c => c === categories[i])]);
-      setOutliers(outliers => {
-        for (const coord of out) {
-          if (!outliers.some(o => o[0] === coord[0] && o[1] === coord[1])) {
-            outliers.push(coord);
-          }
-        }
-        return outliers;
-      });
+      const outside = relevant.filter((r) => r < low || r > high).map(r => [r, categories.findIndex(c => c === categories[i])]);
+      
+      for (const coord of outside) {
+        if (!out.some(o => o[0] === coord[0] && o[1] === coord[1])) out.push(coord);
+      }
+      
       return [low, q1, median, q3, high];
 		})
+    setOutliers(out);
     return ret;
   }, [transactions, categories]);
 
@@ -104,8 +103,7 @@ export default function BoxPlot({ trans, isIncome }: GraphProps) {
       }
     ],
     dataZoom: { 
-      type: 'slider', 
-      height: 18,
+      type: 'inside',
     },
   };
   
