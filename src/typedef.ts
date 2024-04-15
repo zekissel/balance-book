@@ -171,9 +171,9 @@ export function filterTransactions({
 		});
 
 	if (Number(filters.lowAmount) > 0)
-		ret = ret.filter((t) => t.amount - Number(filters.lowAmount) * 100 >= 0);
+		ret = ret.filter((t) => Math.abs(t.amount / 100) >= Number(filters.lowAmount) );
 	if (Number(filters.highAmount) > 0)
-		ret = ret.filter((t) => t.amount - Number(filters.highAmount) * 100 <= 0);
+		ret = ret.filter((t) => Math.abs(t.amount / 100) <= Number(filters.highAmount) );
 
 	if (filters.accounts.length > 0) {
     const exclude = filters.accounts.includes('X');

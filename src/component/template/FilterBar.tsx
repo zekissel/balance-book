@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
 import {
 	Filter,
-	ExpenseRoot,
 	ExpenseLeaf,
-	IncomeRoot,
 	IncomeLeaf,
-	getEnumKeys,
 	Account,
 } from '../../typedef';
 import { addDays } from '../../typeassist';
@@ -23,11 +20,7 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 	const toggleStartDate = () => setShowStartDate(!showStartDate);
 	const [showEndDate, setShowEndDate] = useState(filters.endDate !== null);
 	const toggleEndDate = () => setShowEndDate(!showEndDate);
-	const [showCategory, setShowCategory] = useState(false);
-	const toggleCategory = () => setShowCategory(!showCategory);
 
-	const [showAccounts, setShowAccounts] = useState(false);
-	const toggleAccounts = () => setShowAccounts(!showAccounts);
 
 	const handleLowAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const am = e.target.value;
@@ -89,7 +82,6 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 		}
 	};
 	const voidCategory = () => {
-		toggleCategory();
 		setFilters({ ...filters, category: [] });
 		sessionStorage.removeItem('filter.category');
 	};/*
@@ -160,7 +152,6 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 		});
 		setShowStartDate(false);
 		setShowEndDate(false);
-		setShowCategory(false);
 		sessionStorage.removeItem('filter.type');
 		sessionStorage.removeItem('filter.start');
 		sessionStorage.removeItem('filter.end');
