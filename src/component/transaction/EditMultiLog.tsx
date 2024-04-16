@@ -15,8 +15,9 @@ interface EditMultiLogProps {
 	logs: Transaction[];
 	accounts: Account[];
 	cancel: () => void;
+	refresh: () => void;
 }
-export default function EditMultiLog({ editLogs, logs, accounts, cancel }: EditMultiLogProps) {
+export default function EditMultiLog({ editLogs, logs, accounts, cancel, refresh }: EditMultiLogProps) {
 	const [editCompany, setEditCompany] = useState<string>('');
 	const [editAmount, setEditAmount] = useState('0');
 	const [editCategory, setEditCategory] = useState<string>('');
@@ -58,8 +59,9 @@ export default function EditMultiLog({ editLogs, logs, accounts, cancel }: EditM
 			};
 
 			invoke('fix_transaction', log);
-			await new Promise((r) => setTimeout(r, 80));
+			await new Promise((r) => setTimeout(r, 60));
 		}
+		refresh();
 	};
 
 	const updateAmount = (e: React.ChangeEvent<HTMLInputElement>) => {

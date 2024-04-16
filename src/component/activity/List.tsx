@@ -123,6 +123,7 @@ export default function List({
 					logs={logs}
 					accounts={accounts}
 					cancel={() => setEditLogs([])}
+					refresh={signalRefresh}
 				/>
 			)}
 

@@ -46,16 +46,16 @@ function App() {
 	const [signalTrans, setSignalTrans] = useState(false);
 	const signalRefreshTrans = () => setSignalTrans(!signalTrans);
 	
+	
   const update = (refresh: () => void): (() => void) => {
 		const timeout = setTimeout(() => {
 			refresh();
-		}, 400);
+		}, 50);
     return () => clearTimeout(timeout);
 	};
    
 	useEffect(() => {
     const refreshAccounts = async () => {
-      //console.log('acc')
       if (user) {
         const accts = await getAccounts(user.id)
         if (!ignore) setAccounts(accts);
@@ -65,17 +65,17 @@ function App() {
 		const buffer = update(refreshAccounts);
 
     return () => { ignore = true; buffer(); }
-	}, [signalRefreshAcct]); 
+	}, [signalAcct]);
+
 	useEffect(() => {
     const refreshTransactions = async () => {
-      //console.log('trans')
       const trans = await getTransactions(accounts.map((a) => a.id), transRange);
       if (!ignore) setTransactions(trans);
     };
     let ignore = false;
 		const buffer = update(refreshTransactions);
     return () => { ignore = true; buffer(); }
-	}, [signalRefreshTrans]); 
+	}, [signalTrans]); 
 
 	useEffect(() => {
 		localStorage.removeItem('link_token');

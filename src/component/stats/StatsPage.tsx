@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Transaction, Account } from '../../typedef';
+import { Transaction, Account, getEnumKeys, ExpenseRoot, IncomeRoot } from '../../typedef';
 import TotalGraph from './TotalGraph';
 import PieGraph from './PieGraph';
 import LineGraph from './LineGraph';
@@ -69,6 +69,19 @@ export default function StatsPage({
 	const [boxTypeInc, setBoxTypeInc] = useState<boolean>(
 		localStorage.getItem('stats.boxTypeInc') === 'true' ? true : false,
 	);
+	const [boxRoot, setBoxRoot] = useState<string | null>(null);
+	const usedRoots = useMemo(() => {
+		if (boxTypeInc) {
+			return transactions
+				.filter((t) => t.amount > 0)
+				.map((t) => t.category.split('>')[0])
+				.filter((val, ind, arr) => arr.indexOf(val) === ind);
+		}
+		return transactions
+			.filter((t) => t.amount < 0)
+			.map((t) => t.category.split('>')[0])
+			.filter((val, ind, arr) => arr.indexOf(val) === ind);
+	}, [transactions, boxTypeInc]);
 
 	const [categoryChartType, setCategoryChartType] = useState(
 		localStorage.getItem('stats.categoryChartType') !== null
@@ -211,32 +224,55 @@ export default function StatsPage({
 
 			<div className="stats-main-row">
 				<div className="stats-main-box-shorter">
-					<BoxPlot trans={transactions} isIncome={boxTypeInc} />
-					<div className="stats-category-radio">
-						<input
-							type="radio"
-							id="radio-box-income"
-							name="box"
-							onChange={() => {
-								setBoxTypeInc(true);
-								localStorage.setItem('stats.boxTypeInc', 'true');
-							}}
-							defaultChecked={boxTypeInc}
-						/>
-						<label htmlFor="radio-box-income">Income</label>
-						<input
-							type="radio"
-							id="radio-box-expense"
-							name="box"
-							onChange={() => {
-								setBoxTypeInc(false);
-								localStorage.setItem('stats.boxTypeInc', 'false');
-							}}
-							defaultChecked={!boxTypeInc}
-						/>
-						<label htmlFor="radio-box-expense">Expense</label>
+					<BoxPlot trans={transactions} isIncome={boxTypeInc} root={boxRoot} />
+
+					<div className="stats-menu-sep">
+
+						<div className="stats-category-radio">
+							<input
+								type="radio"
+								id="radio-box-income"
+								name="box"
+								onChange={() => {
+									setBoxRoot(null);
+									setBoxTypeInc(true);
+									localStorage.setItem('stats.boxTypeInc', 'true');
+								}}
+								defaultChecked={boxTypeInc}
+							/>
+							<label htmlFor="radio-box-income">Income</label>
+							<input
+								type="radio"
+								id="radio-box-expense"
+								name="box"
+								onChange={() => {
+									setBoxRoot(null);
+									setBoxTypeInc(false);
+									localStorage.setItem('stats.boxTypeInc', 'false');
+								}}
+								defaultChecked={!boxTypeInc}
+							/>
+							<label htmlFor="radio-box-expense">Expense</label>
+						</div>
+
+						<span>
+							<select value={boxRoot ?? ''} onChange={(e) => setBoxRoot(e.target.value)}>
+								<option value={''}>All</option>
+								{ boxTypeInc ? 
+									getEnumKeys((IncomeRoot)).filter(k => usedRoots.includes(k)).map((key) => (
+										<option value={key} key={key}>{key}</option>
+									))
+									:
+									getEnumKeys(ExpenseRoot).filter(k => usedRoots.includes(k)).map((key) => (
+										<option value={key} key={key}>{key}</option>
+									))
+								}
+							</select>
+						</span>
 					</div>
 				</div>
+
+				
 
 				<div className="stats-main-box-longer longer-flip">
 					{sankey && <Sankey transactions={transactions} accounts={accounts} />}

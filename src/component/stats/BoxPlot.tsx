@@ -2,8 +2,8 @@ import ReactECharts from 'echarts-for-react';
 import { Transaction } from '../../typedef';
 import { useMemo, useState } from 'react';
 
-interface GraphProps { trans: Transaction[], isIncome: boolean }
-export default function BoxPlot({ trans, isIncome }: GraphProps) {
+interface GraphProps { trans: Transaction[], isIncome: boolean, root: string | null }
+export default function BoxPlot({ trans, isIncome, root }: GraphProps) {
 
   const transactions = useMemo(() => {
     return isIncome ? trans.filter(t => t.amount > 0)
@@ -12,12 +12,21 @@ export default function BoxPlot({ trans, isIncome }: GraphProps) {
 
 	const categoryTotals = useMemo(() => {
 		const totals: { [key: string]: number } = {};
-		transactions.filter(t => t.category.includes('>')).forEach((t) => {
-			if (totals[t.category.split('>')[0]] === undefined) totals[t.category.split('>')[0]] = 0;
-			totals[t.category.split('>')[0]] += Math.round(t.amount / 100);
-		});
+    if (root) {
+      transactions.filter(t => t.category.includes('>') && t.category.split('>')[0] === root).forEach((t) => {
+        if (totals[t.category.split('>')[1]] === undefined) totals[t.category.split('>')[1]] = 0;
+        totals[t.category.split('>')[1]] += Math.round(t.amount / 100);
+      });
+
+    } else {
+
+      transactions.filter(t => t.category.includes('>')).forEach((t) => {
+        if (totals[t.category.split('>')[0]] === undefined) totals[t.category.split('>')[0]] = 0;
+        totals[t.category.split('>')[0]] += Math.round(t.amount / 100);
+      });
+    }
 		return totals;
-	}, [transactions]);
+	}, [transactions, root]);
 
   const categories = useMemo(() => {
     return Object.keys(categoryTotals);
@@ -29,7 +38,8 @@ export default function BoxPlot({ trans, isIncome }: GraphProps) {
     setOutliers([]);
     const out: number[][] = [];
     const ret = Array.from({ length: categories.length }, (_, i) => {
-      const relevant = transactions.filter((t) => t.category.split('>')[0] === categories[i]).map(t => Math.abs(t.amount / 100)).sort((a, b) => a - b);
+      const relevant: number[] = (root ? transactions.filter((t) => t.category.split('>')[1] === categories[i]) : transactions.filter((t) => t.category.split('>')[0] === categories[i])).map(t => Math.abs(t.amount / 100)).sort((a, b) => a - b);
+      //const relevant = transactions.filter((t) => t.category.split('>')[0] === categories[i]).map(t => Math.abs(t.amount / 100)).sort((a, b) => a - b);
 
       const q1 = relevant[Math.floor((relevant.length - 1) * .25)];
       const median = relevant[Math.floor(relevant.length / 2)];
@@ -51,7 +61,7 @@ export default function BoxPlot({ trans, isIncome }: GraphProps) {
 		})
     setOutliers(out);
     return ret;
-  }, [transactions, categories]);
+  }, [transactions, categories, root]);
 
 	const option = {
     title: { 

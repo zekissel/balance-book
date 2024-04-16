@@ -133,6 +133,7 @@ export default function Sankey({ transactions, accounts }: GraphProps) {
 	const option = {
 		title: {
 			text: 'Asset Allocation',
+			top: 5,
 		},
 		tooltip: {
 			trigger: 'item',

@@ -77,7 +77,7 @@ export default function TreeSelect({ value, options, onChange, multi, option2 }:
     <div className='custom-select'>
       <input 
         type="text" 
-        placeholder="Category"
+        placeholder={ isAccount(options) ? 'Account' : 'Category'}
         value={(value.includes('X') ? ['(Exclude)'] : []).concat(outputVal.length > 1 ? [`${outputVal.length} selected`] : outputVal)}
         onClick={() => setDropdown(!dropdown)}
         onBlur={() => setDropdown(false)}
