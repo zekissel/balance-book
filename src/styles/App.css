@@ -32,13 +32,13 @@ div.logo {
 	margin: 0 auto;
 	background-color: #f1f1f1;
 }
-
+/*
 @keyframes bg-glow {
   0%   {background-color: #bce2d0;}
   33%  {background-color: #c7d4cd;}
   66%  {background-color: #a7cdbb;}
   100% {background-color: #bce2d0;}
-}
+}*/
 
 div.no-auth {
 	display: flex;
@@ -54,9 +54,17 @@ div.no-auth {
 	padding: 0;
 	background-color: #9a9a9a;
 
+	/*
 	animation-name: bg-glow;
   animation-duration: 12s;
-	animation-iteration-count: infinite;
+	animation-iteration-count: infinite;*/
+}
+
+.float-fg {
+	position: absolute;
+	z-index: 105;
+	top: 0;
+	left: 0;
 }
 
 div.auth-field {
@@ -64,6 +72,9 @@ div.auth-field {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+
+	position: absolute;
+	z-index: 110;
 
 	border-radius: 2rem;
 	border: 3px solid #929e98;
@@ -94,8 +105,7 @@ div.auth-field > button {
 
 div.app-loading {
 	position: absolute;
-	z-index: 100;
-	top: 18rem;
+	z-index: 150;
 }
 
 div.home-preview {

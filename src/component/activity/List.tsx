@@ -179,7 +179,7 @@ export default function List({
 											style={{ backgroundColor: getCategoryColor(transaction.category) }}
 										>
 											{transaction.category.split('>')[1]
-												? `${transaction.category.split('>')[0].slice(0, 5)}>${transaction.category.split('>')[1].slice(0, 9)}`
+												? `${transaction.category.split('>')[0].slice(0, 6)}>${transaction.category.split('>')[1].slice(0, 9)}`
 												: `${transaction.category.slice(0, 18)}`}
 										</span>
 										<span className="list-item-desc"> - {transaction.desc}</span>

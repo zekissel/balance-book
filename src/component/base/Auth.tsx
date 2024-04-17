@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactECharts from 'echarts-for-react';
 import { User, DataState } from '../../typedef';
+import Float from '../home/Float';
 
 interface AuthProps {
 	verify: (user: User) => void;
@@ -91,6 +92,7 @@ export default function Auth({ verify, logout }: AuthProps) {
 
 	return (
 		<div className='no-auth'>
+			<Float />
 			<div className="auth-field">
 				<input
 					type="text"
