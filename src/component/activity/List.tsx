@@ -24,30 +24,28 @@ export default function List({
 
 	const logs = useMemo(() => {
 		const ret = transactions.filter((t) => !['Transfer', 'Credit'].includes(t.category.split('>')[1]));
-		const rel = transactions.filter((t) => ['Transfer', 'Credit'].includes(t.category.split('>')[1]));
+		const rela = transactions.filter((t) => ['Transfer', 'Credit'].includes(t.category.split('>')[1]));
 		
-		const rel_map: { [key: string]: number } = {};
-		rel.forEach((t) => {
-			if (rel_map[Math.abs(t.amount)] === undefined) rel_map[Math.abs(t.amount)] = 0;
-			rel_map[Math.abs(t.amount)] += t.amount;
-		});
-		const acct_map: { [key: string]: string } = {};
-		Object.keys(rel_map).filter(k => rel_map[k] % 2 === 0).forEach(k => {
-			const t = rel.find(t => t.amount === Number(k));
-			if (t) {
-				if (acct_map[Math.abs(t.amount).toString()] === undefined) acct_map[Math.abs(t.amount).toString()] = `${accounts.find(a => a.id === t.account_id)?.account_type}:${accounts.find(a => a.id === t.account_id)?.account_name}`;
+		const rel = rela.map((t) => {
+			const amt = t.amount;
+			const rel_t = rela.find((rt) => rt.amount === -amt);
+			if (rel_t) {
+				const acct = accounts.find(a => a.id === rel_t.account_id);
+				rela.splice(rela.indexOf(rel_t), 1);
+				return {
+					id: t.id,
+					date: t.date,
+					amount: amt,
+					category: t.category,
+					desc: t.desc,
+					account_id: t.account_id,
+					company: acct ? `${acct.account_type.slice(0, 5)}:${acct.account_name}` : t.company,
+				} as Transaction;
 			}
-		});
+			return null;
+		}).filter((t) => t !== null) as Transaction[];
 
-		Object.keys(rel_map).filter(k => rel_map[k] % 2 === 0).forEach(k => {
-			const t = rel.find(t => Math.abs(t.amount) === Number(k));
-			if (t) {
-				t.company = acct_map[Math.abs(t.amount).toString()] ?? t.company;
-				ret.push(t);
-			}
-		});
-
-		return ret.sort((a, b) => b.date.getTime() - a.date.getTime());
+		return ret.concat(rel).sort((a, b) => b.date.getTime() - a.date.getTime());
 	}, [transactions]);
 
 	const futureTransactions = useMemo(() => {

@@ -44,6 +44,7 @@ li.new-trans-detail {
 	width: 100%;
 	display: flex;
 	justify-content: space-between;
+	height: 2rem;
 }
 
 div.new-trans-main > li {

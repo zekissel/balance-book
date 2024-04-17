@@ -139,16 +139,32 @@ span.list-item-desc {
 }
 
 menu.edit-multi-log {
-	width: 20%;
-	height: 40%;
+	width: 90%;
+	height: 4rem;
 	margin: 0;
 	padding: 0;
 	display: flex;
-	flex-direction: column;
 	justify-content: space-around;
 	align-items: center;
 	background-color: #dbdbdbdd;
 
 	position: fixed;
 	border: 2px dashed #abc;
+}
+
+menu.edit-multi-log  div.multi-sep {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+menu.edit-multi-log  input {
+	max-width: 5rem;
+}
+
+span.multi-edit-adjust {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
 }

@@ -2,13 +2,11 @@ import { invoke } from '@tauri-apps/api/tauri';
 import React, { useState, useMemo, useEffect } from 'react';
 import {
 	Transaction,
-	IncomeRoot,
 	IncomeLeaf,
-	ExpenseRoot,
 	ExpenseLeaf,
-	getEnumKeys,
 	Account,
 } from '../../typedef';
+import TreeSelect from '../template/TreeSelect';
 
 interface EditLogProps {
 	log: Transaction | null;
@@ -26,7 +24,7 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 			`${Math.abs(Number(amount))}${amount.charAt(amount.length - 1) === '.' ? '.' : ''}${amount.charAt(amount.length - 2) === '.' && amount.charAt(amount.length - 1) === '0' ? '.0' : ''}`,
 		[amount],
 	);
-	const [category, setCategory] = useState(log ? log.category : '');
+	const [category, setCategory] = useState(log ? [log.category] : ['']);
 	const [date, setDate] = useState(
 		log ? log.date : new Date(new Date().toISOString().split('T')[0]),
 	);
@@ -37,7 +35,7 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 	);
 
 	const [isIncomeState, setIsIncomeState] = useState(isIncome);
-	useEffect(() => setIsIncomeState(isIncome), [isIncome]);
+	useEffect(() => {setIsIncomeState(isIncome); setCategory([''])}, [isIncome]);
 
 	const accountError = useMemo(
 		() =>
@@ -65,7 +63,7 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 			setError('Account and amount required');
 			return;
 		}
-		if (category === '') {
+		if (category.length === 0 || !category[0]) {
 			setError('Category required');
 			return;
 		}
@@ -113,8 +111,8 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 		}
 	};
 
-	const handleCategorySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		setCategory(e.target.value as typeof category);
+	const handleCategorySelect = (c: string[]) => {
+		setCategory(c);
 	};
 
 	return (
@@ -142,33 +140,8 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 			</div>
 
 			<li className="new-trans-detail">
-				{isIncomeState ? (
-					<select value={`${category}`} onChange={handleCategorySelect}>
-						<option value="">{`Select Category`}</option>
-						{getEnumKeys(IncomeRoot).map((root, index) => (
-							<optgroup label={root} key={index}>
-								{IncomeLeaf[root].map((leaf, index) => (
-									<option key={index} value={`${root}>${leaf}`}>
-										{`> ${leaf}`}
-									</option>
-								))}
-							</optgroup>
-						))}
-					</select>
-				) : (
-					<select value={`${category}`} onChange={handleCategorySelect}>
-						<option value="">{`Select Category`}</option>
-						{getEnumKeys(ExpenseRoot).map((root, index) => (
-							<optgroup key={index} label={root}>
-								{ExpenseLeaf[root].map((leaf, index) => (
-									<option key={index} value={`${root}>${leaf}`}>
-										{`> ${leaf}`}
-									</option>
-								))}
-							</optgroup>
-						))}
-					</select>
-				)}
+				<TreeSelect value={category} options={isIncome ? IncomeLeaf : ExpenseLeaf} onChange={handleCategorySelect} multi={false} />
+				
 				<input
 					className="date-pick"
 					type="date"

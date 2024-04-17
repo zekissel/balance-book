@@ -19,6 +19,7 @@ interface SelectProps {
   onChange: (value: string[]) => void;
   multi: boolean;
   option2?: typeof ExpenseLeaf | typeof IncomeLeaf;
+  lower?: boolean;
 }
 export default function TreeSelect({ value, options, onChange, multi, option2 }: SelectProps) {
 

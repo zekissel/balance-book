@@ -3,9 +3,11 @@ ul.dropdown {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  background-color: #a3a3a3;
-
+  background-color: #d4d7d5;
+  position: absolute;
+  z-index: 200;
   
+  width: 8.2rem;
   margin: 0 auto;
 }
 div.tree-option {
@@ -13,12 +15,11 @@ div.tree-option {
   cursor: pointer;
 }
 div.tree-option:hover {
-  background-color: #888888;
+  background-color: #b2b8b5;
 }
-
+li.dropdown-li { height: 1.4rem; }
 li.dropdown-li:hover {
-  background-color: #888888;
-  display: block;
+  background-color: #b2b8b5;
   height: 1.4rem;
 }
 li.dropdown-li:hover div.option-container {
@@ -28,9 +29,9 @@ li.dropdown-li:hover div.option-container {
 div.option-container {
   display: none;
   position: relative;
-  background-color: #a3a3a3;
+  background-color: #d4d7d5;
   z-index: 250;
-  left: 8.5rem;
+  left: 8rem;
   top: -1.4rem;
 }
 
