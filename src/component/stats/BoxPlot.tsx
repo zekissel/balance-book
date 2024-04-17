@@ -6,8 +6,8 @@ interface GraphProps { trans: Transaction[], isIncome: boolean, root: string | n
 export default function BoxPlot({ trans, isIncome, root }: GraphProps) {
 
   const transactions = useMemo(() => {
-    return isIncome ? trans.filter(t => t.amount > 0)
-      : trans.filter(t => t.amount < 0);
+    return (isIncome ? trans.filter(t => t.amount > 0)
+      : trans.filter(t => t.amount < 0)).filter(t => !['Transfer', 'Credit'].includes(t.category.split('>')[1]));
   }, [trans, isIncome]);
 
 	const categoryTotals = useMemo(() => {
@@ -38,7 +38,7 @@ export default function BoxPlot({ trans, isIncome, root }: GraphProps) {
     setOutliers([]);
     const out: number[][] = [];
     const ret = Array.from({ length: categories.length }, (_, i) => {
-      const relevant: number[] = (root ? transactions.filter((t) => t.category.split('>')[1] === categories[i]) : transactions.filter((t) => t.category.split('>')[0] === categories[i])).map(t => Math.abs(t.amount / 100)).sort((a, b) => a - b);
+      const relevant: number[] = (root ? transactions.filter((t) => (t.category.split('>')[0] === root) && (t.category.split('>')[1] === categories[i])) : transactions.filter((t) => t.category.split('>')[0] === categories[i])).map(t => Math.abs(t.amount / 100)).sort((a, b) => a - b);
       //const relevant = transactions.filter((t) => t.category.split('>')[0] === categories[i]).map(t => Math.abs(t.amount / 100)).sort((a, b) => a - b);
 
       const q1 = relevant[Math.floor((relevant.length - 1) * .25)];

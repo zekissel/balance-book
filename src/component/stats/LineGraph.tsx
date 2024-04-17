@@ -19,7 +19,7 @@ export default function TotalGraph({ transactions, range, endDate }: GraphProps)
 		const totals: SeriesDay[] = Array.from({ length: range + 1 }, (_, i) => {
 			return { date: addDays(today, -i), total: 0 };
 		});
-		transactions.forEach((t) => {
+		transactions.filter(t => !['Transfer', 'Credit'].includes(t.category.split('>')[1])).forEach((t) => {
 			const index = Math.ceil((endDate.getTime() - t.date.getTime()) / (24 * 60 * 60 * 1000));
 			if (index <= range) {
 				totals[index].total += Math.round(t.amount / 100);
@@ -41,7 +41,7 @@ export default function TotalGraph({ transactions, range, endDate }: GraphProps)
 	}, [range]);
 
 	const option = {
-		color: [transactions.length === 0 ? '#abc' : '#739d88'],
+		color: [transactions.filter(t => !['Transfer', 'Credit'].includes(t.category.split('>')[1])).length === 0 ? '#abc' : '#739d88'],
 		grid: { show: true, top: '13%', bottom: '5%', },
 		tooltip: {
 			trigger: 'axis',

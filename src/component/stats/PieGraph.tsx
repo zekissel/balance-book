@@ -10,7 +10,7 @@ interface GraphProps {
 export default function PieGraph({ transactions, isIncome }: GraphProps) {
 	const categoryTotals = useMemo(() => {
 		const totals: { [key: string]: number } = {};
-		transactions.forEach((t) => {
+		transactions.filter(t => !['Transfer', 'Credit'].includes(t.category.split('>')[1])).forEach((t) => {
 			if ((isIncome ? 1 : -1) * t.amount > 0 && totals[t.category] === undefined)
 				totals[t.category] = 0;
 			if ((isIncome ? 1 : -1) * t.amount > 0) totals[t.category] += Math.abs(t.amount / 100);
