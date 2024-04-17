@@ -81,6 +81,9 @@ div.list-item-income:hover {
 	background-color: #b6d1c199;
 }
 
+div.list-item-transfer { background-color: #9eb4c965; }
+div.list-item-transfer:hover { background-color: #9eb4c999; }
+
 span.list-item-date {
 	font-family: 'Courier New', Courier, monospace;
 	font-size: 14px;

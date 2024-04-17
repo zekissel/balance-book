@@ -117,7 +117,7 @@ export default function Activity({
 
 			{listView ? (
 				<List
-					logs={filteredTransactions}
+					transactions={filteredTransactions}
 					accounts={accounts}
 					updateLog={signalRefresh}
 					showFilter={filterGUI}

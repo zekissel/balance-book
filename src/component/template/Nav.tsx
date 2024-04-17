@@ -8,12 +8,11 @@ export default function Nav() {
 	const [fullNav, setFullNav] = useState(true);
 	const toggleNav = () => setFullNav(!fullNav);
 
-	const curPageStyle = (path: string) =>
-		new URL(window.location.href).pathname === path ? 'nav-current' : undefined;
+	const [curPage, setCurPage] = useState(new URL(window.location.href).pathname);
 
 	return (
 		<>
-			<nav>
+			<nav onClick={() => setCurPage(new URL(window.location.href).pathname)}>
 				<ul className="nav-top">
 					<li onClick={toggleNav}>
 						<img
@@ -26,27 +25,27 @@ export default function Nav() {
 
 				<ul className="nav-core">
 					<Link to="/home">
-						<li id={curPageStyle('/home')}>
+						<li id={curPage === '/home' ? 'nav-current' : undefined}>
 							{fullNav ? 'Home' : <img draggable={false} src="/home.svg" alt="Home" />}
 						</li>
 					</Link>
 					<Link to="/activity">
-						<li id={curPageStyle('/activity')}>
+						<li id={curPage === '/activity' ? 'nav-current' : undefined}>
 							{fullNav ? 'Activity' : <img draggable={false} src="/book.svg" alt="Activity" />}
 						</li>
 					</Link>
 					<Link to="/stats">
-						<li id={curPageStyle('/stats')}>
+						<li id={curPage === '/stats' ? 'nav-current' : undefined}>
 							{fullNav ? 'Statistics' : <img draggable={false} src="/stats.svg" alt="Statistics" />}
 						</li>
 					</Link>
 					<Link to="/assets">
-						<li id={curPageStyle('/assets')}>
+						<li id={curPage === '/assets' ? 'nav-current' : undefined}>
 							{fullNav ? 'Accounts' : <img draggable={false} src="/wallet.svg" alt="Accounts" />}
 						</li>
 					</Link>
 					<Link to="/market">
-						<li id={curPageStyle('/market')}>
+						<li id={curPage === '/market' ? 'nav-current' : undefined}>
 							{fullNav ? 'Market' : <img draggable={false} src="/candles.svg" alt="Market" />}
 						</li>
 					</Link>
@@ -54,12 +53,12 @@ export default function Nav() {
 
 				<ul className={fullNav ? 'nav-extra' : 'nav-extra nav-inverse'}>
 					<Link to="/profile">
-						<li id={curPageStyle('/profile')}>
+						<li id={curPage === '/profile' ? 'nav-current' : undefined}>
 							{fullNav ? 'Profile' : <img draggable={false} src="/user.svg" alt="Profile" />}
 						</li>
 					</Link>
 					<Link to="/settings">
-						<li id={curPageStyle('/settings')}>
+						<li id={curPage === '/settings' ? 'nav-current' : undefined}>
 							{fullNav ? 'Settings' : <img draggable={false} src="/cog.svg" alt="Settings" />}
 						</li>
 					</Link>

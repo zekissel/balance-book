@@ -6,7 +6,7 @@ import '../../styles/List.css';
 import EditMultiLog from '../transaction/EditMultiLog';
 
 interface ListProps {
-	logs: Transaction[];
+	transactions: Transaction[];
 	accounts: Account[];
 	updateLog: () => void;
 	showFilter: boolean;
@@ -14,13 +14,42 @@ interface ListProps {
 	signalRefresh: () => void;
 }
 export default function List({
-	logs,
+	transactions,
 	accounts,
 	updateLog,
 	showFilter,
 	incRange,
 	signalRefresh,
 }: ListProps) {
+
+	const logs = useMemo(() => {
+		const ret = transactions.filter((t) => !['Transfer', 'Credit'].includes(t.category.split('>')[1]));
+		const rel = transactions.filter((t) => ['Transfer', 'Credit'].includes(t.category.split('>')[1]));
+		
+		const rel_map: { [key: string]: number } = {};
+		rel.forEach((t) => {
+			if (rel_map[Math.abs(t.amount)] === undefined) rel_map[Math.abs(t.amount)] = 0;
+			rel_map[Math.abs(t.amount)] += t.amount;
+		});
+		const acct_map: { [key: string]: string } = {};
+		Object.keys(rel_map).filter(k => rel_map[k] % 2 === 0).forEach(k => {
+			const t = rel.find(t => t.amount === Number(k));
+			if (t) {
+				if (acct_map[Math.abs(t.amount).toString()] === undefined) acct_map[Math.abs(t.amount).toString()] = `${accounts.find(a => a.id === t.account_id)?.account_type}:${accounts.find(a => a.id === t.account_id)?.account_name}`;
+			}
+		});
+
+		Object.keys(rel_map).filter(k => rel_map[k] % 2 === 0).forEach(k => {
+			const t = rel.find(t => Math.abs(t.amount) === Number(k));
+			if (t) {
+				t.company = acct_map[Math.abs(t.amount).toString()] ?? t.company;
+				ret.push(t);
+			}
+		});
+
+		return ret.sort((a, b) => b.date.getTime() - a.date.getTime());
+	}, [transactions]);
+
 	const futureTransactions = useMemo(() => {
 		return logs.filter((t) => t.date.getTime() > new Date().getTime());
 	}, [logs]);
@@ -161,7 +190,7 @@ export default function List({
 									<div
 										className={
 											(transaction.amount < 0 ? 'list-item-expense' : 'list-item-income') +
-											' list-item'
+											' list-item' + (['Transfer', 'Credit'].includes(transaction.category.split('>')[1]) ? ' list-item-transfer' : '')
 										}
 										onClick={() => updateSelected(transaction)}
 									>
@@ -171,7 +200,7 @@ export default function List({
 										<span className="list-item-source"> {transaction.company}</span>
 										<span className="list-item-amount">
 											{' '}
-											{transaction.amount < 0 ? `-$` : `+$`}
+											{ ['Transfer', 'Credit'].includes(transaction.category.split('>')[1]) ? ('$') : (transaction.amount < 0 ? `-$` : `+$`) }
 											{Math.abs(transaction.amount / 100).toFixed(2)}
 										</span>
 										<span
