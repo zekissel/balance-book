@@ -71,7 +71,7 @@ export default function TreeSelect({ value, options, onChange, multi, option2 }:
   }, [options, value]);
 
   const outputVal = useMemo(() => {
-    return isAccount(options) ? acctValues : value.filter(v => v !== 'X');
+    return isAccount(options) ? acctValues : (multi === true ? value.filter(v => v !== 'X') : value);
   }, [options, value]);
 
   return (

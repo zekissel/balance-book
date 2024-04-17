@@ -35,7 +35,7 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 	);
 
 	const [isIncomeState, setIsIncomeState] = useState(isIncome);
-	useEffect(() => {setIsIncomeState(isIncome); setCategory([''])}, [isIncome]);
+	useEffect(() => {setIsIncomeState(isIncome); if (!log) setCategory(['']) }, [isIncome]);
 
 	const accountError = useMemo(
 		() =>
@@ -73,7 +73,7 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 			id: log ? log.id : undefined,
 			company: company,
 			amount: Math.round((Number(amount) + Number.EPSILON) * 100) * balanceAdjustor,
-			category: category,
+			category: category[0],
 			date: new Date(date.toDateString()),
 			desc: desc,
 			accountId: accountId,

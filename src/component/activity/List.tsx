@@ -109,15 +109,7 @@ export default function List({
 	);
 
 	const transactionTitles = ['Upcoming', '7 Days', '30 Days', '90 Days', 'Previous'];
-	const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([]);
-	const updateSelected = (transaction: Transaction) => {
-		if (selectedTransactions.includes(transaction))
-			setSelectedTransactions(
-				selectedTransactions.filter((t) => JSON.stringify(t) !== JSON.stringify(transaction)),
-			);
-		else setSelectedTransactions([...selectedTransactions, transaction]);
-	};
-
+	
 	const [showIndices, setShowIndices] = useState(
 		sessionStorage
 			.getItem('list.indices')
@@ -134,6 +126,21 @@ export default function List({
 			setShowIndices(indices);
 			sessionStorage.setItem('list.indices', indices.join(' '));
 		}
+	};
+
+	const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([]);
+	const updateSelected = (transaction: Transaction) => {
+		if (selectedTransactions.includes(transaction) || editLogs.includes(transaction.id)) {
+			setSelectedTransactions(
+				selectedTransactions.filter((t) => JSON.stringify(t) !== JSON.stringify(transaction)),
+			);
+			setEditLogs(editLogs.filter((e) => e !== transaction.id));
+		}
+		else {
+			const selected = selectedTransactions.map(t => t.id).concat(editLogs).concat([transaction.id]);
+			if (selected.length > 1) {setEditLogs(selected); setSelectedTransactions([]);}
+			else setSelectedTransactions([...selectedTransactions, transaction])
+		};
 	};
 
 	const [editLogs, setEditLogs] = useState<string[]>([]); // list of transaction ids to edit

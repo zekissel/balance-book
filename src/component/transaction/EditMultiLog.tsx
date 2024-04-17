@@ -80,12 +80,9 @@ export default function EditMultiLog({ editLogs, logs, accounts, cancel, refresh
 
 	return (
 		<menu className="edit-multi-log">
+			<div className='multi-sep'>{' '}</div>
 			<div className='multi-sep'>
-				<span>
-					<button onClick={cancel}>
-						<img src="/x.svg" />
-					</button>
-				</span>
+				
 				<span>
 					Edit {editLogs.length}{' '}
 					{isIncome === true ? 'Income(s)' : isIncome === false ? 'Expense(s)' : 'Transactions'}
@@ -181,7 +178,13 @@ export default function EditMultiLog({ editLogs, logs, accounts, cancel, refresh
 				</span>
 			</div>
 
-			<button onClick={handleSubmitEdit}>Submit</button>
+			<div className='multi-sep'>
+				<button onClick={handleSubmitEdit}>Submit</button>
+			
+				<button onClick={cancel}>
+					<img src="/x.svg" />
+				</button>
+			</div>
 		</menu>
 	);
 }
