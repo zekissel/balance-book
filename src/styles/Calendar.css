@@ -18,8 +18,8 @@ tr:nth-child(even) {
 
 td,
 th {
-	width: 8.5rem;
-	height: 8rem;
+	width: 8.7rem;
+	height: 8.7rem;
 	border: 1px solid #ccc;
 	text-overflow: ellipsis;
 }

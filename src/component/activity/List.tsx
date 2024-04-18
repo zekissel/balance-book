@@ -146,7 +146,7 @@ export default function List({
 						<img src={ sortBy === 'category' ? '/sort-z-a.svg' :'/sort-a-z.svg'}/>Category
 					</button>
 					<button onClick={() => handleSort('type')} className={sortBy.includes('type') ? 'active-sort-filter' : ''}>
-						<img src={ sortBy === 'type' ? '/sort-up.svg' :'/sort-down.svg'}/>Type
+						<img src='/sort.svg'/>Type
 					</button>
 					<button onClick={() => handleSort('account')} className={sortBy.includes('account') ? 'active-sort-filter' : ''}>
 						<img src={ sortBy === 'account' ? '/sort-z-a.svg' :'/sort-a-z.svg'}/>Account

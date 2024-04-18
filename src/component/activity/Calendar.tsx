@@ -135,7 +135,7 @@ export default function Calendar({
 
 	return (
 		<div className={showFilter ? 'main-down-shift page-main' : 'page-main'}>
-			<menu className="calendar-menu">
+			<menu className="calendar-menu" onWheel={processWheel}>
 				<span
 					className="calendar-menu-today"
 					onClick={() => {
@@ -146,7 +146,7 @@ export default function Calendar({
 					{curDate.current.toDateString()}
 				</span>
 
-				<span className="calendar-shift" onWheel={processWheel}>
+				<span className="calendar-shift">
 					<button onClick={() => shiftWeeks(-1)}>
 						<img src="/left-arrow.svg" />
 					</button>

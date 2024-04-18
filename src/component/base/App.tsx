@@ -42,12 +42,22 @@ function App() {
 	const [accounts, setAccounts] = useState<Account[]>([]);
 	const [transactions, setTransactions] = useState<Transaction[]>([]);
 
-	const [signalAcct, setSignalAcct] = useState(0);
-	const signalRefreshAcct = () => setSignalAcct((signalAcct + 1) % 255);
+	const [signalAcct, setSignalAcct] = useState(false);
+	const signalRefreshAcct = () => setSignalAcct(!signalAcct);
 	const [signalTrans, setSignalTrans] = useState(false);
 	const signalRefreshTrans = () => setSignalTrans(!signalTrans);
 	
 	
+	const refreshTransactions = async () => {
+		const [trans, more] = await getTransactions(accounts.map((a) => a.id), transRange);
+		setTransactions(trans); 
+		setMoreTrans(more);
+	};
+
+	const refreshAccounts = async () => {
+		if (user) {setAccounts(await getAccounts(user.id));}
+	};
+
   const update = (refresh: () => void): (() => void) => {
 		const timeout = setTimeout(() => {
 			refresh();
@@ -56,26 +66,13 @@ function App() {
 	};
    
 	useEffect(() => {
-    const refreshAccounts = async () => {
-      if (user) {
-        const accts = await getAccounts(user.id)
-        if (!ignore) setAccounts(accts);
-      }
-    };
-    let ignore = false;
 		const buffer = update(refreshAccounts);
-
-    return () => { ignore = true; buffer(); }
+    return () => buffer();
 	}, [signalAcct]);
 
 	useEffect(() => {
-    const refreshTransactions = async () => {
-      const [trans, more] = await getTransactions(accounts.map((a) => a.id), transRange);
-      if (!ignore) {setTransactions(trans); setMoreTrans(more);}
-    };
-    let ignore = false;
 		const buffer = update(refreshTransactions);
-    return () => { ignore = true; buffer(); }
+    return () => buffer();
 	}, [signalTrans]); 
 
 	useEffect(() => {
@@ -93,13 +90,8 @@ function App() {
       if (syncBalance) localStorage.setItem('sync.b.date', new Date().toISOString().split('T')[0]);
       if (syncTrans) localStorage.setItem('sync.t.date', new Date().toISOString().split('.')[0]);
 
-      const refreshTransactions = async () => {
-				const [trans, more] = await getTransactions(accounts.map((a) => a.id), transRange);
-				if (!ignore) {setTransactions(trans); setMoreTrans(more);}
-			};
-      let ignore = false;
-			const buffer = update(refreshTransactions);
-      return () => { ignore = true; buffer(); }
+			update(refreshAccounts);
+			update(refreshTransactions);
 		}
 	}, [user]);
 
