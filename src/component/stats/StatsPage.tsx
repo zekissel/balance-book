@@ -4,10 +4,10 @@ import TotalGraph from './TotalGraph';
 import PieGraph from './PieGraph';
 import LineGraph from './LineGraph';
 import BarGraph from './BarGraph';
-import HeatMap from './HeatMap';
 import Sankey from './Sankey';
 import TreeGraph from './TreeGraph';
 import BoxPlot from './BoxPlot';
+import Tree from './Tree';
 
 interface StatsPageProps {
 	transactions: Transaction[];
@@ -56,6 +56,8 @@ export default function StatsPage({
 			.reduce((acc, t) => acc + t.amount, 0);
 	}, [transactions]);
 
+	const [stats, setStats] = useState(false);
+	const toggleStats = () => setStats(!stats);
 
 	const [sankey, setSankey] = useState(
 		localStorage.getItem('stats.sankey') === 'false' ? false : true,
@@ -129,7 +131,19 @@ export default function StatsPage({
 				</div>
 
 				<div className="stats-main-box-long">
-					<TotalGraph transactions={transactions} />
+					{!stats && <TotalGraph transactions={transactions} />}
+					{stats && 
+						<div className='stats-graph'>
+							mean, median, mode, range, total, etc.
+						</div>
+					}
+
+					<div className="stats-menu-sep">
+						<span></span>
+						<button onClick={toggleStats} id={!stats?'stats-b-adjust':undefined}>
+							<img src={stats ? '/bar.svg' : 'list.svg'} />
+						</button>
+					</div>
 				</div>
 			</div>
 
@@ -276,16 +290,14 @@ export default function StatsPage({
 
 				<div className="stats-main-box-longer longer-flip">
 					{sankey && <Sankey transactions={transactions} accounts={accounts} />}
-					{!sankey && 'list'}
+					{!sankey && <Tree transactions={transactions} accounts={accounts} />}
 
 					<div className="stats-menu-sep">
 						<span></span>
 						<button onClick={() => setSankey(!sankey)}>
-							<img src={sankey ? '/list.svg' : 'line.svg'} />
+							<img src={sankey ? '/tree.svg' : 'line.svg'} />
 						</button>
 					</div>
-
-					{false && <HeatMap transactions={transactions} startDate={startDate} endDate={endDate} />}
 				</div>
 			</div>
 		</div>

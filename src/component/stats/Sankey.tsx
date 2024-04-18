@@ -150,6 +150,7 @@ export default function Sankey({ transactions, accounts }: GraphProps) {
 				},
 				nodeAlign: 'right',
 				top: '10%',
+				left: '3%',
 				bottom: '5%',
 				data: nodes,
 				links: links,

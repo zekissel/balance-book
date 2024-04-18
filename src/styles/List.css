@@ -184,10 +184,13 @@ menu.list-view-options {
 	background-color: rgba(223, 226, 225, 0.695);
 }
 
-menu.list-view-options  input {
-	height: 1.2rem;
+menu.list-view-options input {
+	height: 1.4rem;
 	width: 2rem;
 	text-align: center;
+	font-size: 32;
+	font-weight: 550;
+	margin: 0 .2rem;
 }
 
 menu.list-view-options  div.list-menu-opt {

@@ -57,11 +57,12 @@ export default function TotalGraph({ transactions }: GraphProps) {
 		],
 		title: {
 			text: 'Total Balance by Category',
+			top: 15,
 		},
 		width: '87%',
-		height: '74%',
+		height: '70%',
 		grid: {
-			top: 30,
+			top: 45,
 		},
 		dataZoom: { type: 'inside' },
 		tooltip: {

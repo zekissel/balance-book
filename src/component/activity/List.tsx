@@ -93,7 +93,11 @@ export default function List({
 	);
 
 	const topMenu = useRef<HTMLDivElement>(null);
-	useEffect(() => topMenu.current?.scrollIntoView({ behavior: 'smooth' }), [page]);
+	const scrollBehavior = useRef<ScrollBehavior>('instant');
+	useEffect(() => {
+		topMenu.current?.scrollIntoView({ behavior: scrollBehavior.current })
+		scrollBehavior.current = 'smooth';
+	}, [page]);
 
 
 	const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([]);
@@ -264,9 +268,11 @@ function ListMenu({ logs, page, perPage, setPage, setPerPage }: ListMenuProps) {
 	return (
 		<menu className='list-view-options'>
 			<div className='list-menu-opt'>
+
 				<button onClick={() => setPage(page - 1)} disabled={page <= 0}><img src='/left-arrow.svg' /></button>
-				<span> Page: </span><input type='text' value={`${page + 1}`} onChange={handlePage} /><span>{` / ${Math.floor(logs.length / perPage)+1}`} </span>
+				<input type='text' value={`${page + 1}`} onChange={handlePage} /><span>{` / ${Math.floor(logs.length / perPage)+1}`} </span>
 				<button onClick={() => setPage(page + 1)} disabled={page >= Math.floor(logs.length / perPage)}><img src='/right-arrow.svg' /></button>
+
 			</div>
 
 			<div className='list-menu-opt'>
