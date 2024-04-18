@@ -22,6 +22,7 @@ function App() {
 		dob: localStorage.getItem('dob') ? new Date(localStorage.getItem('dob') as string) : null,
 	});
 
+	const [moreTrans, setMoreTrans] = useState(false);
 	const [transRange, setTransRange] = useState(
 		sessionStorage.getItem('fetchRange') !== null
 			? Number(sessionStorage.getItem('fetchRange'))
@@ -69,8 +70,8 @@ function App() {
 
 	useEffect(() => {
     const refreshTransactions = async () => {
-      const trans = await getTransactions(accounts.map((a) => a.id), transRange);
-      if (!ignore) setTransactions(trans);
+      const [trans, more] = await getTransactions(accounts.map((a) => a.id), transRange);
+      if (!ignore) {setTransactions(trans); setMoreTrans(more);}
     };
     let ignore = false;
 		const buffer = update(refreshTransactions);
@@ -93,9 +94,9 @@ function App() {
       if (syncTrans) localStorage.setItem('sync.t.date', new Date().toISOString().split('.')[0]);
 
       const refreshTransactions = async () => {
-        const trans = await getTransactions(accounts.map((a) => a.id), transRange);
-        if (!ignore) setTransactions(trans);
-      };
+				const [trans, more] = await getTransactions(accounts.map((a) => a.id), transRange);
+				if (!ignore) {setTransactions(trans); setMoreTrans(more);}
+			};
       let ignore = false;
 			const buffer = update(refreshTransactions);
       return () => { ignore = true; buffer(); }
@@ -147,6 +148,7 @@ function App() {
 									signalRefresh={signalRefreshTrans}
 									incRange={incrementRange}
 									setRange={setRange}
+									more={moreTrans}
 								/>
 							}
 						/>

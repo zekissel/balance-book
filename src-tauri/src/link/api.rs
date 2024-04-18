@@ -10,7 +10,7 @@ pub async fn sync_transactions(access_token: &str, count: i16, cursor: Option<&s
     .count(count.into())
     .cursor(cursor.unwrap_or(""))
     .options(TransactionsSyncRequestOptions {
-      days_requested: Some(1),
+      days_requested: None,
       include_logo_and_counterparty_beta: None,//Some(true),
       include_original_description: Some(true),
       include_personal_finance_category: Some(true),

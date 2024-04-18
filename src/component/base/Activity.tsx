@@ -21,6 +21,7 @@ interface ActivityProps {
 	signalRefresh: () => void;
 	incRange: () => void;
 	setRange: (range: number) => void;
+	more: boolean;
 }
 export default function Activity({
 	transactions,
@@ -28,6 +29,7 @@ export default function Activity({
 	signalRefresh,
 	incRange,
 	setRange,
+	more
 }: ActivityProps) {
 	/* filter transactions by object state (filter function declared in typedef) */
 	const [filterGUI, setFilterGUI] = useState(false);
@@ -123,6 +125,7 @@ export default function Activity({
 					showFilter={filterGUI}
 					incRange={incRange}
 					signalRefresh={signalRefresh}
+					more={more}
 				/>
 			) : (
 				<Calendar

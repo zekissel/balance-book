@@ -52,18 +52,18 @@ export function addHours(date: Date, hours: number) {
 export async function getTransactions(
 	account_ids: string[],
 	range: number,
-): Promise<Transaction[]> {
+): Promise<[Transaction[], boolean]> {
 	const startDate = addDays(new Date(), -range).toISOString().split('T')[0];
 	return await invoke('get_transactions', { accountId: account_ids, start: startDate }).then(
 		(data) => {
-			const trans = data as Transaction[];
+			const [trans, more] = data as [Transaction[], boolean];
 			trans.forEach((t) => {
 				t.date = addDays(
 					new Date(new Date(t.date).toUTCString().split(' ').slice(0, 4).join(' ')),
 					0,
 				);
 			});
-			return trans.sort((a, b) => (a.date > b.date ? -1 : 1));
+			return [trans.sort((a, b) => (a.date > b.date ? -1 : 1)), more];
 		},
 	);
 }
