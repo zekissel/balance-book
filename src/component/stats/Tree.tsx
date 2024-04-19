@@ -1,11 +1,14 @@
 import ReactECharts from 'echarts-for-react';
 import { Transaction } from '../../typedef';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 interface GraphProps {
 	transactions: Transaction[];
 }
 export default function Tree({ transactions }: GraphProps) {
+	const [full, setFull] = useState(false);
+	const toggleFull = () => setFull(!full);
+
 	const incomeTotals = useMemo(() => {
 		const totals: { [key: string]: number } = {};
 		transactions
@@ -144,25 +147,30 @@ export default function Tree({ transactions }: GraphProps) {
 			},
 			legend: {
 				top: 5,
-				right: 3,
+				right: full ? 450 : 3,
 				orient: 'vertical',
 				data: [
 					{
 						name: 'expense',
 						icon: 'rectangle',
-						itemStyle: { color: `#d1b690` },
+						itemStyle: { color: full ? `#edd9be`: `#d1b690` },
 					},
 					{
 						name: 'income',
 						icon: 'rectangle',
-						itemStyle: { color: `#739d88` },
+						itemStyle: { color: full ? `#99deb5` : `#739d88` },
 					},
 				],
 				borderColor: '#c23531',
 			},
 			title: {
 				text: 'Allocation by Store',
-				top: 5,
+				left: full ? 'center' : 'left',
+				top: full ? 15 : 0,
+				textStyle: {
+					color: full ? '#fff' : '#494949',
+					fontSize: full ? 24 : 18,
+				},
 			},
 			series: [
 				{
@@ -181,6 +189,8 @@ export default function Tree({ transactions }: GraphProps) {
 						position: 'top',
 						verticalAlign: 'middle',
 						align: 'right',
+						color: full ? '#edd9be' : '#333',
+						fontSize: full ? 16 : 12,
 					},
 
 					leaves: {
@@ -216,6 +226,8 @@ export default function Tree({ transactions }: GraphProps) {
 						position: 'top',
 						verticalAlign: 'middle',
 						align: 'right',
+						color: full ? '#99deb5' : '#333',
+						fontSize: full ? 16 : 12,
 					},
 
 					leaves: {
@@ -237,11 +249,12 @@ export default function Tree({ transactions }: GraphProps) {
 				},
 			],
 		};
-	}, [data, data2]);
+	}, [data, data2, full]);
+
 
 	return (
-		<div className="stats-graph">
-			<ReactECharts option={option} />
+		<div className={"stats-graph" + (full ? ' graph-fullscreen' : '')} onDoubleClick={toggleFull}>
+			<ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
 		</div>
 	);
 }

@@ -123,7 +123,7 @@ export default function StatsInfo({ transactions, accounts }: StatsPageProps) {
 					})
 					.map((s) => {
 						return (
-							<li className={categoryStats[s].total > 0 ? 'info-inc' : 'info-exp'}>
+							<li key={s} className={categoryStats[s].total > 0 ? 'info-inc' : 'info-exp'}>
 								<h5>{s.replace('Income', '')}</h5>
 								<span> {categoryStats[s].count}</span>
 								<span>

@@ -1,12 +1,15 @@
 import ReactECharts from 'echarts-for-react';
 import { Transaction, Account } from '../../typedef';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 interface GraphProps {
 	transactions: Transaction[];
 	accounts: Account[];
 }
 export default function Sankey({ transactions, accounts }: GraphProps) {
+	const [full, setFull] = useState(false);
+	const toggleFull = () => setFull(!full);
+
 	const categoryTotals = useMemo(() => {
 		const totals: { [key: string]: number } = {};
 		transactions.forEach((t) => {
@@ -142,15 +145,20 @@ export default function Sankey({ transactions, accounts }: GraphProps) {
 	const option = {
 		title: {
 			text: 'Asset Allocation',
-			top: 5,
+			left: full ? 'center' : 'left',
+			top: full ? 15 : 0,
+			textStyle: {
+				color: full ? '#fff' : '#494949',
+				fontSize: full ? 24 : 18,
+			},
 		},
 		tooltip: {
 			trigger: 'item',
 			triggerOn: 'mousemove',
 			formatter: '<em>{b}</em> : <b>${c}</b>',
 		},
-		width: '75%',
-		height: '87%',
+		width: full ? '81%' : '75%',
+		height: full ? '75%' : '87%',
 		series: [
 			{
 				type: 'sankey',
@@ -158,14 +166,23 @@ export default function Sankey({ transactions, accounts }: GraphProps) {
 					focus: 'adjacency',
 				},
 				nodeAlign: 'right',
-				top: '10%',
+				top: full ? '16%': '10%',
 				left: '3%',
 				bottom: '5%',
+				label: {
+					color: full ? '#fff' : '#333',
+					fontSize: full ? 16 : 12,
+				},
+
 				data: nodes,
 				links: links,
 				lineStyle: {
 					color: 'source',
 					curveness: 0.4,
+					opacity: full ? .5 : 0.24,
+				},
+				itemStyle: {
+					opacity: full ? .85 : 0.68,
 				},
 				levels: [
 					{
@@ -204,8 +221,8 @@ export default function Sankey({ transactions, accounts }: GraphProps) {
 	};
 
 	return (
-		<div className="stats-graph">
-			<ReactECharts option={option} />
+		<div className={"stats-graph" + (full ? ' graph-fullscreen' : '')} onDoubleClick={toggleFull}>
+			<ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
 		</div>
 	);
 }

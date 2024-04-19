@@ -43,7 +43,7 @@ pub async fn fetch_transactions(token: Token, number: i16) -> Result<bool, ()> {
   let mut count = 1;
   let mut cursor: String = token.cursor.as_ref().unwrap_or(&"".to_owned()).to_string();
   while more {
-    print!("Fetching transactions: {:#?}", count);
+    println!("Fetching transactions: {:#?}", count);
     count += 1;
     match sync_transactions(&token.id, number, Some(&cursor)).await {
       Ok(mut d) => {

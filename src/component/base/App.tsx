@@ -85,7 +85,7 @@ function App() {
 
 		const transSyncDate = localStorage.getItem('sync.t.date');
 		const syncTrans = transSyncDate
-			? addHours(new Date(transSyncDate), 6) < new Date(new Date().toISOString().split('.')[0])
+			? addHours(new Date(transSyncDate), 4) < new Date(new Date().toISOString().split('.')[0])
 			: true;
 
 		const balSyncDate = localStorage.getItem('sync.b.date');
