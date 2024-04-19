@@ -46,7 +46,15 @@ export function addDays(date: Date, days: number) {
 }
 
 export function addHours(date: Date, hours: number) {
-	return new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours() + hours, 0, 0, 0);
+	return new Date(
+		date.getFullYear(),
+		date.getMonth(),
+		date.getDate(),
+		date.getHours() + hours,
+		0,
+		0,
+		0,
+	);
 }
 
 export async function getTransactions(

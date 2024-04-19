@@ -18,15 +18,18 @@ export default function Sankey({ transactions, accounts }: GraphProps) {
 	}, [transactions]);
 
 	const categories = useMemo(
-		() => Object.keys(categoryTotals).sort((a, b) => categoryTotals[a] - categoryTotals[b]
-	), [categoryTotals]);
+		() => Object.keys(categoryTotals).sort((a, b) => categoryTotals[a] - categoryTotals[b]),
+		[categoryTotals],
+	);
 
 	const isCycle = useMemo(() => {
 		let ret = false;
-		const transfers = transactions.filter(t => t.category.split('>').length > 1 && ['Transfer'].includes(t.category.split('>')[1]));
+		const transfers = transactions.filter(
+			(t) => t.category.split('>').length > 1 && ['Transfer'].includes(t.category.split('>')[1]),
+		);
 		const direction: { [key: string]: number } = {};
-		transfers.forEach(t => {
-			if (direction[t.account_id] === undefined) direction[t.account_id] = (t.amount > 0 ? 1 : -1);
+		transfers.forEach((t) => {
+			if (direction[t.account_id] === undefined) direction[t.account_id] = t.amount > 0 ? 1 : -1;
 			else if (direction[t.account_id] !== (t.amount > 0 ? 1 : -1)) ret = true;
 		});
 		return ret;
@@ -46,9 +49,11 @@ export default function Sankey({ transactions, accounts }: GraphProps) {
 			.concat(
 				categories
 					.filter(
-						(c) => c.split('>').length > 1 && !(isCycle ? ['Credit'] : ['Transfer', 'Credit']).includes(c.split('>')[1]),
+						(c) =>
+							c.split('>').length > 1 &&
+							!(isCycle ? ['Credit'] : ['Transfer', 'Credit']).includes(c.split('>')[1]),
 					)
-					.map((c) => new Object({ name: c})),
+					.map((c) => new Object({ name: c })),
 			);
 
 		return ret;
@@ -96,7 +101,11 @@ export default function Sankey({ transactions, accounts }: GraphProps) {
 			.forEach((t) => {
 				const acct = accounts.find((a) => a.id === t.account_id)!;
 
-				const link = connect.find((c: Link) => (c.value === Math.abs(t.amount / 100) && c.target.split('>')[1] === t.category.split('>')[1]));
+				const link = connect.find(
+					(c: Link) =>
+						c.value === Math.abs(t.amount / 100) &&
+						c.target.split('>')[1] === t.category.split('>')[1],
+				);
 				if (link) link.target = `${acct.account_type}:${acct.account_name}`;
 				else
 					connect.push(
@@ -107,8 +116,8 @@ export default function Sankey({ transactions, accounts }: GraphProps) {
 						}) as Link,
 					);
 			});
-			if (isCycle) {
-				transactions
+		if (isCycle) {
+			transactions
 				.filter(
 					(t) =>
 						t.category.split('>')[0] === 'Financial' &&
@@ -125,7 +134,7 @@ export default function Sankey({ transactions, accounts }: GraphProps) {
 						}) as Link,
 					);
 				});
-			}
+		}
 
 		return ret.concat(connect);
 	}, [transactions, categories, accounts]);

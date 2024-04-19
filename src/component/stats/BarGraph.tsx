@@ -42,7 +42,18 @@ export default function TotalGraph({ transactions, range, endDate }: GraphProps)
 
 	const option = {
 		color: ['#739d88'],
-		grid: { show: true, top: '13%', left: transactions.length === 0 ? 35 : Math.round(Math.max(...(Object.values(timeFrameTotals).map(v => Math.abs(v.total))))).toString().length * 12 + 10, },
+		grid: {
+			show: true,
+			top: '13%',
+			left:
+				transactions.length === 0
+					? 35
+					: Math.round(
+							Math.max(...Object.values(timeFrameTotals).map((v) => Math.abs(v.total))),
+						).toString().length *
+							12 +
+						10,
+		},
 		tooltip: {
 			trigger: 'axis',
 			axisPointer: { type: 'line' },
@@ -89,7 +100,10 @@ export default function TotalGraph({ transactions, range, endDate }: GraphProps)
 			text: 'Net Balance by Day',
 			top: 5,
 		},
-		width: Math.max(...(Object.values(timeFrameTotals).map(v => Math.abs(v.total)))) >= 10000 ? '87%' : '90%',
+		width:
+			Math.max(...Object.values(timeFrameTotals).map((v) => Math.abs(v.total))) >= 10000
+				? '87%'
+				: '90%',
 		height: range >= 100 ? '73%' : '78%',
 		dataZoom: { type: 'inside' },
 	};

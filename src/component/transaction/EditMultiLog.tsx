@@ -1,10 +1,5 @@
 import { useState, useMemo } from 'react';
-import {
-	Transaction,
-	IncomeLeaf,
-	ExpenseLeaf,
-	Account,
-} from '../../typedef';
+import { Transaction, IncomeLeaf, ExpenseLeaf, Account } from '../../typedef';
 import { invoke } from '@tauri-apps/api';
 import TreeSelect from '../template/TreeSelect';
 
@@ -15,7 +10,13 @@ interface EditMultiLogProps {
 	cancel: () => void;
 	refresh: () => void;
 }
-export default function EditMultiLog({ editLogs, logs, accounts, cancel, refresh }: EditMultiLogProps) {
+export default function EditMultiLog({
+	editLogs,
+	logs,
+	accounts,
+	cancel,
+	refresh,
+}: EditMultiLogProps) {
 	const [editCompany, setEditCompany] = useState<string>('');
 	const [editAmount, setEditAmount] = useState('0');
 	const [editCategory, setEditCategory] = useState<string[]>(['']);
@@ -50,7 +51,8 @@ export default function EditMultiLog({ editLogs, logs, accounts, cancel, refresh
 					editAmount !== '0'
 						? Math.round((Number(editAmount) + Number.EPSILON) * 100) * (isIncome ? 1 : -1)
 						: logs.find((l) => l.id === id)?.amount,
-				category: editCategory[0] !== '' ? editCategory[0] : logs.find((l) => l.id === id)?.category,
+				category:
+					editCategory[0] !== '' ? editCategory[0] : logs.find((l) => l.id === id)?.category,
 				date: editDate !== null ? editDate : logs.find((l) => l.id === id)?.date,
 				desc: editDesc !== '' ? editDesc : logs.find((l) => l.id === id)?.desc,
 				accountId: editAccount !== '' ? editAccount : logs.find((l) => l.id === id)?.account_id,
@@ -80,16 +82,15 @@ export default function EditMultiLog({ editLogs, logs, accounts, cancel, refresh
 
 	return (
 		<menu className="edit-multi-log">
-			<div className='multi-sep'>{' '}</div>
-			<div className='multi-sep'>
-				
+			<div className="multi-sep"> </div>
+			<div className="multi-sep">
 				<span>
 					Edit {editLogs.length}{' '}
 					{isIncome === true ? 'Income(s)' : isIncome === false ? 'Expense(s)' : 'Transactions'}
 				</span>
 			</div>
 
-			<div className='multi-sep'>
+			<div className="multi-sep">
 				<span>
 					<label htmlFor="edit-multi-co">Company: </label>
 					<input
@@ -113,17 +114,17 @@ export default function EditMultiLog({ editLogs, logs, accounts, cancel, refresh
 				</span>
 			</div>
 
-			<div className='multi-sep'>
-				<span className='multi-edit-adjust'>
+			<div className="multi-sep">
+				<span className="multi-edit-adjust">
 					<label htmlFor="edit-multi-ca">Category: </label>
-					{ isIncome !== undefined &&
+					{isIncome !== undefined && (
 						<TreeSelect
 							value={editCategory}
 							options={isIncome ? IncomeLeaf : ExpenseLeaf}
 							onChange={handleCategorySelect}
 							multi={false}
-							/>
-					}
+						/>
+					)}
 					{isIncome === undefined && (
 						<input
 							type="text"
@@ -149,7 +150,7 @@ export default function EditMultiLog({ editLogs, logs, accounts, cancel, refresh
 				</span>
 			</div>
 
-			<div className='multi-sep'>
+			<div className="multi-sep">
 				<span>
 					<label htmlFor="edit-multi-de">Description: </label>
 					<input
@@ -168,7 +169,7 @@ export default function EditMultiLog({ editLogs, logs, accounts, cancel, refresh
 							setEditAccount(e.target.value);
 						}}
 					>
-					<option value="">Select Account</option>
+						<option value="">Select Account</option>
 						{accounts.map((a, index) => (
 							<option key={index} value={String(a.id)}>
 								{a.account_type}:{a.account_name}
@@ -178,9 +179,9 @@ export default function EditMultiLog({ editLogs, logs, accounts, cancel, refresh
 				</span>
 			</div>
 
-			<div className='multi-sep'>
+			<div className="multi-sep">
 				<button onClick={handleSubmitEdit}>Submit</button>
-			
+
 				<button onClick={cancel}>
 					<img src="/x.svg" />
 				</button>

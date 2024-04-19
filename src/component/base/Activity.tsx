@@ -29,7 +29,7 @@ export default function Activity({
 	signalRefresh,
 	incRange,
 	setRange,
-	more
+	more,
 }: ActivityProps) {
 	/* filter transactions by object state (filter function declared in typedef) */
 	const [filterGUI, setFilterGUI] = useState(false);

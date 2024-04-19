@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-import {
-	Filter,
-	ExpenseLeaf,
-	IncomeLeaf,
-	Account,
-} from '../../typedef';
+import { Filter, ExpenseLeaf, IncomeLeaf, Account } from '../../typedef';
 import { addDays } from '../../typeassist';
 import '../../styles/Filter.css';
 import TreeSelect from './TreeSelect';
@@ -20,7 +15,6 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 	const toggleStartDate = () => setShowStartDate(!showStartDate);
 	const [showEndDate, setShowEndDate] = useState(filters.endDate !== null);
 	const toggleEndDate = () => setShowEndDate(!showEndDate);
-
 
 	const handleLowAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const am = e.target.value;
@@ -84,7 +78,7 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 	const voidCategory = () => {
 		setFilters({ ...filters, category: [] });
 		sessionStorage.removeItem('filter.category');
-	};/*
+	}; /*
 	const handleCategory = (e: any) => {
 		if (filters.category.includes(e.target.value)) {
 			const newCategories = filters.category.filter((c) => c !== e.target.value);
@@ -99,7 +93,7 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 	const handleCategory = (e: string[]) => {
 		setFilters({ ...filters, category: e });
 		sessionStorage.setItem('filter.category', e.join(' '));
-	}
+	};
 
 	const handleSource = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const sources = e.target.value.split(',');
@@ -111,7 +105,7 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 		//toggleAccounts();
 		setFilters({ ...filters, accounts: [] });
 		sessionStorage.removeItem('filter.accounts');
-	};/*
+	}; /*
 	const handleAccounts = (e: any) => {
 		if (filters.accounts.includes(e.target.value)) {
 			const newAccounts = filters.accounts.filter((a) => a !== e.target.value);
@@ -126,7 +120,7 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 	const handleAccounts = (e: string[]) => {
 		setFilters({ ...filters, accounts: e });
 		sessionStorage.setItem('filter.accounts', e.join(' '));
-	}
+	};
 	const excludeAccounts = () => {
 		if (filters.accounts.includes('X')) {
 			const no_ex = filters.accounts.filter((c) => c !== 'X');
@@ -206,18 +200,26 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 
 			<li>
 				<span className="filter-menu-heading">
-					<label>
-						Categories:{' '}
-					</label>
+					<label>Categories: </label>
 					<span className="category-img" onClick={voidCategory}>
 						<img src="/x.svg" />
 					</span>
 					<span className="category-img" onClick={excludeCategory}>
-						{filters.category.includes('X') ? <img src="/include.svg" /> : <img src="/exclude.svg" />}
+						{filters.category.includes('X') ? (
+							<img src="/include.svg" />
+						) : (
+							<img src="/exclude.svg" />
+						)}
 					</span>
 				</span>
-				
-				<TreeSelect value={filters.category} options={ExpenseLeaf} onChange={handleCategory} multi={true} option2={IncomeLeaf} />
+
+				<TreeSelect
+					value={filters.category}
+					options={ExpenseLeaf}
+					onChange={handleCategory}
+					multi={true}
+					option2={IncomeLeaf}
+				/>
 			</li>
 
 			<li>
@@ -236,18 +238,25 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 
 			<li>
 				<span className="filter-menu-heading">
-					<label>
-						Accounts:{' '}
-					</label>
+					<label>Accounts: </label>
 					<span className="category-img" onClick={voidAccounts}>
 						<img src="/x.svg" />
 					</span>
 					<span className="category-img" onClick={excludeAccounts}>
-						{filters.accounts.includes('X') ? <img src="/include.svg" /> : <img src="/exclude.svg" />}
+						{filters.accounts.includes('X') ? (
+							<img src="/include.svg" />
+						) : (
+							<img src="/exclude.svg" />
+						)}
 					</span>
 				</span>
-				
-				<TreeSelect value={filters.accounts} options={accounts} onChange={handleAccounts} multi={true} />
+
+				<TreeSelect
+					value={filters.accounts}
+					options={accounts}
+					onChange={handleAccounts}
+					multi={true}
+				/>
 			</li>
 
 			<li className="filter-menu-meta">

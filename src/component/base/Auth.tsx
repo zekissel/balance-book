@@ -91,7 +91,7 @@ export default function Auth({ verify, logout }: AuthProps) {
 	};
 
 	return (
-		<div className='no-auth'>
+		<div className="no-auth">
 			<Float />
 			<div className="auth-field">
 				<input

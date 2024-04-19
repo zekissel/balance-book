@@ -1,11 +1,6 @@
 import { invoke } from '@tauri-apps/api/tauri';
 import React, { useState, useMemo, useEffect } from 'react';
-import {
-	Transaction,
-	IncomeLeaf,
-	ExpenseLeaf,
-	Account,
-} from '../../typedef';
+import { Transaction, IncomeLeaf, ExpenseLeaf, Account } from '../../typedef';
 import TreeSelect from '../template/TreeSelect';
 
 interface EditLogProps {
@@ -35,7 +30,10 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 	);
 
 	const [isIncomeState, setIsIncomeState] = useState(isIncome);
-	useEffect(() => {setIsIncomeState(isIncome); if (!log) setCategory(['']) }, [isIncome]);
+	useEffect(() => {
+		setIsIncomeState(isIncome);
+		if (!log) setCategory(['']);
+	}, [isIncome]);
 
 	const accountError = useMemo(
 		() =>
@@ -140,8 +138,13 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 			</div>
 
 			<li className="new-trans-detail">
-				<TreeSelect value={category} options={isIncome ? IncomeLeaf : ExpenseLeaf} onChange={handleCategorySelect} multi={false} />
-				
+				<TreeSelect
+					value={category}
+					options={isIncome ? IncomeLeaf : ExpenseLeaf}
+					onChange={handleCategorySelect}
+					multi={false}
+				/>
+
 				<input
 					className="date-pick"
 					type="date"

@@ -41,11 +41,23 @@ export default function TotalGraph({ transactions, range, endDate }: GraphProps)
 	}, [range]);
 
 	const option = {
-		color: [transactions.filter(t => !['Transfer', 'Credit'].includes(t.category.split('>')[1])).length === 0 ? '#abc' : '#739d88'],
-		grid: { 
-			show: true, 
+		color: [
+			transactions.filter((t) => !['Transfer', 'Credit'].includes(t.category.split('>')[1]))
+				.length === 0
+				? '#abc'
+				: '#739d88',
+		],
+		grid: {
+			show: true,
 			top: '13%',
-			left: transactions.length === 0 ? 35 : Math.round(Math.max(...(Object.values(timeFrameTotals).map(v => Math.abs(v.total))))).toString().length * 12 + 10,
+			left:
+				transactions.length === 0
+					? 35
+					: Math.round(
+							Math.max(...Object.values(timeFrameTotals).map((v) => Math.abs(v.total))),
+						).toString().length *
+							12 +
+						10,
 		},
 		tooltip: {
 			trigger: 'axis',
@@ -93,7 +105,10 @@ export default function TotalGraph({ transactions, range, endDate }: GraphProps)
 			text: 'Net Balance by Day',
 			top: 5,
 		},
-		width: Math.max(...(Object.values(timeFrameTotals).map(v => Math.abs(v.total)))) >= 10000 ? '87%' : '90%',
+		width:
+			Math.max(...Object.values(timeFrameTotals).map((v) => Math.abs(v.total))) >= 10000
+				? '87%'
+				: '90%',
 		height: range >= 100 ? '73%' : '78%',
 		dataZoom: { type: 'inside' },
 	};

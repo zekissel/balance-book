@@ -105,7 +105,10 @@ export default function StatsPage({
 				<div className="stats-main-box-short">
 					<h3>
 						Net Balance:{' '}
-						<span id="stats-main-net" style={netBalance === 0 ? netNeutral : (netBalance > 0 ? netStyleProfit : netStyleLoss)}>
+						<span
+							id="stats-main-net"
+							style={netBalance === 0 ? netNeutral : netBalance > 0 ? netStyleProfit : netStyleLoss}
+						>
 							{netBalance >= 0
 								? `+$${(netBalance / 100).toFixed(2)}`
 								: `-$${(netBalance / -100).toFixed(2)}`}
@@ -138,7 +141,7 @@ export default function StatsPage({
 
 					<div className="stats-menu-sep">
 						<span></span>
-						<button onClick={toggleStats} id={!stats?'stats-b-adjust':'stats-b-adjust-less'}>
+						<button onClick={toggleStats} id={!stats ? 'stats-b-adjust' : 'stats-b-adjust-less'}>
 							<img src={stats ? '/bar.svg' : 'info.svg'} />
 						</button>
 					</div>
@@ -163,7 +166,11 @@ export default function StatsPage({
 					)}
 
 					<div className="stats-menu-sep">
-						<button onClick={() => {setHistoryGraphLine(!historyGraphLine)}}>
+						<button
+							onClick={() => {
+								setHistoryGraphLine(!historyGraphLine);
+							}}
+						>
 							<img src={historyGraphLine ? '/bar.svg' : 'line.svg'} />
 						</button>
 					</div>
@@ -239,7 +246,6 @@ export default function StatsPage({
 					<BoxPlot trans={transactions} isIncome={boxTypeInc} root={boxRoot} />
 
 					<div className="stats-menu-sep">
-
 						<div className="stats-category-radio">
 							<input
 								type="radio"
@@ -270,21 +276,25 @@ export default function StatsPage({
 						<span>
 							<select value={boxRoot ?? ''} onChange={(e) => setBoxRoot(e.target.value)}>
 								<option value={''}>All</option>
-								{ boxTypeInc ? 
-									getEnumKeys((IncomeRoot)).filter(k => usedRoots.includes(k)).map((key) => (
-										<option value={key} key={key}>{key}</option>
-									))
-									:
-									getEnumKeys(ExpenseRoot).filter(k => usedRoots.includes(k)).map((key) => (
-										<option value={key} key={key}>{key}</option>
-									))
-								}
+								{boxTypeInc
+									? getEnumKeys(IncomeRoot)
+											.filter((k) => usedRoots.includes(k))
+											.map((key) => (
+												<option value={key} key={key}>
+													{key}
+												</option>
+											))
+									: getEnumKeys(ExpenseRoot)
+											.filter((k) => usedRoots.includes(k))
+											.map((key) => (
+												<option value={key} key={key}>
+													{key}
+												</option>
+											))}
 							</select>
 						</span>
 					</div>
 				</div>
-
-				
 
 				<div className="stats-main-box-longer longer-flip">
 					{sankey && <Sankey transactions={transactions} accounts={accounts} />}

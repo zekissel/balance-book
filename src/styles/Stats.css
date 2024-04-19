@@ -70,7 +70,9 @@ div.stats-main-box-longer {
 	align-items: start;
 }
 
-div.longer-flip { align-items: end; }
+div.longer-flip {
+	align-items: end;
+}
 
 div.stats-main-box-shorter {
 	height: 17.8rem;
@@ -145,8 +147,6 @@ div.stats-menu-sep button:hover {
 	border-radius: 1vw;
 }
 
-
-
 div.dynamic-menu-main > button > input {
 	width: 2.5rem;
 	font-size: 20px;
@@ -156,11 +156,11 @@ div.dynamic-menu-main > button > input {
 
 button#stats-b-adjust {
 	position: relative;
-	bottom: .6rem;
+	bottom: 0.6rem;
 }
 button#stats-b-adjust-less {
 	position: relative;
-	bottom: -.2rem;
+	bottom: -0.2rem;
 }
 
 div.stats-stats {
@@ -169,8 +169,11 @@ div.stats-stats {
 	overflow: hidden;
 }
 
-div.stats-stats h4 { color: #2c2c2cee }
-div.stats-stats h4, div.stats-stats h5 {
+div.stats-stats h4 {
+	color: #2c2c2cee;
+}
+div.stats-stats h4,
+div.stats-stats h5 {
 	margin: 0;
 	padding-left: 5px;
 	text-align: left;
@@ -182,18 +185,21 @@ div.stats-stats ul {
 	overflow: hidden;
 	overflow-y: scroll;
 }
-div.stats-stats ul, div.stats-stats li {
+div.stats-stats ul,
+div.stats-stats li {
 	list-style: none;
 	padding: 0;
-	margin: .1rem .4rem;
+	margin: 0.1rem 0.4rem;
 	width: 98%;
 }
-li.info-placeholder { margin-top: 8rem; }
+li.info-placeholder {
+	margin-top: 8rem;
+}
 
 div.stats-stats li {
 	display: grid;
-	grid-template-columns: 1.5fr .4fr 1fr 1.2fr 1fr 1fr 1fr;
-	border-radius: .5rem;
+	grid-template-columns: 1.5fr 0.4fr 1fr 1.2fr 1fr 1fr 1fr;
+	border-radius: 0.5rem;
 	text-align: right;
 	height: 1.6rem;
 	font-size: 16px;
@@ -205,14 +211,14 @@ li.info-head span {
 	width: fit-content;
 	margin: 0 0 0 auto;
 
-	margin-top: .08rem;
-	border-radius: .5rem;
+	margin-top: 0.08rem;
+	border-radius: 0.5rem;
 }
 
 li.info-head h5 {
 	width: fit-content;
 	margin: 0 auto 0 0;
-	border-radius: .5rem;
+	border-radius: 0.5rem;
 }
 li.info-head h5:hover {
 	background-color: #d3d5d5;
@@ -222,10 +228,16 @@ li.info-head h5:hover {
 li.info-head span:hover {
 	background-color: #d3d5d5;
 	width: fit-content;
-	margin: .08rem 0 0 auto;
+	margin: 0.08rem 0 0 auto;
 	cursor: pointer;
 }
 
-li.info-inc { background-color: #c6e1d155; }
-li.info-exp { background-color: #f6d6aa33; }
-li.info-head { background-color: #c8cbc9; }
+li.info-inc {
+	background-color: #c6e1d155;
+}
+li.info-exp {
+	background-color: #f6d6aa33;
+}
+li.info-head {
+	background-color: #c8cbc9;
+}

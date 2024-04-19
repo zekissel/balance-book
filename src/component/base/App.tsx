@@ -46,49 +46,57 @@ function App() {
 	const signalRefreshAcct = () => setSignalAcct(!signalAcct);
 	const [signalTrans, setSignalTrans] = useState(false);
 	const signalRefreshTrans = () => setSignalTrans(!signalTrans);
-	
-	
+
 	const refreshTransactions = async () => {
-		const [trans, more] = await getTransactions(accounts.map((a) => a.id), transRange);
-		setTransactions(trans); 
+		const [trans, more] = await getTransactions(
+			accounts.map((a) => a.id),
+			transRange,
+		);
+		setTransactions(trans);
 		setMoreTrans(more);
 	};
 
 	const refreshAccounts = async () => {
-		if (user) {setAccounts(await getAccounts(user.id));}
+		if (user) {
+			setAccounts(await getAccounts(user.id));
+		}
 	};
 
-  const update = (refresh: () => void): (() => void) => {
+	const update = (refresh: () => void): (() => void) => {
 		const timeout = setTimeout(() => {
 			refresh();
 		}, 50);
-    return () => clearTimeout(timeout);
+		return () => clearTimeout(timeout);
 	};
-   
+
 	useEffect(() => {
 		const buffer = update(refreshAccounts);
-    return () => buffer();
+		return () => buffer();
 	}, [signalAcct]);
 
 	useEffect(() => {
 		const buffer = update(refreshTransactions);
-    return () => buffer();
-	}, [signalTrans]); 
+		return () => buffer();
+	}, [signalTrans]);
 
 	useEffect(() => {
 		localStorage.removeItem('link_token');
 		localStorage.removeItem('auth_state');
 
-    const transSyncDate = localStorage.getItem('sync.t.date');
-    const syncTrans = transSyncDate ? (addHours(new Date(transSyncDate), 6) < new Date(new Date().toISOString().split('.')[0])) : true;
+		const transSyncDate = localStorage.getItem('sync.t.date');
+		const syncTrans = transSyncDate
+			? addHours(new Date(transSyncDate), 6) < new Date(new Date().toISOString().split('.')[0])
+			: true;
 
-    const balSyncDate = localStorage.getItem('sync.b.date');
-    const syncBalance = balSyncDate ? new Date(balSyncDate) < new Date(new Date().toISOString().split('T')[0]) : true;
+		const balSyncDate = localStorage.getItem('sync.b.date');
+		const syncBalance = balSyncDate
+			? new Date(balSyncDate) < new Date(new Date().toISOString().split('T')[0])
+			: true;
 
 		if (user) {
 			if (syncTrans) invoke('sync_info', { userId: user.id, balance: syncBalance });
-      if (syncBalance) localStorage.setItem('sync.b.date', new Date().toISOString().split('T')[0]);
-      if (syncTrans) localStorage.setItem('sync.t.date', new Date().toISOString().split('.')[0]);
+			if (syncBalance) localStorage.setItem('sync.b.date', new Date().toISOString().split('T')[0]);
+			if (syncTrans) localStorage.setItem('sync.t.date', new Date().toISOString().split('.')[0]);
 
 			update(refreshAccounts);
 			update(refreshTransactions);
@@ -125,63 +133,65 @@ function App() {
 				<Routes>
 					<Route path="/" element={<Auth verify={verify} logout={logout} />} />
 
-          { user && <>
-					<Route element={<Nav />}>
-						<Route
-							path="/home"
-							element={<Home user={user!} accounts={accounts} transactions={transactions} />}
-						/>
-						<Route
-							path="/activity"
-							element={
-								<Activity
-									transactions={transactions}
-									accounts={accounts}
-									signalRefresh={signalRefreshTrans}
-									incRange={incrementRange}
-									setRange={setRange}
-									more={moreTrans}
+					{user && (
+						<>
+							<Route element={<Nav />}>
+								<Route
+									path="/home"
+									element={<Home user={user!} accounts={accounts} transactions={transactions} />}
 								/>
-							}
-						/>
-						<Route
-							path="/stats"
-							element={
-								<Stats
-									transactions={transactions}
-									accounts={accounts}
-									signalRefresh={signalRefreshTrans}
-									setRange={setRange}
+								<Route
+									path="/activity"
+									element={
+										<Activity
+											transactions={transactions}
+											accounts={accounts}
+											signalRefresh={signalRefreshTrans}
+											incRange={incrementRange}
+											setRange={setRange}
+											more={moreTrans}
+										/>
+									}
 								/>
-							}
-						/>
-						<Route
-							path="/assets"
-							element={
-								<Assets
-									user={user}
-									accounts={accounts}
-									transactions={transactions}
-									signalRefresh={signalRefreshAcct}
+								<Route
+									path="/stats"
+									element={
+										<Stats
+											transactions={transactions}
+											accounts={accounts}
+											signalRefresh={signalRefreshTrans}
+											setRange={setRange}
+										/>
+									}
 								/>
-							}
-						/>
-						<Route path="/market" element={<>work in progress</>} />
-						<Route
-							path="/profile"
-							element={
-								<Profile
-									user={user}
-									setUser={setUser}
-									logout={logout}
-									refreshAcct={signalRefreshAcct}
-									refreshTrans={signalRefreshTrans}
+								<Route
+									path="/assets"
+									element={
+										<Assets
+											user={user}
+											accounts={accounts}
+											transactions={transactions}
+											signalRefresh={signalRefreshAcct}
+										/>
+									}
 								/>
-              
-							}
-						/>
-						<Route path="/settings" element={<>work in progress</>} />
-					</Route></>}
+								<Route path="/market" element={<>work in progress</>} />
+								<Route
+									path="/profile"
+									element={
+										<Profile
+											user={user}
+											setUser={setUser}
+											logout={logout}
+											refreshAcct={signalRefreshAcct}
+											refreshTrans={signalRefreshTrans}
+										/>
+									}
+								/>
+								<Route path="/settings" element={<>work in progress</>} />
+							</Route>
+						</>
+					)}
 				</Routes>
 			</BrowserRouter>
 		</div>

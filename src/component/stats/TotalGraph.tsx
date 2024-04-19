@@ -8,10 +8,12 @@ interface GraphProps {
 export default function TotalGraph({ transactions }: GraphProps) {
 	const categoryTotals = useMemo(() => {
 		const totals: { [key: string]: number } = {};
-		transactions.filter(t => !['Transfer', 'Credit'].includes(t.category.split('>')[1])).forEach((t) => {
-			if (totals[t.category] === undefined) totals[t.category] = 0;
-			totals[t.category] += Math.round(t.amount / 100);
-		});
+		transactions
+			.filter((t) => !['Transfer', 'Credit'].includes(t.category.split('>')[1]))
+			.forEach((t) => {
+				if (totals[t.category] === undefined) totals[t.category] = 0;
+				totals[t.category] += Math.round(t.amount / 100);
+			});
 		totals;
 		return totals;
 	}, [transactions]);
@@ -59,12 +61,20 @@ export default function TotalGraph({ transactions }: GraphProps) {
 			text: 'Total Balance by Category',
 			top: 15,
 		},
-		width: Math.max(...(Object.values(categoryTotals).map(v => Math.abs(v)))) >= 10000 ? '87%' : '90%',
+		width:
+			Math.max(...Object.values(categoryTotals).map((v) => Math.abs(v))) >= 10000 ? '87%' : '90%',
 		height: '72%',
 		grid: {
 			top: 45,
 			// maximize graph space: 12px per digit + 10px padding
-			left: transactions.length === 0 ? 35 : Math.round(Math.max(...(Object.values(categoryTotals).map(v => Math.abs(v))))).toString().length * 12 + 10,
+			left:
+				transactions.length === 0
+					? 35
+					: Math.round(
+							Math.max(...Object.values(categoryTotals).map((v) => Math.abs(v))),
+						).toString().length *
+							12 +
+						10,
 		},
 		dataZoom: { type: 'inside' },
 		tooltip: {
