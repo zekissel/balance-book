@@ -192,11 +192,10 @@ li.info-placeholder { margin-top: 8rem; }
 
 div.stats-stats li {
 	display: grid;
-	grid-template-columns: 1.5fr .4fr 1.2fr 1fr 1fr 1fr;
+	grid-template-columns: 1.5fr .4fr 1fr 1.2fr 1fr 1fr 1fr;
 	border-radius: .5rem;
 	text-align: right;
 	height: 1.6rem;
-	padding-right: 5px;
 	font-size: 16px;
 }
 
