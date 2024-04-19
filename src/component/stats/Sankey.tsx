@@ -1,6 +1,7 @@
 import ReactECharts from 'echarts-for-react';
 import { Transaction, Account } from '../../typedef';
 import { useMemo, useState } from 'react';
+import ZoomChart from './ZoomChart';
 
 interface GraphProps {
 	transactions: Transaction[];
@@ -221,8 +222,8 @@ export default function Sankey({ transactions, accounts }: GraphProps) {
 	};
 
 	return (
-		<div className={"stats-graph" + (full ? ' graph-fullscreen' : '')} onDoubleClick={toggleFull}>
+		<ZoomChart full={full} toggleFull={toggleFull}>
 			<ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
-		</div>
+		</ZoomChart>
 	);
 }

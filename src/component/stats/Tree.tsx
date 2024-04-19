@@ -1,11 +1,13 @@
 import ReactECharts from 'echarts-for-react';
+import ZoomChart from './ZoomChart';
 import { Transaction } from '../../typedef';
 import { useMemo, useState } from 'react';
 
 interface GraphProps {
 	transactions: Transaction[];
 }
-export default function Tree({ transactions }: GraphProps) {
+export default function TreeAlt({ transactions }: GraphProps) {
+
 	const [full, setFull] = useState(false);
 	const toggleFull = () => setFull(!full);
 
@@ -253,8 +255,8 @@ export default function Tree({ transactions }: GraphProps) {
 
 
 	return (
-		<div className={"stats-graph" + (full ? ' graph-fullscreen' : '')} onDoubleClick={toggleFull}>
+		<ZoomChart full={full} toggleFull={toggleFull}>
 			<ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
-		</div>
+		</ZoomChart>
 	);
 }

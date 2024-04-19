@@ -1,19 +1,21 @@
 import ReactECharts from 'echarts-for-react';
 import { Transaction } from '../../typedef';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { addDays } from '../../typeassist';
+import ZoomChart from './ZoomChart';
 
 interface GraphProps {
 	transactions: Transaction[];
 	range: number;
 	endDate: Date;
+  typeLine: boolean;
 }
-export default function TotalGraph({ transactions, range, endDate }: GraphProps) {
-	interface SeriesDay {
-		date: Date;
-		total: number;
-	}
+export default function NetByDay({ transactions, range, endDate, typeLine }: GraphProps) {
 
+  const [full, setFull] = useState(false);
+	const toggleFull = () => setFull(!full);
+	
+  type SeriesDay = { date: Date; total: number; }
 	const timeFrameTotals = useMemo(() => {
 		const today = new Date(endDate.toDateString());
 		const totals: SeriesDay[] = Array.from({ length: range + 1 }, (_, i) => {
@@ -49,15 +51,15 @@ export default function TotalGraph({ transactions, range, endDate }: GraphProps)
 		],
 		grid: {
 			show: true,
-			top: '13%',
+			top: full ? '18%' :'13%',
 			left:
-				transactions.length === 0
+				full ? '15%' : (transactions.length === 0
 					? 35
 					: Math.round(
 							Math.max(...Object.values(timeFrameTotals).map((v) => Math.abs(v.total))),
 						).toString().length *
 							12 +
-						10,
+						10),
 		},
 		tooltip: {
 			trigger: 'axis',
@@ -77,45 +79,60 @@ export default function TotalGraph({ transactions, range, endDate }: GraphProps)
 			axisLabel: {
 				rotate: 20,
 				interval: xAxisInterval,
-				align: 'right',
+        color: full ? `#fff` : `#333`,
+        fontSize: full ? 16 : 12,
 			},
 			splitLine: { show: true, lineStyle: { color: '#ffffff' } },
 		},
 		yAxis: {
 			type: 'value',
 			splitLine: { show: true, lineStyle: { color: '#ffffff' } },
+      axisLabel: {
+        color: full ? `#fff` : `#333`,
+        fontSize: full ? 16 : 12,
+      },
 		},
 		series: [
 			{
 				data: timeFrameTotals.map(
-					(t) =>
+					(t, i) =>
 						new Object({
 							value: t.total,
+              itemStyle: {
+                color: typeLine ? '#739d88' : (transactions.length > 0 ? (t.total > 0 ? '#739d88' : '#f6d6aa') : '#abc'),
+              },
 							label: {
-								show: t.total !== 0,
+								show: range >= 24 ? (i % 2 == 0 && t.total !== 0) : (t.total !== 0),
 								position: t.total > 0 ? 'top' : 'bottom',
 								formatter: '${c}',
+                color: full ? `#fff` : `#333`,
+                fontSize: full ? 16 : 12,
 							},
 						}),
 				),
-				type: 'line',
+				type: typeLine ? 'line' : 'bar',
 			},
 		],
 		title: {
 			text: 'Net Balance by Day',
-			top: 5,
+			top: full ? 15 : 2,
+      left: full ? 'center' : 'left',
+      textStyle: {
+				color: full ? '#fff' : '#494949',
+				fontSize: full ? 24 : 18,
+			},
 		},
 		width:
-			Math.max(...Object.values(timeFrameTotals).map((v) => Math.abs(v.total))) >= 10000
+			full ? '75%' : (Math.max(...Object.values(timeFrameTotals).map((v) => Math.abs(v.total))) >= 10000
 				? '87%'
-				: '90%',
-		height: range >= 100 ? '73%' : '78%',
+				: '90%'),
+		height: full ? '70%' : (range >= 100 ? '73%' : '78%'),
 		dataZoom: { type: 'inside' },
 	};
 
 	return (
-		<div className="stats-graph">
-			<ReactECharts option={option} />
-		</div>
+		<ZoomChart full={full} toggleFull={toggleFull}>
+			<ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
+		</ZoomChart>
 	);
 }

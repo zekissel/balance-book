@@ -1,7 +1,7 @@
 import ReactECharts from 'echarts-for-react';
 import { Transaction } from '../../typedef';
-import { generateChartColor } from '../../typeassist';
 import { useMemo } from 'react';
+import { generateChartColor } from '../../typeassist';
 
 interface GraphProps {
 	transactions: Transaction[];

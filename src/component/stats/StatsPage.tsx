@@ -2,10 +2,9 @@ import { useMemo, useState } from 'react';
 import { Transaction, Account, getEnumKeys, ExpenseRoot, IncomeRoot } from '../../typedef';
 import TotalGraph from './TotalGraph';
 import PieGraph from './PieGraph';
-import LineGraph from './LineGraph';
-import BarGraph from './BarGraph';
+import NetByDay from './NetByDay';
 import Sankey from './Sankey';
-import TreeGraph from './TreeGraph';
+import TreeGraph from './TreeMap';
 import BoxPlot from './BoxPlot';
 import Tree from './Tree';
 import StatsInfo from './StatsInfo';
@@ -150,20 +149,7 @@ export default function StatsPage({
 
 			<div className="stats-main-row">
 				<div className="stats-main-box-longer">
-					{historyGraphLine && (
-						<LineGraph
-							transactions={transactions}
-							range={Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))}
-							endDate={endDate}
-						/>
-					)}
-					{!historyGraphLine && (
-						<BarGraph
-							transactions={transactions}
-							range={Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))}
-							endDate={endDate}
-						/>
-					)}
+					<NetByDay transactions={transactions} range={Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))} endDate={endDate} typeLine={historyGraphLine} />
 
 					<div className="stats-menu-sep">
 						<button
