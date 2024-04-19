@@ -59,10 +59,12 @@ export default function TotalGraph({ transactions }: GraphProps) {
 			text: 'Total Balance by Category',
 			top: 15,
 		},
-		width: '87%',
-		height: '70%',
+		width: Math.max(...(Object.values(categoryTotals).map(v => Math.abs(v)))) >= 10000 ? '87%' : '90%',
+		height: '72%',
 		grid: {
 			top: 45,
+			// maximize graph space: 12px per digit + 10px padding
+			left: transactions.length === 0 ? 35 : Math.round(Math.max(...(Object.values(categoryTotals).map(v => Math.abs(v))))).toString().length * 12 + 10,
 		},
 		dataZoom: { type: 'inside' },
 		tooltip: {

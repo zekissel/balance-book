@@ -8,6 +8,7 @@ import Sankey from './Sankey';
 import TreeGraph from './TreeGraph';
 import BoxPlot from './BoxPlot';
 import Tree from './Tree';
+import StatsInfo from './StatsInfo';
 
 interface StatsPageProps {
 	transactions: Transaction[];
@@ -97,6 +98,7 @@ export default function StatsPage({
 		localStorage.setItem('stats.categoryChartType', index.toString());
 	};
 
+	// MARK: RENDER
 	return (
 		<div className={showFilter ? 'main-down-shift page-main' : 'page-main'}>
 			<div className="stats-main-row">
@@ -132,16 +134,12 @@ export default function StatsPage({
 
 				<div className="stats-main-box-long">
 					{!stats && <TotalGraph transactions={transactions} />}
-					{stats && 
-						<div className='stats-graph'>
-							mean, median, mode, range, total, etc.
-						</div>
-					}
+					{stats && <StatsInfo transactions={transactions} accounts={accounts} />}
 
 					<div className="stats-menu-sep">
 						<span></span>
-						<button onClick={toggleStats} id={!stats?'stats-b-adjust':undefined}>
-							<img src={stats ? '/bar.svg' : 'list.svg'} />
+						<button onClick={toggleStats} id={!stats?'stats-b-adjust':'stats-b-adjust-less'}>
+							<img src={stats ? '/bar.svg' : 'info.svg'} />
 						</button>
 					</div>
 				</div>
@@ -290,12 +288,12 @@ export default function StatsPage({
 
 				<div className="stats-main-box-longer longer-flip">
 					{sankey && <Sankey transactions={transactions} accounts={accounts} />}
-					{!sankey && <Tree transactions={transactions} accounts={accounts} />}
+					{!sankey && <Tree transactions={transactions} />}
 
 					<div className="stats-menu-sep">
 						<span></span>
 						<button onClick={() => setSankey(!sankey)}>
-							<img src={sankey ? '/tree.svg' : 'line.svg'} />
+							<img src={sankey ? '/tree.svg' : 'sankey.svg'} />
 						</button>
 					</div>
 				</div>

@@ -1,15 +1,15 @@
 import ReactECharts from 'echarts-for-react';
-import { Transaction, Account } from '../../typedef';
+import { Transaction } from '../../typedef';
 import { useMemo } from 'react';
 
 interface GraphProps {
 	transactions: Transaction[];
-	accounts: Account[];
 }
-export default function Tree({ transactions, accounts }: GraphProps) {
-	const categoryTotals = useMemo(() => {
+export default function Tree({ transactions }: GraphProps) {
+
+	const incomeTotals = useMemo(() => {
 		const totals: { [key: string]: number } = {};
-		transactions.forEach((t) => {
+		transactions.filter(t => t.amount > 0).forEach((t) => {
 			if (totals[t.category] === undefined) totals[t.category] = 0;
 			totals[t.category] += Math.round(t.amount / 100);
 		});
@@ -17,254 +17,203 @@ export default function Tree({ transactions, accounts }: GraphProps) {
 		return totals;
 	}, [transactions]);
 
-	const categories = useMemo(
-		() => Object.keys(categoryTotals).sort((a, b) => categoryTotals[a] - categoryTotals[b]
-	), [categoryTotals]);
+	const incRoots = useMemo(() => {
+		const ret = Object.keys(incomeTotals).map((c) => c.split('>')[0].slice(0, 20));
+		return [...new Set(ret)];
+	}, [incomeTotals]);
 
-	const data = {
-		name: 'flare',
-		children: [
-			{
-				name: 'data',
-				children: [
-					{
-						name: 'converters',
-						children: [
-							{ name: 'Converters', value: 721 },
-							{ name: 'DelimitedTextConverter', value: 4294 }
-						]
-					},
-					{
-						name: 'DataUtil',
-						value: 3322
-					}
-				]
-			},
-			{
-				name: 'display',
-				children: [
-					{ name: 'DirtySprite', value: 8833 },
-					{ name: 'LineSprite', value: 1732 },
-					{ name: 'RectSprite', value: 3623 }
-				]
-			},
-			{
-				name: 'flex',
-				children: [{ name: 'FlareVis', value: 4116 }]
-			},
-			{
-				name: 'query',
-				children: [
-					{ name: 'AggregateExpression', value: 1616 },
-					{ name: 'And', value: 1027 },
-					{ name: 'Arithmetic', value: 3891 },
-					{ name: 'Average', value: 891 },
-					{ name: 'BinaryExpression', value: 2893 },
-					{ name: 'Comparison', value: 5103 },
-					{ name: 'CompositeExpression', value: 3677 },
-					{ name: 'Count', value: 781 },
-					{ name: 'DateUtil', value: 4141 },
-					{ name: 'Distinct', value: 933 },
-					{ name: 'Expression', value: 5130 },
-					{ name: 'ExpressionIterator', value: 3617 },
-					{ name: 'Fn', value: 3240 },
-					{ name: 'If', value: 2732 },
-					{ name: 'IsA', value: 2039 },
-					{ name: 'Literal', value: 1214 },
-					{ name: 'Match', value: 3748 },
-					{ name: 'Maximum', value: 843 },
-					{
-						name: 'methods',
-						children: [
-							{ name: 'add', value: 593 },
-							{ name: 'and', value: 330 },
-							{ name: 'average', value: 287 },
-							{ name: 'count', value: 277 },
-							{ name: 'distinct', value: 292 },
-							{ name: 'div', value: 595 },
-							{ name: 'eq', value: 594 },
-							{ name: 'fn', value: 460 },
-							{ name: 'gt', value: 603 },
-							{ name: 'gte', value: 625 },
-							{ name: 'iff', value: 748 },
-							{ name: 'isa', value: 461 },
-							{ name: 'lt', value: 597 },
-							{ name: 'lte', value: 619 },
-							{ name: 'max', value: 283 },
-							{ name: 'min', value: 283 },
-							{ name: 'mod', value: 591 },
-							{ name: 'mul', value: 603 },
-							{ name: 'neq', value: 599 },
-							{ name: 'not', value: 386 },
-							{ name: 'or', value: 323 },
-							{ name: 'orderby', value: 307 },
-							{ name: 'range', value: 772 },
-							{ name: 'select', value: 296 },
-							{ name: 'stddev', value: 363 },
-							{ name: 'sub', value: 600 },
-							{ name: 'sum', value: 280 },
-							{ name: 'update', value: 307 },
-							{ name: 'variance', value: 335 },
-							{ name: 'where', value: 299 },
-							{ name: 'xor', value: 354 },
-							{ name: '_', value: 264 }
-						]
-					},
-					{ name: 'Minimum', value: 843 },
-					{ name: 'Not', value: 1554 },
-					{ name: 'Or', value: 970 },
-					{ name: 'Query', value: 13896 },
-					{ name: 'Range', value: 1594 },
-					{ name: 'StringUtil', value: 4130 },
-					{ name: 'Sum', value: 791 },
-					{ name: 'Variable', value: 1124 },
-					{ name: 'Variance', value: 1876 },
-					{ name: 'Xor', value: 1101 }
-				]
-			},
-			{
-				name: 'scale',
-				children: [
-					{ name: 'IScaleMap', value: 2105 },
-					{ name: 'LinearScale', value: 1316 },
-					{ name: 'LogScale', value: 3151 },
-					{ name: 'OrdinalScale', value: 3770 },
-					{ name: 'QuantileScale', value: 2435 },
-					{ name: 'QuantitativeScale', value: 4839 },
-					{ name: 'RootScale', value: 1756 },
-					{ name: 'Scale', value: 4268 },
-					{ name: 'ScaleType', value: 1821 },
-					{ name: 'TimeScale', value: 5833 }
-				]
-			}
-		]
-	};
+	const incLeafs = useMemo(() => {
+		const ret = Object.keys(incomeTotals).filter(c => c.includes('>')).map((c) => c.split('>')[1] !== 'Other' ? c.split('>')[1] : c);
+		return [...new Set(ret)];
+	}, [incomeTotals]);
+
+	const expenseTotals = useMemo(() => {
+		const totals: { [key: string]: number } = {};
+		transactions.filter(t => t.amount < 0).forEach((t) => {
+			if (totals[t.category] === undefined) totals[t.category] = 0;
+			totals[t.category] += Math.round(t.amount / 100);
+		});
+		totals;
+		return totals;
+	}, [transactions]);
+
+	const expRoots = useMemo(() => {
+		const ret = Object.keys(expenseTotals).map((c) => c.split('>')[0].slice(0, 20));
+		return [...new Set(ret)];
+	}, [expenseTotals]);
+
+	const expLeafs = useMemo(() => {
+		const ret = Object.keys(expenseTotals).filter(c => c.includes('>')).map((c) => c.split('>')[1] !== 'Other' ? c.split('>')[1] : c);
+		return [...new Set(ret)];
+	}, [expenseTotals]);
+
+
+	const data = useMemo(() => {
+		return {
+			name: 'expense',
+			itemStyle: { color: `#f6d6aa` },
+			children: 
+				expRoots.map((r) => {
+					return {
+						name: r,
+						itemStyle: { color: `#f6d6aa` },
+						children: expLeafs.map((l) => {
+							if (l.includes('>') && l.split('>')[0] !== r)	return null;
+							const val = Math.abs(expenseTotals[!l.includes('>') ? `${r}>${l}` : `${l}`]) || 0;
+							if (val === 0) return null;
+							return {
+								name: l,
+								value: val,
+								itemStyle: { color: `#f6d6aa` },
+								children: transactions.filter(t => (t.category === (!l.includes('>') ? (`${r}>${l}`) : l))).map(t => {
+									return {
+										name: t.company,
+										value: Math.abs(t.amount / 100),
+										itemStyle: { color: `#f6d6aa` },
+									};
+								
+								})
+							};
+						}).filter((c) => c !== null) as any[],
+					};
+				}),
+			
+		}
+	}, [expRoots, expLeafs, expenseTotals]);
 	
-	var data2 = {
-		name: 'flare',
-		children: [
-			{
-				name: 'flex',
-				children: [{ name: 'FlareVis', value: 4116 }]
+	const data2 = useMemo(() => {
+		return {
+			name: 'income',
+			itemStyle: { color: `#739d88` },
+			children: 
+				incRoots.map((r) => {
+					return {
+						name: r,
+						itemStyle: { color: `#739d88` },
+						children: incLeafs.map((l) => {
+							if (l.includes('>') && l.split('>')[0] !== r)	return null;
+							const val = Math.abs(incomeTotals[`${r}>${l}`]) || 0;
+							if (val === 0) return null;
+							return {
+								name: l,
+								value: val,
+								itemStyle: { color: `#739d88` },
+									children: transactions.filter(t => (t.category === (!l.includes('>') ? (`${r}>${l}`) : l))).map(t => {
+										return {
+											name: t.company,
+											value: Math.abs(t.amount / 100),
+											itemStyle: { color: `#739d88` },
+										};
+									})
+							};
+						}).filter((c) => c !== null) as any[],
+					};
+				}),
+		}
+	}, [incRoots, incLeafs, incomeTotals]);
+
+	const option = useMemo(() =>{
+		return {
+			tooltip: {
+				trigger: 'item',
+				triggerOn: 'mousemove'
 			},
-			{
-				name: 'scale',
-				children: [
-					{ name: 'IScaleMap', value: 2105 },
-					{ name: 'LinearScale', value: 1316 },
-					{ name: 'LogScale', value: 3151 },
-					{ name: 'OrdinalScale', value: 3770 },
-					{ name: 'QuantileScale', value: 2435 },
-					{ name: 'QuantitativeScale', value: 4839 },
-					{ name: 'RootScale', value: 1756 },
-					{ name: 'Scale', value: 4268 },
-					{ name: 'ScaleType', value: 1821 },
-					{ name: 'TimeScale', value: 5833 }
-				]
+			legend: {
+				top: 5,
+				right: 3,
+				orient: 'vertical',
+				data: [
+					{
+						name: 'expense',
+						icon: 'rectangle',
+						itemStyle: { color: `#f6d6aa` },
+					},
+					{
+						name: 'income',
+						icon: 'rectangle',
+						itemStyle: { color: `#739d88` },
+					}
+				],
+				borderColor: '#c23531'
 			},
-			{
-				name: 'display',
-				children: [{ name: 'DirtySprite', value: 8833 }]
-			}
-		]
-	};
+			title: {
+				text: 'Allocation by Store',
+				top: 5,
+			},
+			series: [
+				{
+					type: 'tree',
+					name: 'expense',
+					data: [data],
 
-	const option = {
-    tooltip: {
-      trigger: 'item',
-      triggerOn: 'mousemove'
-    },
-    legend: {
-      top: '2%',
-      left: '3%',
-      orient: 'vertical',
-      data: [
-        {
-          name: 'tree1',
-          icon: 'rectangle'
-        },
-        {
-          name: 'tree2',
-          icon: 'rectangle'
-        }
-      ],
-      borderColor: '#c23531'
-    },
-    series: [
-      {
-        type: 'tree',
+					top: 35,
+					left: '8%',
+					bottom: 0,
+					right: '65%',
 
-        name: 'tree1',
+					symbolSize: 7,
 
-        data: [data],
+					label: {
+						position: 'top',
+						verticalAlign: 'middle',
+						align: 'right'
+					},
 
-        top: '5%',
-        left: '7%',
-        bottom: '2%',
-        right: '60%',
+					leaves: {
+						label: {
+							position: 'right',
+							verticalAlign: 'middle',
+							align: 'left'
+						}
+					},
 
-        symbolSize: 7,
+					emphasis: {
+						focus: 'descendant'
+					},
 
-        label: {
-          position: 'left',
-          verticalAlign: 'middle',
-          align: 'right'
-        },
+					expandAndCollapse: true,
 
-        leaves: {
-          label: {
-            position: 'right',
-            verticalAlign: 'middle',
-            align: 'left'
-          }
-        },
+					animationDuration: 550,
+					animationDurationUpdate: 750
+				},
+				{
+					type: 'tree',
+					name: 'income',
+					data: [data2],
 
-        emphasis: {
-          focus: 'descendant'
-        },
+					top: 42,
+					left: '59%',
+					bottom: -5,
+					right: '17%',
 
-        expandAndCollapse: true,
+					symbolSize: 7,
 
-        animationDuration: 550,
-        animationDurationUpdate: 750
-      },
-      {
-        type: 'tree',
-        name: 'tree2',
-        data: [data2],
+					label: {
+						position: 'top',
+						verticalAlign: 'middle',
+						align: 'right'
+					},
 
-        top: '20%',
-        left: '60%',
-        bottom: '22%',
-        right: '18%',
+					leaves: {
+						label: {
+							position: 'right',
+							verticalAlign: 'middle',
+							align: 'left'
+						}
+					},
 
-        symbolSize: 7,
+					expandAndCollapse: true,
 
-        label: {
-          position: 'left',
-          verticalAlign: 'middle',
-          align: 'right'
-        },
+					emphasis: {
+						focus: 'descendant'
+					},
 
-        leaves: {
-          label: {
-            position: 'right',
-            verticalAlign: 'middle',
-            align: 'left'
-          }
-        },
-
-        expandAndCollapse: true,
-
-        emphasis: {
-          focus: 'descendant'
-        },
-
-        animationDuration: 550,
-        animationDurationUpdate: 750
-      }
-    ]
-  };
+					animationDuration: 550,
+					animationDurationUpdate: 750
+				}
+			]
+		};
+	}, [data, data2]);
 
 	return (
 		<div className="stats-graph">
