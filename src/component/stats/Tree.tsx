@@ -51,12 +51,14 @@ export default function Tree({ transactions }: GraphProps) {
 	const data = useMemo(() => {
 		return {
 			name: 'expense',
-			itemStyle: { color: `#f6d6aa` },
+			value: Object.keys(expenseTotals).reduce((acc, c) => acc + Math.abs(expenseTotals[c]), 0),
+			itemStyle: { color: `#d1b690` },
 			children: 
 				expRoots.map((r) => {
 					return {
 						name: r,
-						itemStyle: { color: `#f6d6aa` },
+						value: Object.keys(expenseTotals).filter((c) => c.split('>')[0] === r).reduce((acc, c) => acc + Math.abs(expenseTotals[c]), 0),
+						itemStyle: { color: `#d1b690` },
 						children: expLeafs.map((l) => {
 							if (l.includes('>') && l.split('>')[0] !== r)	return null;
 							const val = Math.abs(expenseTotals[!l.includes('>') ? `${r}>${l}` : `${l}`]) || 0;
@@ -64,12 +66,12 @@ export default function Tree({ transactions }: GraphProps) {
 							return {
 								name: l,
 								value: val,
-								itemStyle: { color: `#f6d6aa` },
+								itemStyle: { color: `#d1b690` },
 								children: transactions.filter(t => (t.category === (!l.includes('>') ? (`${r}>${l}`) : l))).map(t => {
 									return {
 										name: t.company,
 										value: Math.abs(t.amount / 100),
-										itemStyle: { color: `#f6d6aa` },
+										itemStyle: { color: `#d1b690` },
 									};
 								
 								})
@@ -84,11 +86,13 @@ export default function Tree({ transactions }: GraphProps) {
 	const data2 = useMemo(() => {
 		return {
 			name: 'income',
+			value: Object.keys(incomeTotals).reduce((acc, c) => acc + Math.abs(incomeTotals[c]), 0),
 			itemStyle: { color: `#739d88` },
 			children: 
 				incRoots.map((r) => {
 					return {
 						name: r,
+						value: Object.keys(incomeTotals).filter((c) => c.split('>')[0] === r).reduce((acc, c) => acc + Math.abs(incomeTotals[c]), 0),
 						itemStyle: { color: `#739d88` },
 						children: incLeafs.map((l) => {
 							if (l.includes('>') && l.split('>')[0] !== r)	return null;
@@ -126,7 +130,7 @@ export default function Tree({ transactions }: GraphProps) {
 					{
 						name: 'expense',
 						icon: 'rectangle',
-						itemStyle: { color: `#f6d6aa` },
+						itemStyle: { color: `#d1b690` },
 					},
 					{
 						name: 'income',

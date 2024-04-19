@@ -166,9 +166,67 @@ button#stats-b-adjust-less {
 div.stats-stats {
 	width: 100%;
 	height: 100%;
+	overflow: hidden;
 }
 
-div.stats-stats  h4 {
+div.stats-stats h4 { color: #2c2c2cee }
+div.stats-stats h4, div.stats-stats h5 {
 	margin: 0;
 	padding-left: 5px;
+	text-align: left;
+	overflow: hidden;
 }
+
+div.stats-stats ul {
+	height: 100%;
+	overflow: hidden;
+	overflow-y: scroll;
+}
+div.stats-stats ul, div.stats-stats li {
+	list-style: none;
+	padding: 0;
+	margin: .1rem .4rem;
+	width: 98%;
+}
+li.info-placeholder { margin-top: 8rem; }
+
+div.stats-stats li {
+	display: grid;
+	grid-template-columns: 1.5fr .4fr 1.2fr 1fr 1fr 1fr;
+	border-radius: .5rem;
+	text-align: right;
+	height: 1.6rem;
+	padding-right: 5px;
+	font-size: 16px;
+}
+
+li.info-head span {
+	font-weight: 550;
+	font-size: 14px;
+	width: fit-content;
+	margin: 0 0 0 auto;
+
+	margin-top: .08rem;
+	border-radius: .5rem;
+}
+
+li.info-head h5 {
+	width: fit-content;
+	margin: 0 auto 0 0;
+	border-radius: .5rem;
+}
+li.info-head h5:hover {
+	background-color: #d3d5d5;
+	cursor: pointer;
+}
+
+li.info-head span:hover {
+	background-color: #d3d5d5;
+	width: fit-content;
+	margin: .08rem 0 0 auto;
+	cursor: pointer;
+}
+
+li.info-inc { background-color: #c6e1d155; }
+li.info-exp { background-color: #f6d6aa33; }
+li.info-head { background-color: #c8cbc9; }

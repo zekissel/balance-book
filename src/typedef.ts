@@ -56,7 +56,7 @@ export const IncomeLeaf = {
 	Salary: ['Monthly', 'Bi-Weekly', 'Weekly', 'Other'],
 	SideJob: ['Gig', 'Freelance', 'Other'],
 	FinanceIncome: ['Transfer', 'Credit', 'Interest', 'Other'],
-	OtherIncome: ['Reimbursement', 'Gifts', 'Other'],
+	OtherIncome: ['Reimbursement', 'Refund', 'Gifts', 'Other'],
 };
 
 export type Category = `${IncomeRoot | ExpenseRoot}>${string}`;

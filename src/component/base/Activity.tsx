@@ -126,6 +126,7 @@ export default function Activity({
 					incRange={incRange}
 					signalRefresh={signalRefresh}
 					more={more}
+					restrictAcct={filters.accounts.length > 0}
 				/>
 			) : (
 				<Calendar

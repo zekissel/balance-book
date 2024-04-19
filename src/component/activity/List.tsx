@@ -13,6 +13,7 @@ interface ListProps {
 	incRange: () => void;
 	signalRefresh: () => void;
 	more: boolean;
+	restrictAcct: boolean;
 }
 export default function List({
 	transactions,
@@ -22,6 +23,7 @@ export default function List({
 	incRange,
 	signalRefresh,
 	more,
+	restrictAcct,
 }: ListProps) {
 
 	const [sortBy, setSortBy] = useState('date');
@@ -34,29 +36,31 @@ export default function List({
 	}
 
 	const logs = useMemo(() => {
-		let ret = transactions.filter((t) => !['Transfer', 'Credit'].includes(t.category.split('>')[1]));
-		const rela = transactions.filter((t) => ['Transfer', 'Credit'].includes(t.category.split('>')[1]));
-		
-		const rel = rela.map((t) => {
-			const amt = t.amount;
-			const rel_t = rela.find((rt) => rt.amount === -amt);
-			if (rel_t) {
-				const acct = accounts.find(a => a.id === rel_t.account_id);
-				rela.splice(rela.indexOf(rel_t), 1);
-				return {
-					id: t.id,
-					date: t.date,
-					amount: amt,
-					category: t.category,
-					desc: t.desc,
-					account_id: t.account_id,
-					company: acct ? `${acct.account_type.slice(0, 5)}:${acct.account_name}` : t.company,
-				} as Transaction;
-			}
-			return null;
-		}).filter((t) => t !== null) as Transaction[];
+		let ret = restrictAcct ? transactions : transactions.filter((t) => !['Transfer', 'Credit'].includes(t.category.split('>')[1]));
 
-		ret = ret.concat(rel)
+		if (!restrictAcct) {
+			const rela = transactions.filter((t) => ['Transfer', 'Credit'].includes(t.category.split('>')[1]));
+			const rel = rela.map((t) => {
+				const amt = t.amount;
+				const rel_t = rela.find((rt) => rt.amount === -amt);
+				if (rel_t) {
+					const acct = accounts.find(a => a.id === rel_t.account_id);
+					rela.splice(rela.indexOf(rel_t), 1);
+					return {
+						id: t.id,
+						date: t.date,
+						amount: amt,
+						category: t.category,
+						desc: t.desc,
+						account_id: t.account_id,
+						company: acct ? `${acct.account_type.slice(0, 5)}:${acct.account_name}` : t.company,
+					} as Transaction;
+				}
+				return null;
+			}).filter((t) => t !== null) as Transaction[];
+			ret = ret.concat(rel)
+		}
+
 		ret = ret.sort((a, b) => {
 			switch (sortBy) {
 				case 'date': return b.date.getTime() - a.date.getTime()
