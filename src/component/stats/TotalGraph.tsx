@@ -1,11 +1,17 @@
 import ReactECharts from 'echarts-for-react';
 import { Transaction } from '../../typedef';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import ZoomChart from './ZoomChart';
+import { titleOptions } from './common_chart';
 
 interface GraphProps {
 	transactions: Transaction[];
 }
 export default function TotalGraph({ transactions }: GraphProps) {
+
+	const [full, setFull] = useState(false);
+	const toggleFull = () => setFull(!full);
+
 	const categoryTotals = useMemo(() => {
 		const totals: { [key: string]: number } = {};
 		transactions
@@ -31,7 +37,17 @@ export default function TotalGraph({ transactions }: GraphProps) {
 						new Object({
 							value: t,
 							itemStyle: { color: t > 0 ? '#739d88' : '#D8AA69' },
-							label: { show: true, position: t >= 0 ? 'top' : 'bottom', formatter: '${c}' },
+							label: { 
+								show: true, 
+								position: t >= 0 ? 'top' : 'bottom', 
+								formatter: '${c}',
+								color: full ? `#fff` : `#333`,
+								textBorderColor: full ? '#000' : '#fff',
+								textBorderType: 'solid',
+								textBorderWidth: 1,
+                fontSize: full ? 16 : 12,
+							},
+							
 						}),
 				),
 		[categoryTotals],
@@ -42,13 +58,20 @@ export default function TotalGraph({ transactions }: GraphProps) {
 			type: 'category',
 			data: categories,
 			axisLabel: {
-				rotate: 28,
-				show: false,
+				rotate: 20,
+				show: full,
+        color: full ? `#fff` : `#333`,
+        fontSize: full ? 16 : 12,
 			},
+			axisLine: { lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
 		},
 		yAxis: {
 			type: 'value',
-			splitLine: { show: true, lineStyle: { color: '#ffffff' } },
+			splitLine: { show: true, lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
+			axisLabel: {
+        color: full ? `#fff` : `#333`,
+        fontSize: full ? 16 : 12,
+			},
 		},
 		series: [
 			{
@@ -57,24 +80,21 @@ export default function TotalGraph({ transactions }: GraphProps) {
 				itemStyle: { color: '#739d88' },
 			},
 		],
-		title: {
-			text: 'Total Balance by Category',
-			top: 15,
-		},
-		width:
-			Math.max(...Object.values(categoryTotals).map((v) => Math.abs(v))) >= 10000 ? '87%' : '90%',
-		height: '72%',
+		title: titleOptions('Total Balance by Category', full),
+		width: full ? '85%' : 
+			(Math.max(...Object.values(categoryTotals).map((v) => Math.abs(v))) >= 10000 ? '87%' : '90%'),
+		height: full ? '72%' : '77%',
 		grid: {
-			top: 45,
+			top: full ? 120 : 45,
 			// maximize graph space: 12px per digit + 10px padding
-			left:
-				transactions.length === 0
+			left: full ? 130 :
+				(transactions.length === 0
 					? 35
 					: Math.round(
 							Math.max(...Object.values(categoryTotals).map((v) => Math.abs(v))),
 						).toString().length *
 							12 +
-						10,
+						10),
 		},
 		dataZoom: { type: 'inside' },
 		tooltip: {
@@ -85,8 +105,8 @@ export default function TotalGraph({ transactions }: GraphProps) {
 	};
 
 	return (
-		<div className="stats-graph">
-			<ReactECharts option={option} />
-		</div>
+		<ZoomChart full={full} toggleFull={toggleFull}>
+			<ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
+		</ZoomChart>
 	);
 }

@@ -1,7 +1,9 @@
 import ReactECharts from 'echarts-for-react';
 import { Transaction } from '../../typedef';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { generateChartColor } from '../../typeassist';
+import ZoomChart from './ZoomChart';
+import { titleOptions } from './common_chart';
 
 interface GraphProps {
 	trans: Transaction[];
@@ -9,6 +11,10 @@ interface GraphProps {
 	income: boolean;
 }
 export default function TreeMap({ trans, treemap, income }: GraphProps) {
+
+	const [full, setFull] = useState(false);
+	const toggleFull = () => setFull(!full);
+
 	const transactions = useMemo(() => {
 		return trans.filter(
 			(t) => t.category.includes('>') && !['Transfer', 'Credit'].includes(t.category.split('>')[1]),
@@ -67,14 +73,11 @@ export default function TreeMap({ trans, treemap, income }: GraphProps) {
 	}, [categoryTotals, trunkTotals]);
 
 	const treemapOption = {
-		title: {
-			text: `${income ? 'Income' : 'Expense'} Total by Category`,
-			y: 10,
-		},
+		title: titleOptions(`${income ? 'Income' : 'Expense'} Total by Category`, full),
 		series: [
 			{
 				type: 'treemap',
-				top: 35,
+				top: full ? 100 : 35,
 				animationDurationUpdate: 1000,
 				roam: false,
 				nodeClick: 'zoomToNode',
@@ -83,6 +86,7 @@ export default function TreeMap({ trans, treemap, income }: GraphProps) {
 				label: {
 					show: true,
 					color: '#222',
+					fontSize: full ? 16 : 12,
 					formatter: '{b}: ${c}',
 				},
 				breadcrumb: {
@@ -96,15 +100,12 @@ export default function TreeMap({ trans, treemap, income }: GraphProps) {
 		},
 	};
 	const sunburstOption = {
-		title: {
-			text: `${income ? 'Income' : 'Expense'} Total by Category`,
-			y: 10,
-		},
+		title: titleOptions(`${income ? 'Income' : 'Expense'} Total by Category`, full),
 		series: [
 			{
 				type: 'sunburst',
 				radius: ['15%', '82%'],
-				center: ['50%', '56%'],
+				center: ['50%', full ? '50%' : '56%'],
 				animationDurationUpdate: 1000,
 				nodeClick: 'rootToNode',
 				data: data,
@@ -115,6 +116,7 @@ export default function TreeMap({ trans, treemap, income }: GraphProps) {
 				},
 				label: {
 					show: true,
+					fontSize: full ? 16 : 12,
 					rotate: 0,
 					formatter: '{b}',
 				},
@@ -131,8 +133,8 @@ export default function TreeMap({ trans, treemap, income }: GraphProps) {
 	}, [treemap, income, trans]);
 
 	return (
-		<div className="stats-graph">
-			<ReactECharts option={option} />
-		</div>
+		<ZoomChart full={full} toggleFull={toggleFull}>
+			<ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
+		</ZoomChart>
 	);
 }

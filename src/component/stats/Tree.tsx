@@ -2,6 +2,7 @@ import ReactECharts from 'echarts-for-react';
 import ZoomChart from './ZoomChart';
 import { Transaction } from '../../typedef';
 import { useMemo, useState } from 'react';
+import { titleOptions } from './common_chart';
 
 interface GraphProps {
 	transactions: Transaction[];
@@ -166,15 +167,7 @@ export default function TreeAlt({ transactions }: GraphProps) {
 				],
 				borderColor: '#c23531',
 			},
-			title: {
-				text: 'Allocation by Store',
-				left: full ? 'center' : 'left',
-				top: full ? 15 : 0,
-				textStyle: {
-					color: full ? '#fff' : '#494949',
-					fontSize: full ? 24 : 18,
-				},
-			},
+			title: titleOptions('Allocation by Store', full),
 			series: [
 				{
 					type: 'tree',

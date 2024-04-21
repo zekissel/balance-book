@@ -1,6 +1,8 @@
 import ReactECharts from 'echarts-for-react';
 import { Transaction } from '../../typedef';
 import { useMemo, useState } from 'react';
+import ZoomChart from './ZoomChart';
+import { titleOptions } from './common_chart';
 
 interface GraphProps {
 	trans: Transaction[];
@@ -8,6 +10,10 @@ interface GraphProps {
 	root: string | null;
 }
 export default function BoxPlot({ trans, isIncome, root }: GraphProps) {
+
+	const [full, setFull] = useState(false);
+	const toggleFull = () => setFull(!full);
+
 	const transactions = useMemo(() => {
 		return (
 			isIncome ? trans.filter((t) => t.amount > 0) : trans.filter((t) => t.amount < 0)
@@ -81,14 +87,8 @@ export default function BoxPlot({ trans, isIncome, root }: GraphProps) {
 	}, [transactions, categories, root]);
 
 	const option = {
-		title: {
-			text: `${isIncome ? 'Income' : 'Expense'} Spread by Category`,
-			top: 10,
-		},
-		tooltip: {
-			trigger: 'axis',
-			axisPointer: { type: 'shadow' },
-		},
+		title: titleOptions(`${isIncome ? 'Income' : 'Expense'} Spread by Category`, full),
+		height: full ? '70%' : '83%',
 		grid: {
 			left: '14%',
 			right: '11%',
@@ -98,17 +98,28 @@ export default function BoxPlot({ trans, isIncome, root }: GraphProps) {
 		yAxis: {
 			type: 'category',
 			data: Object.keys(categoryTotals).map((c) => new Object({ value: c.slice(0, 9) })),
-			splitLine: {
-				show: false,
+			splitLine: { show: false, },
+			axisLabel: {
+        color: full ? `#fff` : `#333`,
+        fontSize: full ? 16 : 12,
 			},
 		},
 		xAxis: {
 			type: 'value',
 			name: 'Dollars',
+			nameTextStyle: {
+				color: full ? `#fff` : `#333`,
+				fontSize: full ? 16 : 12,
+			},
 			nameLocation: 'end',
 			splitArea: {
 				show: true,
 			},
+			axisLabel: {
+        color: full ? `#fff` : `#333`,
+        fontSize: full ? 16 : 12,
+			},
+			splitLine: { show: full, lineStyle: { color: '#ffffff44' } },
 		},
 		series: [
 			{
@@ -116,8 +127,8 @@ export default function BoxPlot({ trans, isIncome, root }: GraphProps) {
 				type: 'boxplot',
 				data: source,
 				itemStyle: {
-					color: isIncome ? '#739d8877' : '#D8AA6977',
-					borderColor: isIncome ? '#405c4e' : '#635645',
+					color: full ? (isIncome ? '#99deb577' : '#f6d6aa77') :(isIncome ? '#739d8877' : '#D8AA6977'),
+					borderColor: full ? (isIncome ? '#a7e8c1' : '#e3cbaa') :(isIncome ? '#405c4e' : '#635645'),
 				},
 			},
 			{
@@ -125,18 +136,24 @@ export default function BoxPlot({ trans, isIncome, root }: GraphProps) {
 				type: 'scatter',
 				data: outliers,
 				itemStyle: {
-					color: isIncome ? '#405c4e' : '#69553b',
+					color: full ? (isIncome ? '#a7e8c1' : '#e3cbaa') :(isIncome ? '#405c4e' : '#635645'),
 				},
 			},
 		],
 		dataZoom: {
 			type: 'inside',
 		},
+		tooltip: {
+			trigger: 'axis',
+			axisPointer: { type: 'shadow' },
+			//formatter: '{b}: <br />Low: ${d[0]} <br />Q1: ${c[1]} <br />Median: ${c[2]} <br />Q3: ${c[3]} <br />High: ${c[4]}',
+		},
 	};
 
+
 	return (
-		<div className="stats-graph">
-			<ReactECharts option={option} />
-		</div>
+		<ZoomChart full={full} toggleFull={toggleFull}>
+			<ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
+		</ZoomChart>
 	);
 }

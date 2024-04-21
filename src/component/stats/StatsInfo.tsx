@@ -6,6 +6,10 @@ interface StatsPageProps {
 	accounts: Account[];
 }
 export default function StatsInfo({ transactions, accounts }: StatsPageProps) {
+
+	const [full, setFull] = useState(false);
+	const toggleFull = () => setFull(!full);
+
 	type stat = { avg: number; total: number; count: number; max: number; med: number; min: number };
 	interface catStat {
 		[key: string]: stat;
@@ -54,114 +58,114 @@ export default function StatsInfo({ transactions, accounts }: StatsPageProps) {
 	};
 
 	return (
-		<div className="stats-stats">
-			<h4>Statistics by Category</h4>
+			<div className={"stats-stats" + (full ? ' graph-fullscreen' : '')} onDoubleClick={toggleFull}>
+				<h4>Statistics by Category</h4>
 
-			<li className="info-head">
-				<h5 onClick={() => handleSort('category')}>Category</h5>
-				<span onClick={() => handleSort('count')}>Count</span>
-				<span onClick={() => handleSort('total')}>Total</span>
-				<span onClick={() => handleSort('avg')}>Avg</span>
-				<span onClick={() => handleSort('min')}>Min</span>
-				<span onClick={() => handleSort('med')}>Median</span>
-				<span onClick={() => handleSort('max')}>Max</span>
-			</li>
+				<li className="info-head">
+					<h5 onClick={() => handleSort('category')}>Category</h5>
+					<span onClick={() => handleSort('count')}>Count</span>
+					<span onClick={() => handleSort('total')}>Total</span>
+					<span onClick={() => handleSort('avg')}>Avg</span>
+					<span onClick={() => handleSort('min')}>Min</span>
+					<span onClick={() => handleSort('med')}>Median</span>
+					<span onClick={() => handleSort('max')}>Max</span>
+				</li>
 
-			<ul>
-				{Object.keys(categoryStats)
-					.sort((a, b) => {
-						switch (sortBy) {
-							case 'category':
-								return a.localeCompare(b);
-							case '!category':
-								return b.localeCompare(a);
-							case 'total':
-								return categoryStats[b].total - categoryStats[a].total;
-							case '!total':
-								return categoryStats[a].total - categoryStats[b].total;
-							case 'avg':
-								return categoryStats[b].avg - categoryStats[a].avg;
-							case '!avg':
-								return categoryStats[a].avg - categoryStats[b].avg;
-							case 'max':
-								return (
-									(categoryStats[b].total < 0 ? -1 : 1) * categoryStats[b].max -
-									(categoryStats[a].total < 0 ? -1 : 1) * categoryStats[a].max
-								);
-							case '!max':
-								return (
-									(categoryStats[a].total < 0 ? -1 : 1) * categoryStats[a].max -
-									(categoryStats[b].total < 0 ? -1 : 1) * categoryStats[b].max
-								);
-							case 'min':
-								return (
-									(categoryStats[b].total < 0 ? -1 : 1) * categoryStats[b].min -
-									(categoryStats[a].total < 0 ? -1 : 1) * categoryStats[a].min
-								);
-							case '!min':
-								return (
-									(categoryStats[a].total < 0 ? -1 : 1) * categoryStats[a].min -
-									(categoryStats[b].total < 0 ? -1 : 1) * categoryStats[b].min
-								);
-							case 'med':
-								return (
-									(categoryStats[b].total < 0 ? -1 : 1) * categoryStats[b].med -
-									(categoryStats[a].total < 0 ? -1 : 1) * categoryStats[a].med
-								);
-							case '!med':
-								return (
-									(categoryStats[a].total < 0 ? -1 : 1) * categoryStats[a].med -
-									(categoryStats[b].total < 0 ? -1 : 1) * categoryStats[b].med
-								);
-							case 'count':
-								return categoryStats[b].count - categoryStats[a].count;
-							case '!count':
-								return categoryStats[a].count - categoryStats[b].count;
-							default:
-								return categoryStats[b].count - categoryStats[a].count;
-						}
-					})
-					.map((s) => {
-						return (
-							<li key={s} className={categoryStats[s].total > 0 ? 'info-inc' : 'info-exp'}>
-								<h5>{s.replace('Income', '')}</h5>
-								<span> {categoryStats[s].count}</span>
-								<span>
-									{' '}
-									{categoryStats[s].total > 0 ? '+$' : '-$'}
-									{Math.round(Math.abs(categoryStats[s].total / 100))}
-								</span>
-								<span>
-									{' '}
-									{categoryStats[s].total > 0 ? '+$' : '-$'}
-									{Math.abs(categoryStats[s].avg / 100).toFixed(2)}
-								</span>
+				<ul>
+					{Object.keys(categoryStats)
+						.sort((a, b) => {
+							switch (sortBy) {
+								case 'category':
+									return a.localeCompare(b);
+								case '!category':
+									return b.localeCompare(a);
+								case 'total':
+									return categoryStats[b].total - categoryStats[a].total;
+								case '!total':
+									return categoryStats[a].total - categoryStats[b].total;
+								case 'avg':
+									return categoryStats[b].avg - categoryStats[a].avg;
+								case '!avg':
+									return categoryStats[a].avg - categoryStats[b].avg;
+								case 'max':
+									return (
+										(categoryStats[b].total < 0 ? -1 : 1) * categoryStats[b].max -
+										(categoryStats[a].total < 0 ? -1 : 1) * categoryStats[a].max
+									);
+								case '!max':
+									return (
+										(categoryStats[a].total < 0 ? -1 : 1) * categoryStats[a].max -
+										(categoryStats[b].total < 0 ? -1 : 1) * categoryStats[b].max
+									);
+								case 'min':
+									return (
+										(categoryStats[b].total < 0 ? -1 : 1) * categoryStats[b].min -
+										(categoryStats[a].total < 0 ? -1 : 1) * categoryStats[a].min
+									);
+								case '!min':
+									return (
+										(categoryStats[a].total < 0 ? -1 : 1) * categoryStats[a].min -
+										(categoryStats[b].total < 0 ? -1 : 1) * categoryStats[b].min
+									);
+								case 'med':
+									return (
+										(categoryStats[b].total < 0 ? -1 : 1) * categoryStats[b].med -
+										(categoryStats[a].total < 0 ? -1 : 1) * categoryStats[a].med
+									);
+								case '!med':
+									return (
+										(categoryStats[a].total < 0 ? -1 : 1) * categoryStats[a].med -
+										(categoryStats[b].total < 0 ? -1 : 1) * categoryStats[b].med
+									);
+								case 'count':
+									return categoryStats[b].count - categoryStats[a].count;
+								case '!count':
+									return categoryStats[a].count - categoryStats[b].count;
+								default:
+									return categoryStats[b].count - categoryStats[a].count;
+							}
+						})
+						.map((s) => {
+							return (
+								<li key={s} className={categoryStats[s].total > 0 ? 'info-inc' : 'info-exp'}>
+									<h5>{s.replace('Income', '')}</h5>
+									<span> {categoryStats[s].count}</span>
+									<span>
+										{' '}
+										{categoryStats[s].total > 0 ? '+$' : '-$'}
+										{Math.round(Math.abs(categoryStats[s].total / 100))}
+									</span>
+									<span>
+										{' '}
+										{categoryStats[s].total > 0 ? '+$' : '-$'}
+										{Math.abs(categoryStats[s].avg / 100).toFixed(2)}
+									</span>
 
-								<span>
-									{' '}
-									{categoryStats[s].total > 0 ? '+$' : '-$'}
-									{Math.round(categoryStats[s].min / 100)}
-								</span>
-								<span>
-									{' '}
-									{categoryStats[s].total > 0 ? '+$' : '-$'}
-									{Math.round(Math.abs(categoryStats[s].med / 100))}
-								</span>
-								<span>
-									{' '}
-									{categoryStats[s].total > 0 ? '+$' : '-$'}
-									{Math.round(categoryStats[s].max / 100)}
-								</span>
-							</li>
-						);
-					})}
+									<span>
+										{' '}
+										{categoryStats[s].total > 0 ? '+$' : '-$'}
+										{Math.round(categoryStats[s].min / 100)}
+									</span>
+									<span>
+										{' '}
+										{categoryStats[s].total > 0 ? '+$' : '-$'}
+										{Math.round(Math.abs(categoryStats[s].med / 100))}
+									</span>
+									<span>
+										{' '}
+										{categoryStats[s].total > 0 ? '+$' : '-$'}
+										{Math.round(categoryStats[s].max / 100)}
+									</span>
+								</li>
+							);
+						})}
 
-				<li id="info-placeholder"></li>
-				<li id="info-placeholder"></li>
-			</ul>
+					<li id="info-placeholder"></li>
+					<li id="info-placeholder"></li>
+				</ul>
 
-			{transactions.length}
-			{accounts.length}
-		</div>
+				{transactions.length}
+				{accounts.length}
+			</div>
 	);
 }

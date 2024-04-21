@@ -2,6 +2,7 @@ import ReactECharts from 'echarts-for-react';
 import { Transaction, Account } from '../../typedef';
 import { useMemo, useState } from 'react';
 import ZoomChart from './ZoomChart';
+import { titleOptions } from './common_chart';
 
 interface GraphProps {
 	transactions: Transaction[];
@@ -144,15 +145,7 @@ export default function Sankey({ transactions, accounts }: GraphProps) {
 	}, [transactions, categories, accounts]);
 
 	const option = {
-		title: {
-			text: 'Asset Allocation',
-			left: full ? 'center' : 'left',
-			top: full ? 15 : 0,
-			textStyle: {
-				color: full ? '#fff' : '#494949',
-				fontSize: full ? 24 : 18,
-			},
-		},
+		title: titleOptions('Asset Allocation', full),
 		tooltip: {
 			trigger: 'item',
 			triggerOn: 'mousemove',
@@ -167,7 +160,7 @@ export default function Sankey({ transactions, accounts }: GraphProps) {
 					focus: 'adjacency',
 				},
 				nodeAlign: 'right',
-				top: full ? '16%': '10%',
+				top: full ? '13%': '10%',
 				left: '3%',
 				bottom: '5%',
 				label: {

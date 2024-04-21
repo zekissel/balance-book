@@ -3,6 +3,7 @@ import { Transaction } from '../../typedef';
 import { useMemo, useState } from 'react';
 import { addDays } from '../../typeassist';
 import ZoomChart from './ZoomChart';
+import { titleOptions } from './common_chart';
 
 interface GraphProps {
 	transactions: Transaction[];
@@ -49,6 +50,12 @@ export default function NetByDay({ transactions, range, endDate, typeLine }: Gra
 				? '#abc'
 				: (full? '#99deb5' :'#739d88'),
 		],
+		title: titleOptions('Net Balance by Day', full),
+		width:
+			full ? '75%' : (Math.max(...Object.values(timeFrameTotals).map((v) => Math.abs(v.total))) >= 10000
+				? '87%'
+				: '90%'),
+		height: full ? '70%' : (range >= 100 ? '73%' : '78%'),
 		grid: {
 			show: true,
 			top: full ? '15%' :'13%',
@@ -60,11 +67,6 @@ export default function NetByDay({ transactions, range, endDate, typeLine }: Gra
 						).toString().length *
 							12 +
 						10),
-		},
-		tooltip: {
-			trigger: 'axis',
-			axisPointer: { type: 'line' },
-			formatter: '<b>{b}</b><br/>${c}',
 		},
 		xAxis: {
       axisLine: { lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
@@ -117,21 +119,12 @@ export default function NetByDay({ transactions, range, endDate, typeLine }: Gra
 				type: typeLine ? 'line' : 'bar',
 			},
 		],
-		title: {
-			text: 'Net Balance by Day',
-			top: full ? 15 : 2,
-      left: full ? 'center' : 'left',
-      textStyle: {
-				color: full ? '#fff' : '#494949',
-				fontSize: full ? 24 : 18,
-			},
-		},
-		width:
-			full ? '75%' : (Math.max(...Object.values(timeFrameTotals).map((v) => Math.abs(v.total))) >= 10000
-				? '87%'
-				: '90%'),
-		height: full ? '70%' : (range >= 100 ? '73%' : '78%'),
 		dataZoom: { type: 'inside' },
+		tooltip: {
+			trigger: 'axis',
+			axisPointer: { type: 'line' },
+			formatter: '<b>{b}</b><br/>${c}',
+		},
 	};
 
 	return (
