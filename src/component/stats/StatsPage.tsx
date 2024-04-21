@@ -3,6 +3,7 @@ import { Transaction, Account, getEnumKeys, ExpenseRoot, IncomeRoot } from '../.
 import TotalGraph from './TotalGraph';
 import PieGraph from './PieGraph';
 import NetByDay from './NetByDay';
+import BalanceByDay from './BalanceByDay';
 import Sankey from './Sankey';
 import TreeGraph from './TreeMap';
 import BoxPlot from './BoxPlot';
@@ -149,7 +150,7 @@ export default function StatsPage({
 
 			<div className="stats-main-row">
 				<div className="stats-main-box-longer">
-					<NetByDay transactions={transactions} range={Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))} endDate={endDate} typeLine={historyGraphLine} />
+					<BalanceByDay transactions={transactions} range={Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))} endDate={endDate} typeLine={historyGraphLine} />
 
 					<div className="stats-menu-sep">
 						<button
@@ -200,7 +201,7 @@ export default function StatsPage({
 						</div>
 
 						<span>
-							<button onClick={() => cycleCategoryChart(-1)}>
+							<button onClick={() => cycleCategoryChart(-1)} >
 								<img
 									src={
 										categoryChartType === 0

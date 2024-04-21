@@ -3,8 +3,19 @@ interface ZoomChartProps { children: React.ReactNode; full: boolean; toggleFull:
 export default function ZoomChart({ children, full, toggleFull }: ZoomChartProps) {
 
   return (
-		<div className={"stats-graph" + (full ? ' graph-fullscreen' : '')} onDoubleClick={toggleFull}>
-			{ children }
-		</div>
+		<>
+			{ // add overlay for close
+				// placeholder so graph icon/button stays in same spot
+				full && (
+					<div className="stats-graph">
+						
+					</div>
+				)
+			}
+
+			<div className={"stats-graph" + (full ? ' graph-fullscreen' : '')} onDoubleClick={toggleFull} /*onClick={() => { if (full) toggleFull(); }}*/>
+				{ children }
+			</div>
+		</>
 	);
 }

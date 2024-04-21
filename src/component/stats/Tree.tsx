@@ -88,6 +88,7 @@ export default function TreeAlt({ transactions }: GraphProps) {
 								itemStyle: { color: `#d1b690` },
 								children: transactions
 									.filter((t) => t.category === (!l.includes('>') ? `${r}>${l}` : l))
+									.sort((a,b) => a.company.localeCompare(b.company))
 									.map((t) => {
 										return {
 											name: t.company,
@@ -193,6 +194,9 @@ export default function TreeAlt({ transactions }: GraphProps) {
 						align: 'right',
 						color: full ? '#edd9be' : '#333',
 						fontSize: full ? 16 : 12,
+						textBorderColor: full ? '#000' : '#fff',
+						textBorderType: 'solid',
+						textBorderWidth: full ? 0 : 1,
 					},
 
 					leaves: {
@@ -230,6 +234,9 @@ export default function TreeAlt({ transactions }: GraphProps) {
 						align: 'right',
 						color: full ? '#99deb5' : '#333',
 						fontSize: full ? 16 : 12,
+						textBorderColor: full ? '#000' : '#fff',
+						textBorderType: 'solid',
+						textBorderWidth: full ? 0 : 1,
 					},
 
 					leaves: {

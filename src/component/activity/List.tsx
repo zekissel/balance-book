@@ -101,7 +101,7 @@ export default function List({
 			}
 		});
 		return ret;
-	}, [transactions, sortBy]);
+	}, [transactions, accounts, sortBy]);
 
 	const [perPage, setPerPage] = useState(
 		localStorage.getItem('list.perPage') !== null

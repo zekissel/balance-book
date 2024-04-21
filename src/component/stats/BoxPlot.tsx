@@ -116,7 +116,7 @@ export default function BoxPlot({ trans, isIncome, root }: GraphProps) {
 				type: 'boxplot',
 				data: source,
 				itemStyle: {
-					color: isIncome ? '#739d8877' : '#f6d6aa77',
+					color: isIncome ? '#739d8877' : '#D8AA6977',
 					borderColor: isIncome ? '#405c4e' : '#635645',
 				},
 			},

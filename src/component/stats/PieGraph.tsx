@@ -1,13 +1,18 @@
 import ReactECharts from 'echarts-for-react';
 import { Transaction } from '../../typedef';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { generateChartColor } from '../../typeassist';
+import ZoomChart from './ZoomChart';
 
 interface GraphProps {
 	transactions: Transaction[];
 	isIncome: boolean;
 }
 export default function PieGraph({ transactions, isIncome }: GraphProps) {
+
+	const [full, setFull] = useState(false);
+	const toggleFull = () => setFull(!full);
+
 	const categoryTotals = useMemo(() => {
 		const totals: { [key: string]: number } = {};
 		transactions
@@ -72,6 +77,10 @@ export default function PieGraph({ transactions, isIncome }: GraphProps) {
 			left: 'right',
 			data: cat,
 			y: 10,
+			textStyle: {
+				color: full ? '#fff' : '#333',
+				fontSize: full ? 16 : 11,
+			},
 		},
 		series: [
 			{
@@ -79,11 +88,23 @@ export default function PieGraph({ transactions, isIncome }: GraphProps) {
 				data: data,
 				y: 40,
 				x: -60,
+				label: {
+					color: full ? '#fff' : '#333',
+					fontSize: full ? 16 : 11,
+					textBorderColor: full ? '#000' : '#fff',
+					textBorderType: 'solid',
+					textBorderWidth: 1,
+				},
 			},
 		],
 		title: {
 			text: `${isIncome ? 'Income' : 'Expense'} Percentage by Category`,
-			y: 10,
+			left: full ? 'center' : 'left',
+			top: full ? 15 : 0,
+			textStyle: {
+				color: full ? '#fff' : '#494949',
+				fontSize: full ? 24 : 18,
+			},
 		},
 		tooltip: {
 			trigger: 'item',
@@ -92,8 +113,8 @@ export default function PieGraph({ transactions, isIncome }: GraphProps) {
 	};
 
 	return (
-		<div className="stats-graph">
-			<ReactECharts option={option} />
-		</div>
+		<ZoomChart full={full} toggleFull={toggleFull}>
+			<ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
+		</ZoomChart>
 	);
 }

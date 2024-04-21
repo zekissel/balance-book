@@ -59,7 +59,7 @@ function App() {
 	const refreshAccounts = async () => {
 		if (user) {
 			setAccounts(await getAccounts(user.id));
-		}
+		} else setAccounts([]);
 	};
 
 	const update = (refresh: () => void): (() => void) => {
@@ -100,6 +100,9 @@ function App() {
 
 			update(refreshAccounts);
 			update(refreshTransactions);
+		} else {
+			setAccounts([]);
+			setTransactions([]);
 		}
 	}, [user]);
 
@@ -124,6 +127,8 @@ function App() {
 	const logout = () => {
 		setUser(null);
 		clearUserLocalStorage();
+		setTransRange(89);
+		sessionStorage.removeItem('fetchRange');
 	};
 
 	// MARK: - RENDER

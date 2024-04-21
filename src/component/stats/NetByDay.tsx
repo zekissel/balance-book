@@ -47,11 +47,11 @@ export default function NetByDay({ transactions, range, endDate, typeLine }: Gra
 			transactions.filter((t) => !['Transfer', 'Credit'].includes(t.category.split('>')[1]))
 				.length === 0
 				? '#abc'
-				: '#739d88',
+				: (full? '#99deb5' :'#739d88'),
 		],
 		grid: {
 			show: true,
-			top: full ? '18%' :'13%',
+			top: full ? '15%' :'13%',
 			left:
 				full ? '15%' : (transactions.length === 0
 					? 35
@@ -67,6 +67,7 @@ export default function NetByDay({ transactions, range, endDate, typeLine }: Gra
 			formatter: '<b>{b}</b><br/>${c}',
 		},
 		xAxis: {
+      axisLine: { lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
 			type: 'category',
 			interval: 0,
 			data: timeFrameTotals.map(
@@ -82,11 +83,11 @@ export default function NetByDay({ transactions, range, endDate, typeLine }: Gra
         color: full ? `#fff` : `#333`,
         fontSize: full ? 16 : 12,
 			},
-			splitLine: { show: true, lineStyle: { color: '#ffffff' } },
+			splitLine: { show: true, lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
 		},
 		yAxis: {
 			type: 'value',
-			splitLine: { show: true, lineStyle: { color: '#ffffff' } },
+			splitLine: { show: true, lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
       axisLabel: {
         color: full ? `#fff` : `#333`,
         fontSize: full ? 16 : 12,
@@ -95,17 +96,20 @@ export default function NetByDay({ transactions, range, endDate, typeLine }: Gra
 		series: [
 			{
 				data: timeFrameTotals.map(
-					(t, i) =>
+					(t) =>
 						new Object({
 							value: t.total,
               itemStyle: {
-                color: typeLine ? '#739d88' : (transactions.length > 0 ? (t.total > 0 ? '#739d88' : '#f6d6aa') : '#abc'),
+                color: typeLine ? (full? '#99deb5' : '#739d88') : (transactions.length > 0 ? (t.total > 0 ? (full? '#99deb5' :'#739d88') : (full? '#f6d6aa' :'#D8AA69')) : '#abc'),
               },
 							label: {
-								show: range >= 24 ? (i % 2 == 0 && t.total !== 0) : (t.total !== 0),
+								show: /*range >= 24 ? (i % 2 == 0 && t.total !== 0) :*/ (t.total !== 0),
 								position: t.total > 0 ? 'top' : 'bottom',
 								formatter: '${c}',
                 color: full ? `#fff` : `#333`,
+								textBorderColor: full ? '#000' : '#fff',
+								textBorderType: 'solid',
+								textBorderWidth: 1,
                 fontSize: full ? 16 : 12,
 							},
 						}),

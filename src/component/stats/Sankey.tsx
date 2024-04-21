@@ -173,6 +173,9 @@ export default function Sankey({ transactions, accounts }: GraphProps) {
 				label: {
 					color: full ? '#fff' : '#333',
 					fontSize: full ? 16 : 12,
+					textBorderColor: full ? '#000' : '#fff',
+					textBorderType: 'solid',
+					textBorderWidth: 1,
 				},
 
 				data: nodes,

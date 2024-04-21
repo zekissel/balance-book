@@ -30,7 +30,7 @@ export default function TotalGraph({ transactions }: GraphProps) {
 					(t) =>
 						new Object({
 							value: t,
-							itemStyle: { color: t > 0 ? '#739d88' : '#f6d6aa' },
+							itemStyle: { color: t > 0 ? '#739d88' : '#D8AA69' },
 							label: { show: true, position: t >= 0 ? 'top' : 'bottom', formatter: '${c}' },
 						}),
 				),
