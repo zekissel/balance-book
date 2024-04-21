@@ -2,7 +2,7 @@ import ReactECharts from 'echarts-for-react';
 import { Transaction } from '../../typedef';
 import { useMemo, useState } from 'react';
 import ZoomChart from './ZoomChart';
-import { titleOptions } from './common_chart';
+import { titleOptions, xAxisOptions, yAxisOptions } from './common_chart';
 
 interface GraphProps {
 	transactions: Transaction[];
@@ -54,7 +54,7 @@ export default function TotalGraph({ transactions }: GraphProps) {
 	);
 
 	const option = {
-		xAxis: {
+		xAxis: xAxisOptions(categories, full, full, false, 0, 20)/*{
 			type: 'category',
 			data: categories,
 			axisLabel: {
@@ -64,15 +64,8 @@ export default function TotalGraph({ transactions }: GraphProps) {
         fontSize: full ? 16 : 12,
 			},
 			axisLine: { lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
-		},
-		yAxis: {
-			type: 'value',
-			splitLine: { show: true, lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
-			axisLabel: {
-        color: full ? `#fff` : `#333`,
-        fontSize: full ? 16 : 12,
-			},
-		},
+		}*/,
+		yAxis: yAxisOptions(full),
 		series: [
 			{
 				data: totals,

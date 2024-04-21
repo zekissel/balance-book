@@ -11,3 +11,30 @@ export const titleOptions = (title: string, full: boolean) => {
 	});
 }
 
+
+export const xAxisOptions = (data: any, full: boolean, hide: boolean, showSplit: boolean, interval?: number, rotate?: number) => {
+  return new Object({
+    axisLine: { lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
+    type: 'category',
+    data: data,
+    axisLabel: {
+      show: hide,
+      rotate: rotate,
+      interval: interval,
+      color: full ? `#fff` : `#333`,
+      fontSize: full ? 16 : 12,
+    },
+    splitLine: { show: showSplit, lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
+  });
+}
+
+export const yAxisOptions = (full: boolean) => {
+  return new Object({
+    type: 'value',
+    splitLine: { show: true, lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
+    axisLabel: {
+      color: full ? `#fff` : `#333`,
+      fontSize: full ? 16 : 12,
+    },
+  });
+}

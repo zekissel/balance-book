@@ -3,7 +3,7 @@ import { Transaction } from '../../typedef';
 import { useMemo, useState } from 'react';
 import { addDays } from '../../typeassist';
 import ZoomChart from './ZoomChart';
-import { titleOptions } from './common_chart';
+import { titleOptions, xAxisOptions, yAxisOptions } from './common_chart';
 
 interface GraphProps {
 	transactions: Transaction[];
@@ -40,7 +40,7 @@ export default function NetByDay({ transactions, range, endDate, typeLine }: Gra
 		else if (range <= 180) return 18;
 		else if (range <= 365) return 30;
 		else if (range <= 730) return 50;
-		else return 80;
+		else return Math.round(range / 15);
 	}, [range]);
 
 	const option = {
@@ -68,33 +68,14 @@ export default function NetByDay({ transactions, range, endDate, typeLine }: Gra
 							12 +
 						10),
 		},
-		xAxis: {
-      axisLine: { lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
-			type: 'category',
-			interval: 0,
-			data: timeFrameTotals.map(
-				(t) =>
-					new Object({
-						value: t.date.toDateString().slice(4, range >= 100 ? 15 : 10),
-						label: { show: true },
-					}),
-			),
-			axisLabel: {
-				rotate: 20,
-				interval: xAxisInterval,
-        color: full ? `#fff` : `#333`,
-        fontSize: full ? 16 : 12,
-			},
-			splitLine: { show: true, lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
-		},
-		yAxis: {
-			type: 'value',
-			splitLine: { show: true, lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
-      axisLabel: {
-        color: full ? `#fff` : `#333`,
-        fontSize: full ? 16 : 12,
-      },
-		},
+		xAxis: xAxisOptions(timeFrameTotals.map(
+			(t) =>
+				new Object({
+					value: t.date.toDateString().slice(4, range >= 100 ? 15 : 10),
+					label: { show: true },
+				}),
+		), full, true, true, xAxisInterval, 20),
+		yAxis: yAxisOptions(full),
 		series: [
 			{
 				data: timeFrameTotals.map(
