@@ -43,6 +43,7 @@ export default function NetByDay({ transactions, range, endDate, typeLine }: Gra
 		else return Math.round(range / 15);
 	}, [range]);
 
+
 	const option = {
 		color: [
 			transactions.filter((t) => !['Transfer', 'Credit'].includes(t.category.split('>')[1]))
@@ -86,7 +87,7 @@ export default function NetByDay({ transactions, range, endDate, typeLine }: Gra
                 color: typeLine ? (full? '#99deb5' : '#739d88') : (transactions.length > 0 ? (t.total > 0 ? (full? '#99deb5' :'#739d88') : (full? '#f6d6aa' :'#D8AA69')) : '#abc'),
               },
 							label: {
-								show: /*range >= 24 ? (i % 2 == 0 && t.total !== 0) :*/ (t.total !== 0),
+								show: t.total !== 0,
 								position: t.total > 0 ? 'top' : 'bottom',
 								formatter: '${c}',
                 color: full ? `#fff` : `#333`,

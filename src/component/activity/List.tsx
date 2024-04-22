@@ -147,6 +147,8 @@ export default function List({
 		else setEditLogs([...editLogs, id]);
 	};
 
+	useEffect(() => signalRefresh(), []);
+
 	return (
 		<div className={showFilter ? 'main-down-shift page-main' : 'page-main'}>
 			{editLogs.length > 0 && (
