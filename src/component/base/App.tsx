@@ -83,20 +83,20 @@ function App() {
 		localStorage.removeItem('link_token');
 		localStorage.removeItem('auth_state');
 
-		const transSyncDate = localStorage.getItem('sync.t.date');
-		const syncTrans = transSyncDate
-			? addHours(new Date(transSyncDate), 4) < new Date(new Date().toISOString().split('.')[0])
-			: true;
-
-		const balSyncDate = localStorage.getItem('sync.b.date');
-		const syncBalance = balSyncDate
-			? new Date(balSyncDate) < new Date(new Date().toISOString().split('T')[0])
-			: true;
-
 		if (user) {
+			const transSyncDate = localStorage.getItem(`${user.uname}.sync.t.date`);
+			const syncTrans = transSyncDate
+				? addHours(new Date(transSyncDate), 4) < new Date(new Date().toISOString().split('.')[0])
+				: true;
+
+			const balSyncDate = localStorage.getItem(`${user.uname}.sync.b.date`);
+			const syncBalance = balSyncDate
+				? new Date(balSyncDate) < new Date(new Date().toISOString().split('T')[0])
+				: true;
+
 			if (syncTrans) invoke('sync_info', { userId: user.id, balance: syncBalance });
-			if (syncBalance) localStorage.setItem('sync.b.date', new Date().toISOString().split('T')[0]);
-			if (syncTrans) localStorage.setItem('sync.t.date', new Date().toISOString().split('.')[0]);
+			if (syncBalance) localStorage.setItem(`${user.uname}.sync.b.date`, new Date().toISOString().split('T')[0]);
+			if (syncTrans) localStorage.setItem(`${user.uname}.sync.t.date`, new Date().toISOString().split('.')[0]);
 
 			update(refreshAccounts);
 			update(refreshTransactions);

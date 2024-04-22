@@ -14,7 +14,7 @@ export const titleOptions = (title: string, full: boolean) => {
 
 export const xAxisOptions = (data: any, full: boolean, hide: boolean, showSplit: boolean, interval?: number, rotate?: number) => {
   return new Object({
-    axisLine: { lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
+    axisLine: { lineStyle: { color: full ? '#ffffff77' : '#ffffff', width: 2 } },
     type: 'category',
     data: data,
     axisLabel: {
@@ -24,14 +24,14 @@ export const xAxisOptions = (data: any, full: boolean, hide: boolean, showSplit:
       color: full ? `#fff` : `#333`,
       fontSize: full ? 16 : 12,
     },
-    splitLine: { show: showSplit, lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
+    splitLine: { show: showSplit, lineStyle: { color: full ? '#ffffff77' : '#ffffff99' } },
   });
 }
 
 export const yAxisOptions = (full: boolean) => {
   return new Object({
     type: 'value',
-    splitLine: { show: true, lineStyle: { color: full ? '#ffffff77' : '#ffffff' } },
+    splitLine: { show: true, lineStyle: { color: full ? '#ffffff77' : '#ffffff99' } },
     axisLabel: {
       color: full ? `#fff` : `#333`,
       fontSize: full ? 16 : 12,
