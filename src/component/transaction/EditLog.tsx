@@ -26,7 +26,7 @@ export function EditLog({ log, accounts, updateLog, isIncome, toggle, cancel }: 
 	const [desc, setDesc] = useState(log ? log.desc : '');
 
 	const [accountId, setAccountId] = useState(
-		log ? String(log.account_id) : localStorage.getItem('accountDefault') ?? '',
+		log ? String(log.account_id) : '',
 	);
 
 	const [isIncomeState, setIsIncomeState] = useState(isIncome);

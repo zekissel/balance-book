@@ -20,10 +20,7 @@ export default function Home({ user, accounts, transactions }: HomeProps) {
 
 				<div className="dynamic-menu-main">
 					<button>
-						<img src="/log.svg" /> Add Log
-					</button>
-					<button>
-						<img src="/add-account.svg" /> Add Account
+						<a href='https://github.com/zekissel/balance-book' target='_blank' rel='noopener noreferrer'><img src="/github.svg" /> Source</a>
 					</button>
 				</div>
 			</menu>

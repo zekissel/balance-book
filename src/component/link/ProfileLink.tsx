@@ -12,11 +12,15 @@ export default function ProfileLink({ user, refreshAcct, refreshTrans }: Profile
 
 	return (
 		<div className="profile-financial">
-			<p>work in progress; connect bank account with plaid/link</p>
+			<h3>Connect Financial Institution with Plaid</h3>
 			<button onClick={() => setShowLink(!showLink)}>
 				{showLink ? 'Close' : 'Start Link Process'}
 			</button>
 			{showLink && <PlaidLink user={user} refreshAcct={refreshAcct} refreshTrans={refreshTrans} />}
+
+			<p>Requires creating an account with <a href='https://plaid.com/' target='_blank' rel="noopener noreferrer">Plaid</a>, and applying for deployment access (production access after June 2024)</p>
+
+			
 		</div>
 	);
 }

@@ -7,16 +7,8 @@ interface PreviewProps {
 	transactions: Transaction[];
 }
 export default function Preview({ accounts, transactions }: PreviewProps) {
-	const [curView, setCurView] = useState(AccountType.Checking);
-	const [curID, setCurID] = useState(localStorage.getItem('accountDefault') ?? '');
-
-	const recentTransactions = useMemo(() => {
-		const minDate = addDays(new Date(), -3);
-		const ret = transactions.filter(
-			(t) => accounts.find((a) => a.id === t.account_id)?.account_type === curView,
-		);
-		return ret.filter((t) => t.date >= minDate).sort((a, b) => b.date.getTime() - a.date.getTime());
-	}, [transactions, curView]);
+	const [curView, setCurView] = useState<AccountType | null>(null);
+	const [curID, setCurID] = useState('');
 
 	const focusAccounts = useMemo(() => {
 		return accounts.filter((a) => a.account_type === curView);
@@ -24,6 +16,14 @@ export default function Preview({ accounts, transactions }: PreviewProps) {
 	const curIndex = useMemo(() => {
 		return focusAccounts.findIndex((a) => a.id === curID);
 	}, [focusAccounts, curID]);
+
+	const recentTransactions = useMemo(() => {
+		const minDate = addDays(new Date(), -3);
+		const ret = transactions.filter(
+			(t) => t.account_id === curID,
+		);
+		return ret.filter((t) => t.date.getTime() >= minDate.getTime()).sort((a, b) => b.date.getTime() - a.date.getTime());
+	}, [transactions, curID]);
 
 	const handleRadio = (view: AccountType) => {
 		setCurView(view);
@@ -37,19 +37,7 @@ export default function Preview({ accounts, transactions }: PreviewProps) {
 	return (
 		<div className="home-preview">
 			<div>
-				<menu>
-					<button disabled={curIndex <= 0} onClick={() => seekAccount(false)}>
-						&lt;
-					</button>
-					<button disabled={curIndex >= focusAccounts.length - 1} onClick={() => seekAccount(true)}>
-						&gt;
-					</button>
-				</menu>
-				{focusAccounts
-					.filter((a) => a.id === curID)
-					.map((a) => (
-						<div key={a.id}>{a.account_name}</div>
-					))}
+				
 				<menu>
 					<input
 						type="radio"
@@ -91,6 +79,21 @@ export default function Preview({ accounts, transactions }: PreviewProps) {
 					/>
 					<label htmlFor="loan">Loan</label>
 				</menu>
+
+				<menu>
+					<button disabled={curIndex <= 0} onClick={() => seekAccount(false)}>
+						<img src='/left-arrow.svg' />
+					</button>
+					<button disabled={curIndex >= focusAccounts.length - 1} onClick={() => seekAccount(true)}>
+						<img src='/right-arrow.svg' />
+					</button>
+				</menu>
+				{focusAccounts
+					.filter((a) => a.id === curID)
+					.map((a) => (
+						<div key={a.id}>{a.account_name}</div>
+					))
+				}
 			</div>
 
 			<ol>
@@ -101,6 +104,8 @@ export default function Preview({ accounts, transactions }: PreviewProps) {
 							{t.company} {t.amount}
 						</li>
 					))}
+
+				{ recentTransactions.length === 0 ? <li>No recent transactions</li> : null }
 			</ol>
 		</div>
 	);

@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '../../typedef';
 import { addDays } from '../../typeassist';
@@ -20,22 +20,27 @@ export default function Profile({
 	refreshAcct,
 	refreshTrans,
 }: ProfileProps) {
-	const [email, setEmail] = useState(localStorage.getItem('useremail') ?? '');
+	const [email, setEmail] = useState(user.email ?? '');
 	const [password, setPassword] = useState('');
 	const [pass2, setPass2] = useState('');
-	const [fname, setFname] = useState(localStorage.getItem('userf') ?? '');
-	const [lname, setLname] = useState(localStorage.getItem('userl') ?? '');
+	const [fname, setFname] = useState(user.fname ?? '');
+	const [lname, setLname] = useState(user.lname ?? '');
 	const [dob, setDob] = useState(
 		localStorage.getItem('dob') ? new Date(localStorage.getItem('dob') as string) : null,
 	);
 
 	const [oldPass, setOldPass] = useState('');
-
 	const [error, setError] = useState('');
+	useEffect(() => {
+		const timer = setTimeout(() => setError(''), 5000);
+		return () => clearTimeout(timer);
+	}, [error]);
 
 	const updateUser = async () => {
+		setError('');
 		if (password !== pass2) {
 			setError('Passwords do not match');
+			setOldPass('');
 			return;
 		}
 
@@ -43,17 +48,29 @@ export default function Profile({
 			id: user.id,
 			password: oldPass,
 			newPass: password.length > 0 ? password : undefined,
-			email: email,
-			fname: fname,
-			lname: lname,
+			email: email !== '' ? email : undefined,
+			fname: fname !== '' ? fname : undefined,
+			lname: lname !== '' ? lname : undefined,
 			dob: dob ? new Date(dob.toDateString()) : undefined,
 		};
 		await invoke('fix_user', data)
 			.then((data) => {
-				if (data !== null) setUser(data as User);
+				if (data !== null) {
+					const user = data as User;
+					setUser(user);
+					if (user.email) localStorage.setItem('useremail', user.email);
+					else localStorage.removeItem('useremail');
+					if (user.fname) localStorage.setItem('userf', user.fname);
+					else localStorage.removeItem('userf');
+					if (user.lname) localStorage.setItem('userl', user.lname);
+					else localStorage.removeItem('userl');
+					if (user.dob) localStorage.setItem('dob', user.dob.toDateString());
+					else localStorage.removeItem('dob');
+				}
 				else setError('Incorrect password');
 			})
-			.catch((err) => setError(err));
+			.catch((err) => setError(err))
+			.finally(() => setOldPass(''))
 	};
 
 	const navigate = useNavigate();

@@ -26,51 +26,16 @@ export function EditAccount({ log, user, type, toggle, cancel, updateAccounts }:
 			date: new Date().toISOString(),
 		};
 
-		if (log) {
-			await invoke('fix_account', data);
-		} else {
-			const account: Account = await invoke('new_account', data);
-			switch (type) {
-				case AccountType.Checking:
-					if (!localStorage.getItem('accountDefault'))
-						localStorage.setItem('accountDefault', account.id.toString());
-					break;
-				case AccountType.Savings:
-					if (!localStorage.getItem('accountSavings'))
-						localStorage.setItem('accountSavings', account.id.toString());
-					break;
-				case AccountType.Investing:
-					if (!localStorage.getItem('accountInvesting'))
-						localStorage.setItem('accountInvesting', account.id.toString());
-					break;
-			}
-		}
-
+		if (log) await invoke('fix_account', data);
+		else await invoke('new_account', data);
+			
 		updateAccounts();
 		toggle();
 	}
 
 	const deleteAccount = () => {
 		invoke('remove_account', { id: log!.id });
-		if (
-			[
-				localStorage.getItem('accountDefault'),
-				localStorage.getItem('accountSavings'),
-				localStorage.getItem('accountInvesting'),
-			].includes(String(log!.id))
-		) {
-			switch (log!.account_type) {
-				case AccountType.Checking:
-					localStorage.removeItem('accountDefault');
-					break;
-				case AccountType.Savings:
-					localStorage.removeItem('accountSavings');
-					break;
-				case AccountType.Investing:
-					localStorage.removeItem('accountInvesting');
-					break;
-			}
-		}
+		
 		updateAccounts();
 		toggle();
 	};
