@@ -86,69 +86,71 @@ export default function BoxPlot({ trans, isIncome, root }: GraphProps) {
 		return ret;
 	}, [transactions, categories, root]);
 
-	const option = {
-		title: titleOptions(`${isIncome ? 'Income' : 'Expense'} Spread by Category`, full),
-		height: full ? '70%' : '83%',
-		grid: {
-			left: '14%',
-			right: '11%',
-			bottom: '6%',
-			top: '11%',
-		},
-		yAxis: {
-			type: 'category',
-			data: Object.keys(categoryTotals).map((c) => new Object({ value: c.slice(0, 9) })),
-			splitLine: { show: false, },
-			axisLabel: {
-        color: full ? `#fff` : `#333`,
-        fontSize: full ? 16 : 12,
+	const option = useMemo(() => {
+		return new Object({
+			title: titleOptions(`${isIncome ? 'Income' : 'Expense'} Spread by Category`, full),
+			height: full ? '70%' : '83%',
+			grid: {
+				left: '14%',
+				right: '11%',
+				bottom: '6%',
+				top: '11%',
 			},
-		},
-		xAxis: {
-			type: 'value',
-			name: 'Dollars',
-			nameTextStyle: {
-				color: full ? `#fff` : `#333`,
-				fontSize: full ? 16 : 12,
-			},
-			nameLocation: 'end',
-			splitArea: {
-				show: true,
-			},
-			axisLabel: {
-        color: full ? `#fff` : `#333`,
-        fontSize: full ? 16 : 12,
-			},
-			splitLine: { show: full, lineStyle: { color: '#ffffff44' } },
-		},
-		series: [
-			{
-				name: 'IQR Spread',
-				type: 'boxplot',
-				data: source,
-				itemStyle: {
-					color: full ? (isIncome ? '#99deb577' : '#f6d6aa77') :(isIncome ? '#739d8877' : '#D8AA6977'),
-					borderColor: full ? (isIncome ? '#a7e8c1' : '#e3cbaa') :(isIncome ? '#405c4e' : '#635645'),
+			yAxis: {
+				type: 'category',
+				data: Object.keys(categoryTotals).map((c) => new Object({ value: c.slice(0, 9) })),
+				splitLine: { show: false, },
+				axisLabel: {
+					color: full ? `#fff` : `#333`,
+					fontSize: full ? 16 : 12,
 				},
 			},
-			{
-				name: 'Outlier',
-				type: 'scatter',
-				data: outliers,
-				itemStyle: {
-					color: full ? (isIncome ? '#a7e8c1' : '#e3cbaa') :(isIncome ? '#405c4e' : '#635645'),
+			xAxis: {
+				type: 'value',
+				name: 'Dollars',
+				nameTextStyle: {
+					color: full ? `#fff` : `#333`,
+					fontSize: full ? 16 : 12,
 				},
+				nameLocation: 'end',
+				splitArea: {
+					show: true,
+				},
+				axisLabel: {
+					color: full ? `#fff` : `#333`,
+					fontSize: full ? 16 : 12,
+				},
+				splitLine: { show: full, lineStyle: { color: '#ffffff44' } },
 			},
-		],
-		dataZoom: {
-			type: 'inside',
-		},
-		tooltip: {
-			trigger: 'axis',
-			axisPointer: { type: 'shadow' },
-			//formatter: '{b}: <br />Low: ${d[0]} <br />Q1: ${c[1]} <br />Median: ${c[2]} <br />Q3: ${c[3]} <br />High: ${c[4]}',
-		},
-	};
+			series: [
+				{
+					name: 'IQR Spread',
+					type: 'boxplot',
+					data: source,
+					itemStyle: {
+						color: full ? (isIncome ? '#99deb577' : '#f6d6aa77') :(isIncome ? '#739d8877' : '#D8AA6977'),
+						borderColor: full ? (isIncome ? '#a7e8c1' : '#e3cbaa') :(isIncome ? '#405c4e' : '#635645'),
+					},
+				},
+				{
+					name: 'Outlier',
+					type: 'scatter',
+					data: outliers,
+					itemStyle: {
+						color: full ? (isIncome ? '#a7e8c1' : '#e3cbaa') :(isIncome ? '#405c4e' : '#635645'),
+					},
+				},
+			],
+			dataZoom: {
+				type: 'inside',
+			},
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: { type: 'shadow' },
+				//formatter: '{b}: <br />Low: ${d[0]} <br />Q1: ${c[1]} <br />Median: ${c[2]} <br />Q3: ${c[3]} <br />High: ${c[4]}',
+			},
+		})
+	}, [source, outliers, isIncome, full, categoryTotals]);
 
 
 	return (

@@ -112,19 +112,30 @@ div.home-preview {
 	display: grid;
 	grid-template-columns: 2fr 3fr;
 
-	width: 100%;
+	margin: .5rem;
+	width: 98.3%;
+	border-radius: 1vw;
 	height: 15rem;
 	background-color: #f0f3f2;
+	border: 1px dashed #739d88;
 }
 
-div.home-preview > div {
+div.home-preview  ul {
+	overflow: hidden;
+	overflow-y: scroll;
+}
+
+div.preview-acct-select {
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
+	justify-content: start;
 	align-items: center;
 
 	width: 100%;
 	height: 100%;
+}
+button.preview-type-active {
+	background-color: #c8cbc9;
 }
 
 a {
@@ -132,3 +143,9 @@ a {
 	color: #333;
 }
 
+div.news-main {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}

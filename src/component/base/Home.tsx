@@ -1,6 +1,7 @@
 import { User, Account, Transaction } from '../../typedef';
 import Logo from '../home/Logo';
 import Preview from '../home/Preview';
+import News from '../home/News';
 import '../../styles/Page.css';
 import '../../styles/Menu.css';
 
@@ -30,7 +31,7 @@ export default function Home({ user, accounts, transactions }: HomeProps) {
 
 				<Preview accounts={accounts} transactions={transactions} />
 
-				<div>financial news/goals</div>
+				<News />
 			</div>
 		</div>
 	);
