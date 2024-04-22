@@ -104,6 +104,8 @@ span.list-item-source {
 	font-weight: 500;
 }
 
+span.trans-updated { background-color: #739d88; }
+
 span.list-item-amount {
 	font-family: 'Courier New', Courier, monospace;
 	background-color: #f2f2f2;

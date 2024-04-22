@@ -4,7 +4,7 @@ import TotalGraph from './TotalGraph';
 import PieGraph from './PieGraph';
 import NetByDay from './NetByDay';
 import Sankey from './Sankey';
-import TreeGraph from './TreeMap';
+import TreeMap from './TreeMap';
 import BoxPlot from './BoxPlot';
 import Tree from './Tree';
 import StatsInfo from './StatsInfo';
@@ -63,7 +63,7 @@ export default function StatsPage({
 		localStorage.getItem('stats.sankey') === 'false' ? false : true,
 	);
 	const [historyGraphLine, setHistoryGraphLine] = useState(
-		localStorage.getItem('stats.historyGraphLine') === 'true' ? true : false,
+		localStorage.getItem('stats.historyGraphLine') === 'false' ? false : true,
 	);
 	const [categoryPieTypeIncome, setCatPieTypeIncome] = useState<boolean>(
 		localStorage.getItem('stats.categoryPieIncome') === 'true' ? true : false,
@@ -154,6 +154,7 @@ export default function StatsPage({
 					<div className="stats-menu-sep">
 						<button
 							onClick={() => {
+								localStorage.setItem('stats.historyGraphLine', `${!historyGraphLine}`)
 								setHistoryGraphLine(!historyGraphLine);
 							}}
 						>
@@ -167,7 +168,7 @@ export default function StatsPage({
 						<PieGraph transactions={transactions} isIncome={categoryPieTypeIncome} />
 					)}
 					{categoryChartType !== 0 && (
-						<TreeGraph
+						<TreeMap
 							trans={transactions}
 							treemap={categoryChartType === 1}
 							income={categoryPieTypeIncome}

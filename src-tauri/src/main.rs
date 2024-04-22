@@ -41,7 +41,7 @@ async fn get_transactions(account_id: Vec<&str>, start: &str) -> Result<(Vec<Tra
 
 #[tauri::command]
 async fn fix_transaction(id: &str, company: &str, amount: i32, category: &str, date: &str, desc: &str, account_id: &str) -> Result<Transaction, ()> {
-  Ok(database::api::update_transaction(id, company, amount, category, date, desc, account_id).await)
+  Ok(database::api::update_transaction(id, company, amount, Some(category), date, desc, account_id).await)
 }
 
 #[tauri::command]
@@ -77,13 +77,20 @@ async fn fix_user(id: &str, password: &str, new_pass: Option<&str>, email: Optio
 }
 
 #[tauri::command]
-async fn sync_info (user_id: &str, balance: bool) -> Result<bool, ()> {
+async fn sync_info(user_id: &str, balance: bool) -> Result<Vec<String>, ()> {
+  let mut updated: Vec<String> = vec![];
   let tokens = database::api::read_user_tokens(user_id).await;
   for token in tokens { 
     if balance { let _ = link::api::fetch_balance(token.clone()).await; }
-    let _ = link::api::fetch_transactions(token, 30).await;
+    let changed = link::api::fetch_transactions(token, 30).await;
+    match changed {
+      Ok(c) => {
+        for t_id in c { updated.push(t_id); }
+      },
+      Err(_) => (),
+    }
   }
-  Ok(true)
+  Ok(updated)
 }
   
 

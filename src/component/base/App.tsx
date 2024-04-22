@@ -42,6 +42,9 @@ function App() {
 	const [accounts, setAccounts] = useState<Account[]>([]);
 	const [transactions, setTransactions] = useState<Transaction[]>([]);
 
+	const [updated, setUpdated] = useState<string[]>([]);
+	const filterUpdated = (id: string) => setUpdated(updated.filter((u) => u !== id));
+
 	const [signalAcct, setSignalAcct] = useState(false);
 	const signalRefreshAcct = () => setSignalAcct(!signalAcct);
 	const [signalTrans, setSignalTrans] = useState(false);
@@ -83,23 +86,27 @@ function App() {
 		localStorage.removeItem('link_token');
 		localStorage.removeItem('auth_state');
 
-		if (user) {
+		if (user && user.id !== '') {
 			const transSyncDate = localStorage.getItem(`${user.uname}.sync.t.date`);
 			const syncTrans = transSyncDate
-				? addHours(new Date(transSyncDate), 4) < new Date(new Date().toISOString().split('.')[0])
+				? addHours(new Date(transSyncDate), 6) < new Date(new Date().toISOString().split('.')[0])
 				: true;
+			
+			const sync = async () => {
+				await invoke('sync_info', { userId: user!.id, balance: true })
+					.then((data) => {
+						const recent = data as string[];
+						setUpdated(recent);
+					})
+			}
 
-			const balSyncDate = localStorage.getItem(`${user.uname}.sync.b.date`);
-			const syncBalance = balSyncDate
-				? new Date(balSyncDate) < new Date(new Date().toISOString().split('T')[0])
-				: true;
-
-			if (syncTrans) invoke('sync_info', { userId: user.id, balance: syncBalance });
-			if (syncBalance) localStorage.setItem(`${user.uname}.sync.b.date`, new Date().toISOString().split('T')[0]);
-			if (syncTrans) localStorage.setItem(`${user.uname}.sync.t.date`, new Date().toISOString().split('.')[0]);
-
+			if (syncTrans && user.uname !== '') {
+				sync();
+				localStorage.setItem(`${user.uname}.sync.t.date`, new Date().toISOString().split('.')[0]);
+			}
 			update(refreshAccounts);
 			update(refreshTransactions);
+
 		} else {
 			setAccounts([]);
 			setTransactions([]);
@@ -113,6 +120,12 @@ function App() {
 		localStorage.removeItem('userf');
 		localStorage.removeItem('userl');
 		localStorage.removeItem('dob');
+		localStorage.removeItem('list.perPage')
+		localStorage.removeItem('listView');
+		localStorage.removeItem('stats.boxTypeInc');
+		localStorage.removeItem('stats.categoryChartType');
+		localStorage.removeItem('stats.categoryPieIncome');
+		localStorage.removeItem('stats.historyGraphLine');
 	};
 	const verify = (user: User) => {
 		clearUserLocalStorage();
@@ -155,6 +168,7 @@ function App() {
 											incRange={incrementRange}
 											setRange={setRange}
 											more={moreTrans}
+											updated={updated}
 										/>
 									}
 								/>

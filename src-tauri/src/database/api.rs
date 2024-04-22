@@ -133,18 +133,27 @@ pub async fn update_transaction(
   id_i: &str,
   company_i: &str, 
   amount_i: i32,
-  category_i: &str,
+  category_i: Option<&str>,
   date_i: &str,
   desc_i: &str,
   account_id_i: &str,
 ) -> Transaction {
   use super::schema::transaction::dsl::*;
 
-  diesel::update(transaction.find(id_i))
-    .set((company.eq(company_i), amount.eq(amount_i), category.eq(category_i), date.eq(date_i), desc.eq(desc_i), account_id.eq(account_id_i)))
-    .returning(Transaction::as_returning())
-    .get_result(&mut establish_connection())
-    .expect("Error updating transaction")
+  match category_i {
+    Some(cat) => 
+      diesel::update(transaction.find(id_i))
+        .set((company.eq(company_i), amount.eq(amount_i), category.eq(cat), date.eq(date_i), desc.eq(desc_i), account_id.eq(account_id_i)))
+        .returning(Transaction::as_returning())
+        .get_result(&mut establish_connection())
+        .expect("Error updating transaction"),
+    None =>
+      diesel::update(transaction.find(id_i))
+        .set((company.eq(company_i), amount.eq(amount_i), date.eq(date_i), desc.eq(desc_i), account_id.eq(account_id_i)))
+        .returning(Transaction::as_returning())
+        .get_result(&mut establish_connection())
+        .expect("Error updating transaction"),
+  }
 }
 
 pub fn delete_transaction(id_i: &str) {

@@ -24,38 +24,43 @@ export enum ExpenseRoot {
 	Utilities = 'Utilities',
 	Food = 'Food',
 	Transport = 'Transport',
+	Healthcare = 'Healthcare',
 	Personal = 'Personal',
-	Office = 'Office',
+	Services = 'Services',
+	General = 'General',
+	Studio = 'Studio',
 	Entertainment = 'Entertainment',
 	Travel = 'Travel',
 	Financial = 'Financial',
 	Other = 'Other',
-}
-
+};
 export const ExpenseLeaf = {
 	Home: ['Rent', 'Maintenance', 'Amenities', 'Garden', 'Insurance', 'Other'],
-	Utilities: ['Electricity', 'Water', 'Gas', 'Internet', 'Phone', 'Trash/Recycle', 'Other'],
-	Food: ['Groceries', 'Restaurants', 'Fast Food', 'Drinks', 'Other'],
-	Transport: ['Gas', 'Maintenance', 'Fees', 'Insurance', 'Other'],
-	Personal: ['Healthcare', 'Services', 'Textile', 'Toilietries', 'Insurance', 'Other'],
-	Office: ['Supplies', 'Equipment', 'Projects', 'Insurance', 'Other'],
-	Entertainment: ['Movies', 'Games', 'Events', 'Music', 'Other'],
-	Travel: ['Transportation', 'Housing', 'Food', 'Insurance', 'Other'],
-	Financial: ['Transfer', 'Credit', 'Taxes/Fees', 'Other'],
-	Other: ['Gifts', 'Pets', 'Other'],
+	Utilities: ['Gas/Electricity', 'Water', 'Internet', 'Cellular', 'Trash/Recycle', 'Other'],
+	Food: ['Groceries', 'Restaurants', 'Fast Food', 'Drinks', 'Alcohol', 'Other'],
+	Transport: ['Gas', 'Parking', 'Tolls/Fees', 'Ride Share', 'Other'],
+	Healthcare: ['Primary', 'Dental', 'Vision', 'Insurance', 'Medication', 'Other'],
+	Personal: ['Apparel', 'Toilietries', 'Electronics', 'Fitness/Beauty', 'Other'],
+	Services: ['Automotive', 'Education', 'Contracting', 'Consulting', 'Laundry', 'Storage', 'Insurance', 'Other'],
+	Studio: ['Supplies', 'Services', 'Projects', 'Insurance', 'Other'],
+	Entertainment: ['Movies/TV', 'Games', 'Events', 'Music', 'Other'],
+	Travel: ['Flights', 'Lodging', 'Rentals', 'Other'],
+	Financial: ['Transfer', 'Credit', 'Taxes/Fees', 'Loan Payment', 'Other'],
+	Other: ['Non-Essentials', 'Gifts', 'Pets', 'Charity', 'Other'],
 };
 
 export enum IncomeRoot {
 	Salary = 'Salary',
 	SideJob = 'SideJob',
+	Government = 'Government',
 	FinanceIncome = 'FinanceIncome',
 	OtherIncome = 'OtherIncome',
-}
-
+};
 export const IncomeLeaf = {
 	Salary: ['Monthly', 'Bi-Weekly', 'Weekly', 'Other'],
 	SideJob: ['Gig', 'Freelance', 'Other'],
-	FinanceIncome: ['Transfer', 'Credit', 'Interest', 'Other'],
+	Government: ['Welfare', 'Unemployment', 'Pension', 'Taxes', 'Other'],
+	FinanceIncome: ['Transfer', 'Credit', 'Interest', 'Loan', 'Other'],
 	OtherIncome: ['Reimbursement', 'Refund', 'Gifts', 'Other'],
 };
 

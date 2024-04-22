@@ -22,6 +22,7 @@ interface ActivityProps {
 	incRange: () => void;
 	setRange: (range: number) => void;
 	more: boolean;
+	updated: string[];
 }
 export default function Activity({
 	transactions,
@@ -30,6 +31,7 @@ export default function Activity({
 	incRange,
 	setRange,
 	more,
+	updated,
 }: ActivityProps) {
 	/* filter transactions by object state (filter function declared in typedef) */
 	const [filterGUI, setFilterGUI] = useState(false);
@@ -55,11 +57,14 @@ export default function Activity({
 
 	/* toggle between list and calendar view, toggle GUI for adding a new transaction */
 	const [listView, setListView] = useState(
-		localStorage.getItem('listView') === 'true' ? true : false,
+		localStorage.getItem('listView') === 'false' ? false : true,
 	);
 	const [addLogGUI, setAddLogGUI] = useState(false);
 	const toggleAddLog = () => setAddLogGUI(!addLogGUI);
 
+	/* 
+		MARK: RENDER
+	*/
 	return (
 		<div className="page-root">
 			<menu className="dynamic-menu">
@@ -68,7 +73,7 @@ export default function Activity({
 						id={listView ? 'dynamic-menu-current' : undefined}
 						onClick={() => {
 							setListView(true);
-							localStorage.setItem('listView', 'true');
+							localStorage.removeItem('listView');
 						}}
 						disabled={listView}
 					>
@@ -127,6 +132,7 @@ export default function Activity({
 					signalRefresh={signalRefresh}
 					more={more}
 					restrictAcct={filters.accounts.length > 0}
+					updated={updated}
 				/>
 			) : (
 				<Calendar

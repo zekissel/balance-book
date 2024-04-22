@@ -122,7 +122,7 @@ export default function NetByDay({ transactions, range, endDate, typeLine }: Gra
 				pieces: [
 					{
 						lt: -(yAxisRange / 600),
-						color: '#D8AA69',
+						color: full ? `#f6d6aa` : '#D8AA69',
 					},
 					{
 					gte: -(yAxisRange / 600),
@@ -131,7 +131,7 @@ export default function NetByDay({ transactions, range, endDate, typeLine }: Gra
 				},
 					{
 						gt: yAxisRange / 600,
-						color: '#739d88',
+						color: full ? `#99deb5` : '#739d88',
 					},
 				],
 			},

@@ -14,6 +14,7 @@ interface ListProps {
 	signalRefresh: () => void;
 	more: boolean;
 	restrictAcct: boolean;
+	updated: string[];
 }
 export default function List({
 	transactions,
@@ -24,6 +25,7 @@ export default function List({
 	signalRefresh,
 	more,
 	restrictAcct,
+	updated,
 }: ListProps) {
 	const [sortBy, setSortBy] = useState('date');
 	const handleSort = (val: string) => {
@@ -245,7 +247,7 @@ export default function List({
 							<span className="list-item-date">
 								{transaction.date.toDateString().split(' ').slice(0, 3).join(' ')}
 							</span>
-							<span className="list-item-source"> {transaction.company}</span>
+							<span className={"list-item-source" + (updated.includes(transaction.id) ? ' trans-updated' : '')}> {transaction.company}</span>
 							<span className="list-item-amount">
 								{' '}
 								{['Transfer', 'Credit'].includes(transaction.category.split('>')[1])

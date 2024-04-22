@@ -10,14 +10,17 @@ export const getCategoryColor = (category: Category): string => {
 		case ExpenseRoot.Entertainment: color = `#F9C9C9`; break;
 		case ExpenseRoot.Financial: color = `#E6C9F9`; break;
 		case ExpenseRoot.Food: color = `#F9C9ED`; break;
-		case ExpenseRoot.Office: color = `#B0CCF0`; break;
+		case ExpenseRoot.Studio: color = `#B0CCF0`; break;
 		case ExpenseRoot.Other: color = `#C9F9E6`; break;
 		case ExpenseRoot.Personal: color = `#F9E6C9`; break;
+		case ExpenseRoot.Healthcare: color = `#F9C9C9`; break;
+		case ExpenseRoot.Services: color = `#F9F1C9`; break;
 		case ExpenseRoot.Transport: color = `#E3AEFF`; break;
 		case ExpenseRoot.Travel: color = `#BEF7F6`; break;
 
 		case IncomeRoot.Salary: color = `#F5C0DB`; break;
 		case IncomeRoot.SideJob: color = `#BAF5DB`; break;
+		case IncomeRoot.Government: color = `#F5D3BA`; break;
 		case IncomeRoot.FinanceIncome: color = `#E0ABFC`; break;
 		case IncomeRoot.OtherIncome: color = `#F0A2B2`; break;
 
