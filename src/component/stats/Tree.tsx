@@ -70,14 +70,14 @@ export default function TreeAlt({ transactions }: GraphProps) {
 		return {
 			name: 'expense',
 			value: Object.keys(expenseTotals).reduce((acc, c) => acc + Math.abs(expenseTotals[c]), 0),
-			itemStyle: { color: `#d1b690` },
+			itemStyle: { color: full ? `#d1b690` : `#D8AA69` },
 			children: expRoots.map((r) => {
 				return {
 					name: r,
 					value: Object.keys(expenseTotals)
 						.filter((c) => c.split('>')[0] === r)
 						.reduce((acc, c) => acc + Math.abs(expenseTotals[c]), 0),
-					itemStyle: { color: `#d1b690` },
+					itemStyle: { color: full ? `#d1b690` : `#D8AA69` },
 					children: expLeafs
 						.map((l) => {
 							if (l.includes('>') && l.split('>')[0] !== r) return null;
@@ -86,7 +86,7 @@ export default function TreeAlt({ transactions }: GraphProps) {
 							return {
 								name: l,
 								value: val,
-								itemStyle: { color: `#d1b690` },
+								itemStyle: { color: full ? `#d1b690` : `#D8AA69` },
 								children: transactions
 									.filter((t) => t.category === (!l.includes('>') ? `${r}>${l}` : l))
 									.sort((a,b) => a.company.localeCompare(b.company))
@@ -94,7 +94,7 @@ export default function TreeAlt({ transactions }: GraphProps) {
 										return {
 											name: t.company,
 											value: Math.abs(t.amount / 100),
-											itemStyle: { color: `#d1b690` },
+											itemStyle: { color: full ? `#d1b690` : `#D8AA69` },
 										};
 									}),
 							};
@@ -157,7 +157,7 @@ export default function TreeAlt({ transactions }: GraphProps) {
 					{
 						name: 'expense',
 						icon: 'rectangle',
-						itemStyle: { color: full ? `#edd9be`: `#d1b690` },
+						itemStyle: { color: full ? `#d1b690` : `#D8AA69` },
 					},
 					{
 						name: 'income',

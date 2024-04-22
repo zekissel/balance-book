@@ -149,3 +149,21 @@ div.news-main {
 	margin: 0;
 	padding: 0;
 }
+
+@keyframes load-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+	animation: load-spin infinite 5s linear;
+	height: 4rem;
+	position: absolute;
+	top: 40%;
+	left: 43%;
+	z-index: 200;
+}

@@ -205,7 +205,7 @@ export default function Sankey({ transactions, accounts }: GraphProps) {
 					{
 						depth: 2,
 						itemStyle: {
-							color: '#d1b690',
+							color: full ? '#d1b690' : `#D8AA69`,
 						},
 						lineStyle: {
 							color: 'gradient',
