@@ -24,7 +24,7 @@ export default function AccountPage({
 	return (
 		<div className="page-main">
 			<ul className="assets-main-list">
-				{accounts.map((a, i) => (
+				{accounts.sort((a, b) => b.balance - a.balance).map((a, i) => (
 					<AccountCard
 						key={i}
 						user={user}

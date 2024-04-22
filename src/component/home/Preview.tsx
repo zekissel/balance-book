@@ -36,17 +36,17 @@ export default function Preview({ accounts, transactions }: PreviewProps) {
 			<div className='preview-acct-select'>
 				
 				<menu>
-					<button className={curView === AccountType.Checking ? 'preview-type-active' : ''} onClick={() => handleType(AccountType.Checking)}>Checking</button>
-					<button className={curView === AccountType.Credit ? 'preview-type-active' : ''} onClick={() => handleType(AccountType.Credit)}>Credit</button>
-					<button className={curView === AccountType.Savings ? 'preview-type-active' : ''} onClick={() => handleType(AccountType.Savings)}>Savings</button>
-					<button className={curView === AccountType.Investment ? 'preview-type-active' : ''} onClick={() => handleType(AccountType.Investment)}>Investment</button>
-					<button className={curView === AccountType.Loan ? 'preview-type-active' : ''} onClick={() => handleType(AccountType.Loan)}>Loan</button>
+					<button id={curView === AccountType.Checking ? 'preview-type-active' : ''} onClick={() => handleType(AccountType.Checking)}>Checking</button>
+					<button id={curView === AccountType.Credit ? 'preview-type-active' : ''} onClick={() => handleType(AccountType.Credit)}>Credit</button>
+					<button id={curView === AccountType.Savings ? 'preview-type-active' : ''} onClick={() => handleType(AccountType.Savings)}>Savings</button>
+					<button id={curView === AccountType.Investment ? 'preview-type-active' : ''} onClick={() => handleType(AccountType.Investment)}>Investment</button>
+					<button id={curView === AccountType.Loan ? 'preview-type-active' : ''} onClick={() => handleType(AccountType.Loan)}>Loan</button>
 				</menu>
 
 				<menu>
 				{ curView &&
 					focusAccounts.map((a) => (
-						<button key={a.id} className={curID === a.id ? 'preview-type-active' : ''} onClick={() => handleID(a.id)}>{a.account_name}</button>
+						<button key={a.id} id={curID === a.id ? 'preview-type-active' : ''} onClick={() => handleID(a.id)}>{a.account_name}</button>
 					))
 				}
 

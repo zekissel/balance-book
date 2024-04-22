@@ -7,9 +7,40 @@ div.profile-personal {
 	padding: 1rem;
 }
 
-div.profile-personal > menu {
+div.profile-card > menu {
 	display: flex;
 	flex-direction: column;
-	justify-content: space-evenly;
+	justify-content: start;
+	align-items: start;
+
+	width: 100%;
 }
 
+div.profile-card {
+	width: 60%;
+	margin: 0.5rem 1rem;
+	padding: 0.5rem 1rem;
+	border: 1px dashed #739d88;
+	border-radius: 1vw;
+
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+
+	list-style: none;
+	background-color: rgba(223, 226, 225, 0.695);
+}
+
+div.profile-card > menu input {
+	width: 80%;
+	font-size: 18px;
+}
+
+div.profile-card > menu button {
+	font-size: 20px;
+	margin: 1rem 4rem;
+}
+
+button.save-user {
+	width: 4rem;
+}
