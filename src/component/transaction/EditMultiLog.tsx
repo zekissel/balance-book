@@ -17,6 +17,7 @@ export default function EditMultiLog({
 	cancel,
 	refresh,
 }: EditMultiLogProps) {
+
 	const [editCompany, setEditCompany] = useState<string>('');
 	const [editAmount, setEditAmount] = useState('0');
 	const [editCategory, setEditCategory] = useState<string[]>(['']);
@@ -60,7 +61,7 @@ export default function EditMultiLog({
 			};
 
 			await invoke('fix_transaction', log);
-			await new Promise((r) => setTimeout(r, 20));
+			//await new Promise((r) => setTimeout(r, 10));
 		}
 		cancel();
 		refresh();
