@@ -292,6 +292,12 @@ pub async fn read_status(token: Token) -> Result<InstitutionStatus, ()> {
 
   let response2 = client
     .institutions_get_by_id(&[&"US".to_owned(), &"CA".to_owned()], &inst_id)
+    .options(InstitutionsGetByIdRequestOptions {
+      include_status: Some(true),
+      include_auth_metadata: None,
+      include_optional_metadata: None,
+      include_payment_initiation_metadata: None,
+    })
     .await
     .unwrap();
 

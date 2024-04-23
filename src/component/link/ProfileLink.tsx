@@ -12,14 +12,14 @@ interface ProfileLinkProps {
 export default function ProfileLink({ user, refreshAcct, refreshTrans }: ProfileLinkProps) {
 	const [showLink, setShowLink] = useState(localStorage.getItem('auth_state') !== null);
 
-
 	interface InstStatus {
 		name: string;
 		last_update: string;
 		status: string;
 	}
 
-	const [status, setStatus] = useState<InstStatus[]>(localStorage.getItem(`${user.uname}.inc.stat`) !== null ? (localStorage.getItem(`${user.uname}.inc.stat`))!.split(' ').map(i => new Object({ name: i.split('?')[0], last_update: i.split('?')[1], status: i.split('?')[2] }) as InstStatus) : []);
+	const [status, setStatus] = useState<InstStatus[]>(localStorage.getItem(`${user.uname}.inst.status`) !== null ? (localStorage.getItem(`${user.uname}.inst.status`))!.split('%').map(i => new Object({ name: i.split('?')[0], last_update: i.split('?')[1], status: i.split('?')[2] }) as InstStatus) : []);
+
 	useEffect(() => {
 
 		const syncStatus = localStorage.getItem(`${user.uname}.sync.s.date`);
@@ -32,15 +32,16 @@ export default function ProfileLink({ user, refreshAcct, refreshTrans }: Profile
 				.then((res) => {
 					const stat = res as InstStatus[];
 					setStatus(stat);
-					const store = stat.map(s => `${s.name}?${s.last_update}?${s.status}`).join(' ');
-					localStorage.setItem(`${user.uname}.inc.stat`, store);
+					const store = stat.map(s => `${s.name}?${s.last_update}?${s.status}`).join('%');
+					localStorage.setItem(`${user.uname}.inst.status`, store);
 				})
-				.catch(_ => setStatus([]));
+				//.catch(_ => setStatus([]));
 		};
 		if (sync) {
 			fetchStatus();
 			localStorage.setItem(`${user.uname}.sync.s.date`, new Date().toISOString().split('.')[0]);
 		}
+
 	}, []);
 
 
@@ -60,7 +61,7 @@ export default function ProfileLink({ user, refreshAcct, refreshTrans }: Profile
 			</div>
 
 			<div className='profile-card'>
-				Connected accounts
+
 				{ status.map((s, i) => (
 					<div key={i}>
 						<p>{s.name}</p>
@@ -71,7 +72,7 @@ export default function ProfileLink({ user, refreshAcct, refreshTrans }: Profile
 
 				{
 
-					status.length === 0 && <p>Error/No accounts connected</p>
+					status.length === 0 && <p>Connected institutions will appear here</p>
 				}
 			</div>
 			
