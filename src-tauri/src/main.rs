@@ -77,6 +77,22 @@ async fn fix_user(id: &str, password: &str, new_pass: Option<&str>, email: Optio
 }
 
 #[tauri::command]
+async fn update_user_link(id: &str, client_id: &str, secret: &str) -> Result<Option<User>, ()> {
+  Ok(database::api::update_user_plaid(id, client_id, secret).await)
+}
+
+#[tauri::command]
+async fn remove_user(id: &str, password: &str) -> Result<bool, ()> {
+  match database::api::read_user_by_id(id).await {
+    None => return Ok(false),
+    Some(user) => match database::api::verify_user(&user.uname, password).await {
+      None => return Ok(false),
+      Some(_) => Ok(database::api::delete_user(id).await)
+    }
+  }
+}
+
+#[tauri::command]
 async fn sync_info(user_id: &str, balance: bool) -> Result<Vec<String>, ()> {
   let mut updated: Vec<String> = vec![];
   let tokens = database::api::read_user_tokens(user_id).await;
@@ -107,7 +123,6 @@ async fn get_status(user_id: &str) -> Result<Vec<link::api::InstitutionStatus>, 
 
 fn main() {
   dotenv::dotenv().ok();
-
   tauri::Builder::default()
     .setup(|_app| {
       // Initialize the database.
@@ -116,7 +131,7 @@ fn main() {
       Ok(())
     })
     .plugin(tauri_plugin_oauth::init())
-    .invoke_handler(tauri::generate_handler![new_transaction, get_transactions, fix_transaction, remove_transaction, new_account, get_accounts, fix_account, remove_account, login, register, fix_user, link::auth::authenticate, link::auth::authorize, link::auth::open_link, sync_info, get_status])
+    .invoke_handler(tauri::generate_handler![new_transaction, get_transactions, fix_transaction, remove_transaction, new_account, get_accounts, fix_account, remove_account, login, register, fix_user, update_user_link, remove_user, link::auth::authenticate, link::auth::authorize, link::auth::open_link, sync_info, get_status])
     .run(tauri::generate_context!())
     .expect("Error while running tauri application");
 }

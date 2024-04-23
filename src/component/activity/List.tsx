@@ -41,11 +41,12 @@ export default function List({
 			? transactions
 			: transactions.filter((t) => !['Transfer', 'Credit'].includes(t.category.split('>')[1]));
 
+		let rel: Transaction[] = [];
 		if (!restrictAcct) {
 			const rela = transactions.filter((t) =>
 				['Transfer', 'Credit'].includes(t.category.split('>')[1]),
 			);
-			const rel = rela
+			rel = rela
 				.map((t) => {
 					const amt = t.amount;
 					const rel_t = rela.find((rt) => rt.amount === -amt);

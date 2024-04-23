@@ -74,6 +74,21 @@ export default function Profile({
 			.finally(() => setOldPass(''))
 	};
 
+	const deleteUser = async () => {
+		await invoke('remove_user', { id: user.id, password: oldPass })
+			.then((resp) => {
+				if (resp as boolean === false) { setError('Unable to delete user'); return }
+				localStorage.removeItem(`${user.uname}.inst.status`);
+				localStorage.removeItem(`${user.uname}.sync.s.date`);
+				localStorage.removeItem(`${user.uname}.sync.t.date`);
+				logout();
+				navigate('/');
+			})
+			.catch((err) => setError(err))
+			.finally(() => setOldPass(''));
+	}
+	const [confirmDelete, setConfirmDelete] = useState(false);
+
 	const navigate = useNavigate();
 	const [stateFinancial, setStateFinancial] = useState(true);
 
@@ -110,7 +125,7 @@ export default function Profile({
 			<div className="page-main">
 				{stateFinancial ? (
 					<div className="profile-personal">
-						<ProfileLink user={user} refreshAcct={refreshAcct} refreshTrans={refreshTrans} />
+						<ProfileLink user={user} setUser={setUser} refreshAcct={refreshAcct} refreshTrans={refreshTrans} />
 					</div>
 				) : (
 					<div className="profile-personal">
@@ -182,7 +197,18 @@ export default function Profile({
 
 								<div>
 									<button className='save-user' onClick={updateUser}>Save</button>
+
+									<button onClick={() => setConfirmDelete(!confirmDelete)}>Delete User</button>
 								</div>
+
+								{ confirmDelete &&
+									<div className='confirm-overlay'>
+										<label>Are you sure you want to delete your user data and all associated accounts and transactions?</label>
+										<input type='password' placeholder='Enter password' value={oldPass} onChange={(e) => setOldPass(e.target.value)} />
+										<button onClick={deleteUser} disabled={oldPass === ''}>Yes</button>
+										<button onClick={() => setConfirmDelete(false)}>No</button>
+									</div>
+								}
 
 								{error !== '' && <em>{error}</em>}
 							</menu>

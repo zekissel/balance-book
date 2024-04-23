@@ -82,7 +82,7 @@ export async function getTransactions(
 export async function getAccounts(user_id: string): Promise<Account[]> {
 	return await invoke('get_accounts', { userId: user_id }).then((data) => {
 		const acc = data as Account[];
-		acc.forEach((e) => (e.date = new Date(e.date)));
+		//acc.forEach((e) => (e.date = new Date(e.date)));
 		return acc.sort((a, b) => (a.date > b.date ? -1 : 1));
 	});
 }

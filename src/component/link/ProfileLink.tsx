@@ -6,10 +6,11 @@ import { addHours } from '../../typeassist';
 
 interface ProfileLinkProps {
 	user: User;
+	setUser: React.Dispatch<React.SetStateAction<User | null>>;
 	refreshAcct: () => void;
 	refreshTrans: () => void;
 }
-export default function ProfileLink({ user, refreshAcct, refreshTrans }: ProfileLinkProps) {
+export default function ProfileLink({ user, setUser, refreshAcct, refreshTrans }: ProfileLinkProps) {
 	const [showLink, setShowLink] = useState(localStorage.getItem('auth_state') !== null);
 
 	interface InstitutionStatus {
@@ -53,18 +54,49 @@ export default function ProfileLink({ user, refreshAcct, refreshTrans }: Profile
 		return localStorage.getItem(`${user.uname}.sync.s.date`);
 	}, [newStatus]);
 
+
+	const [error, setError] = useState('');
+	const [linkNotSet, setLinkSet] = useState(!user.plaid_id || !user.plaid_secret);
+	const [clientId, setClientId] = useState(user.plaid_id ?? '');
+	const [secret, setSecret] = useState(user.plaid_secret ?? '');
+
+	const [showID, setShowID] = useState(false);
+	const toggleShowID = () => setShowID(!showID);
+	const [showSecret, setShowSecret] = useState(false);
+	const toggleShowSecret = () => setShowSecret(!showSecret);
+
+	const updateLink = async () => {
+		await invoke('update_user_link', { id: user.id, clientId, secret })
+			.then((resp) => {
+				if (resp === null) { setError('Error updating Plaid information'); return}
+				const user = resp as User;
+				setUser(user);
+				setClientId(user.plaid_id ?? '');
+				setSecret(user.plaid_secret ?? '');
+				if (user.plaid_id && user.plaid_secret) setLinkSet(false);
+			})
+			.catch(() => setError('Error updating Plaid information'));
+	};
+
 	return (
 		<div className="profile-financial">
 
 			<div className='profile-card'>
 				<menu>
 					<h3>Connect Financial Institution with Plaid</h3>
-					<button onClick={() => setShowLink(!showLink)}>
+					<button onClick={() => setShowLink(!showLink)} disabled={linkNotSet}>
 						{showLink ? 'Close' : 'Start Link Process'}
 					</button>
 					{showLink && <PlaidLink user={user} refreshAcct={refreshAcct} refreshTrans={refreshTrans} />}
 
-					<p>Requires creating an account with <a href='https://plaid.com/' target='_blank' rel="noopener noreferrer">Plaid</a>, and applying for deployment access (production access after June 2024)</p>
+					<p>Requires creating an account with <a id='plaid-url' href='https://plaid.com/' target='_blank' rel="noopener noreferrer">Plaid</a>, and applying for deployment access (production access after June 2024)</p>
+
+					<span>
+					<input id='pID' type={showID? 'text' : 'password'} placeholder='Plaid Client ID' value={clientId} onChange={(e) => setClientId(e.target.value)} /><label htmlFor='pID' onClick={toggleShowID}><img src={showID?'/hide.svg': '/show.svg'} /></label></span>
+					<span><input id='pSec' type={showSecret? 'text' : 'password'} placeholder='Plaid Environment Secret (Development)' value={secret} onChange={(e) => setSecret(e.target.value)} /><label htmlFor='pSec' onClick={toggleShowSecret}><img src={showSecret?'/hide.svg': '/show.svg'} /></label></span>
+					<button onClick={updateLink}>Update Plaid Info</button>
+
+					{ error !== '' && <p>{error}</p> }
 				</menu>
 			</div>
 

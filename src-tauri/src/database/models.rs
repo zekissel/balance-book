@@ -101,6 +101,8 @@ pub struct User {
     pub uname: String,
     pub pwhash: String,
     pub pwsalt: String,
+    pub plaid_id: Option<String>,
+    pub plaid_secret: Option<String>,
     pub email: Option<String>,
     pub fname: Option<String>,
     pub lname: Option<String>,
@@ -114,9 +116,6 @@ pub struct AddUser<'a> {
     pub uname: &'a str,
     pub pwhash: &'a str,
     pub pwsalt: &'a str,
-    pub email: Option<&'a str>,
-    pub fname: Option<&'a str>,
-    pub lname: Option<&'a str>,
     pub dob: Option<&'a str>,
 }
 
@@ -125,13 +124,15 @@ impl Serialize for User {
     where
         S: serde::Serializer,
     {
-        let mut state = serializer.serialize_struct("User", 6)?;
+        let mut state = serializer.serialize_struct("User", 8)?;
         state.serialize_field("id", &self.id)?;
         state.serialize_field("uname", &self.uname)?;
         state.serialize_field("email", &self.email)?;
         state.serialize_field("fname", &self.fname)?;
         state.serialize_field("lname", &self.lname)?;
         state.serialize_field("dob", &self.dob)?;
+        state.serialize_field("plaid_id", &self.plaid_id)?;
+        state.serialize_field("plaid_secret", &self.plaid_secret)?;
         state.end()
     }
 }

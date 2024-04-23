@@ -46,15 +46,23 @@ export default function EditMultiLog({
 
 	const handleSubmitEdit = async () => {
 		for (const id of editLogs) {
+			const amount = (editAmount !== '0'
+				? Math.round((Number(editAmount) + Number.EPSILON) * 100) * (isIncome ? 1 : -1)
+				: logs.find((l) => l.id === id)!.amount);
+			let category = (editCategory[0] !== '' ? editCategory[0] : logs.find((l) => l.id === id)!.category);
+			if (logConflict) {
+				if (category.split('>')[0] === 'Finance') {
+					if (amount > 0) category = `FinanceIncome>${category.split('>')[1]}`;
+					else category = `Financial>${category.split('>')[1]}`;
+				}
+				else if (category.split('>')[0] === 'Other' && amount > 0) category = `OtherIncome>${category.split('>')[1]}`;
+			}
+
 			const log = {
 				id,
 				company: editCompany !== '' ? editCompany : logs.find((l) => l.id === id)?.company,
-				amount:
-					editAmount !== '0'
-						? Math.round((Number(editAmount) + Number.EPSILON) * 100) * (isIncome ? 1 : -1)
-						: logs.find((l) => l.id === id)?.amount,
-				category:
-					editCategory[0] !== '' ? editCategory[0] : logs.find((l) => l.id === id)?.category,
+				amount: amount,
+				category: category,
 				date: editDate !== null ? editDate : logs.find((l) => l.id === id)?.date,
 				desc: editDesc !== '' ? editDesc : logs.find((l) => l.id === id)?.desc,
 				accountId: editAccount !== '' ? editAccount : logs.find((l) => l.id === id)?.account_id,
@@ -120,22 +128,12 @@ export default function EditMultiLog({
 			<div className="multi-sep">
 				<span className="multi-edit-adjust">
 					<label htmlFor="edit-multi-ca">Category: </label>
-					{isIncome !== undefined && (
 						<TreeSelect
 							value={editCategory}
-							options={isIncome ? IncomeLeaf : ExpenseLeaf}
+							options={isIncome !== undefined ? (isIncome ? IncomeLeaf : ExpenseLeaf) : CrossLeaf}
 							onChange={handleCategorySelect}
 							multi={false}
 						/>
-					)}
-					{isIncome === undefined && (
-						<input
-							type="text"
-							id="edit-multi-ca"
-							placeholder="Category disabled"
-							disabled={logConflict}
-						/>
-					)}
 				</span>
 
 				<span>
@@ -192,3 +190,8 @@ export default function EditMultiLog({
 		</menu>
 	);
 }
+
+export const CrossLeaf = {
+	Finance: ['Transfer', 'Credit', 'Other'],
+	Other: ['Other'],
+};

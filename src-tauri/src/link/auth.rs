@@ -1,7 +1,8 @@
-use plaid::{model::LinkTokenCreateResponse, PlaidClient};
+use plaid::model::LinkTokenCreateResponse;
 use plaid::request::LinkTokenCreateRequired;
 use plaid::model::*;
 
+use crate::link::api::establish_plaid;
 use crate::database::api::deposit_token;
 
 
@@ -20,7 +21,7 @@ pub async fn create_link_token(
   redirect_uri: &str,
 ) -> LinkTokenCreateResponse {
 
-  let client = PlaidClient::from_env();
+  let client = establish_plaid(&user_id).await;
   let args = LinkTokenCreateRequired {
     client_name: "Balance Book",
     country_codes: &["US","CA"],
@@ -57,7 +58,8 @@ pub async fn authorize(
   user_id: &str,
   public_token: &str,
 ) -> Result<String, ()> {
-  let client = PlaidClient::from_env();
+  
+  let client = establish_plaid(&user_id).await;
   let response = client
     .item_public_token_exchange(public_token)
     .await

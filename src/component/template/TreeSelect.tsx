@@ -1,21 +1,22 @@
 import { useMemo, useState } from 'react';
 import { ExpenseLeaf, IncomeLeaf, Account } from '../../typedef';
 import '../../styles/Select.css';
+import { CrossLeaf } from '../transaction/EditMultiLog';
 
-type CategoryBase = typeof ExpenseLeaf | typeof IncomeLeaf | Account[];
+type CategoryBase = typeof ExpenseLeaf | typeof IncomeLeaf | Account[] | typeof CrossLeaf;
 function isAccount(tbd: CategoryBase): tbd is Account[] {
 	return (tbd as Account[]).length !== undefined;
 }
-function determineCategory(tbd: CategoryBase): tbd is typeof ExpenseLeaf {
-	if ((tbd as typeof ExpenseLeaf).Home !== undefined) {
-		return true;
-	}
-	return false;
+function isExpense(tbd: CategoryBase): tbd is typeof ExpenseLeaf {
+	return (tbd as typeof ExpenseLeaf).Home !== undefined;
+}
+function isIncome(tbd: CategoryBase): tbd is typeof IncomeLeaf {
+	return (tbd as typeof IncomeLeaf).FinanceIncome !== undefined;
 }
 
 interface SelectProps {
 	value: string[];
-	options: typeof ExpenseLeaf | typeof IncomeLeaf | Account[];
+	options: typeof ExpenseLeaf | typeof IncomeLeaf | Account[] | typeof CrossLeaf;
 	onChange: (value: string[]) => void;
 	multi: boolean;
 	option2?: typeof ExpenseLeaf | typeof IncomeLeaf;
@@ -52,11 +53,14 @@ export default function TreeSelect({ value, options, onChange, multi, option2 }:
 		}
 		const selected = value.findIndex((c) => c.includes(`${root}>`)) !== -1;
 		const replace = value.filter((v) => !v.includes(`${root}`));
+		
+		const incLeaves = (option2 && isIncome(option2) && Object.keys(IncomeLeaf).includes(root)) ? option2[root as keyof typeof IncomeLeaf] : [];
+		const expLeaves = ((isExpense(options) && Object.keys(ExpenseLeaf).includes(root)) ? options[root as keyof typeof ExpenseLeaf] : []);
+		
 		const addValue = value.concat(
-			(determineCategory(options)
-				? options[root as keyof typeof ExpenseLeaf]
-				: options[root as keyof typeof IncomeLeaf]
-			).map((subOption) => `${root}>${subOption}`),
+			expLeaves.map((subOption) => `${root}>${subOption}`)
+		).concat(
+			incLeaves.map((subOption) => `${root}>${subOption}`)
 		);
 
 		if (selected) onChange(replace);
@@ -120,7 +124,7 @@ export default function TreeSelect({ value, options, onChange, multi, option2 }:
 							>
 								{key}&gt;
 								<div className="option-container">
-									{determineCategory(options)
+									{isExpense(options)
 										? options[key as keyof typeof ExpenseLeaf].map((subOption) => (
 												<div
 													className="tree-option"
@@ -134,7 +138,7 @@ export default function TreeSelect({ value, options, onChange, multi, option2 }:
 													{subOption}
 												</div>
 											))
-										: options[key as keyof typeof IncomeLeaf].map((subOption) => (
+										: (isIncome(options) ? options[key as keyof typeof IncomeLeaf] : options[key as keyof typeof CrossLeaf]).map((subOption) => (
 												<div
 													className="tree-option"
 													key={subOption}
@@ -162,7 +166,7 @@ export default function TreeSelect({ value, options, onChange, multi, option2 }:
 							>
 								{key}&gt;
 								<div className="option-container">
-									{determineCategory(option2)
+									{isExpense(option2)
 										? option2[key as keyof typeof ExpenseLeaf].map((subOption) => (
 												<div
 													className="tree-option"

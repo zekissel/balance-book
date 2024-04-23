@@ -78,18 +78,8 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 	const voidCategory = () => {
 		setFilters({ ...filters, category: [] });
 		sessionStorage.removeItem('filter.category');
-	}; /*
-	const handleCategory = (e: any) => {
-		if (filters.category.includes(e.target.value)) {
-			const newCategories = filters.category.filter((c) => c !== e.target.value);
-			setFilters({ ...filters, category: newCategories });
-			sessionStorage.setItem('filter.category', newCategories.join(' '));
-		} else {
-			const newCategories = [...filters.category, e.target.value];
-			setFilters({ ...filters, category: newCategories });
-			sessionStorage.setItem('filter.category', newCategories.join(' '));
-		}
-	};*/
+	}; 
+	
 	const handleCategory = (e: string[]) => {
 		setFilters({ ...filters, category: e });
 		sessionStorage.setItem('filter.category', e.join(' '));
@@ -105,18 +95,8 @@ export default function FilterGUI({ accounts, toggle, filters, setFilters }: Fil
 		//toggleAccounts();
 		setFilters({ ...filters, accounts: [] });
 		sessionStorage.removeItem('filter.accounts');
-	}; /*
-	const handleAccounts = (e: any) => {
-		if (filters.accounts.includes(e.target.value)) {
-			const newAccounts = filters.accounts.filter((a) => a !== e.target.value);
-			setFilters({ ...filters, accounts: newAccounts });
-			sessionStorage.setItem('filter.accounts', newAccounts.join(' '));
-		} else {
-			const newAccounts = [...filters.accounts, e.target.value];
-			setFilters({ ...filters, accounts: newAccounts });
-			sessionStorage.setItem('filter.accounts', newAccounts.join(' '));
-		}
-	};*/
+	}; 
+
 	const handleAccounts = (e: string[]) => {
 		setFilters({ ...filters, accounts: e });
 		sessionStorage.setItem('filter.accounts', e.join(' '));

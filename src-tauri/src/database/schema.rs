@@ -27,6 +27,8 @@ diesel::table! {
     uname -> Text,  /* unique */
     pwhash -> Text,
     pwsalt -> Text,
+    plaid_id -> Nullable<Text>,
+    plaid_secret -> Nullable<Text>,
     email -> Nullable<Text>,  /* unique */
     fname -> Nullable<Text>,
     lname -> Nullable<Text>,

@@ -20,6 +20,8 @@ function App() {
 		fname: localStorage.getItem('userf') ?? '',
 		lname: localStorage.getItem('userl') ?? '',
 		dob: localStorage.getItem('dob') ? new Date(localStorage.getItem('dob') as string) : null,
+		plaid_id: localStorage.getItem('client_id') ?? '',
+		plaid_secret: localStorage.getItem('plaid_s') ?? '',
 	});
 
 	const [moreTrans, setMoreTrans] = useState(false);
@@ -120,6 +122,8 @@ function App() {
 		localStorage.removeItem('userf');
 		localStorage.removeItem('userl');
 		localStorage.removeItem('dob');
+		localStorage.removeItem('client_id');
+		localStorage.removeItem('plaid_s');
 		localStorage.removeItem('list.perPage')
 		localStorage.removeItem('listView');
 		localStorage.removeItem('stats.boxTypeInc');
@@ -136,6 +140,8 @@ function App() {
 		if (user.fname) localStorage.setItem('userf', user.fname);
 		if (user.lname) localStorage.setItem('userl', user.lname);
 		if (user.dob) localStorage.setItem('dob', user.dob.toDateString());
+		if (user.plaid_id) localStorage.setItem('client_id', user.plaid_id);
+		if (user.plaid_secret) localStorage.setItem('plaid_s', user.plaid_secret);
 	};
 	const logout = () => {
 		setUser(null);

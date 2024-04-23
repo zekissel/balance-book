@@ -5,6 +5,8 @@ export interface User {
 	fname: string | null;
 	lname: string | null;
 	dob: Date | null;
+	plaid_id: string | null;
+	plaid_secret: string | null;
 }
 
 export enum DataState {
@@ -102,7 +104,7 @@ export interface Account {
 	account_type: AccountType;
 	account_name: string;
 	balance: number;
-	date: Date;
+	date: string;
 }
 
 export enum AccountType {

@@ -5,8 +5,28 @@ use serde::ser::SerializeStruct;
 
 use crate::database::models::Token;
 
-async fn sync_transactions(access_token: &str, count: i16, cursor: Option<&str>) -> Result<TransactionsSyncResponse, ()> {
-  let client = PlaidClient::from_env();
+use crate::database::api::read_user_by_id;
+static PLAID_VERSION: &str = "2020-09-14";
+
+pub async fn establish_plaid(user_id: &str) -> PlaidClient {
+  let user = read_user_by_id(&user_id).await.unwrap();
+  let client_id = user.plaid_id.unwrap();
+  let secret = user.plaid_secret.unwrap();
+  
+  PlaidClient::with_auth(plaid::PlaidAuth::ClientId {
+    client_id, secret, plaid_version: PLAID_VERSION.to_owned(),
+  })
+
+  /* {
+    // requires env variables: PLAID_CLIENT_ID, PLAID_SECRET, PLAID_ENV, PLAID_VERSION
+    PlaidClient::from_env()
+  } */
+}
+
+
+async fn sync_transactions(user_id: &str, access_token: &str, count: i16, cursor: Option<&str>) -> Result<TransactionsSyncResponse, ()> {
+  
+  let client = establish_plaid(&user_id).await;
   let response = client
     .transactions_sync(access_token)
     .count(count.into())
@@ -180,7 +200,7 @@ pub async fn fetch_transactions(token: Token, number: i16) -> Result<Vec<String>
   while more {
     println!("Fetching transactions: {:#?}", count);
     count += 1;
-    match sync_transactions(&token.id, number, Some(&cursor)).await {
+    match sync_transactions(&token.user_id, &token.id, number, Some(&cursor)).await {
       Ok(mut d) => {
         let mut list = d.added;
         list.append(&mut d.modified);
@@ -208,7 +228,7 @@ pub async fn fetch_transactions(token: Token, number: i16) -> Result<Vec<String>
 }
 
 pub async fn fetch_balance(token: Token) -> Result<bool, ()> {
-  let client = PlaidClient::from_env();
+  let client = establish_plaid(&token.user_id).await;
   let response = client
     .accounts_balance_get(&token.id)
     .await
@@ -232,7 +252,7 @@ pub async fn extract_accounts(user_id: &str, access_token: &str) -> Result<bool,
     }
   }
 
-  let client = PlaidClient::from_env();
+  let client = establish_plaid(&user_id).await;
   let response = client
     .accounts_balance_get(access_token)
     .await
@@ -281,7 +301,7 @@ impl Serialize for InstitutionStatus {
   }
 }
 pub async fn read_status(token: Token) -> Result<InstitutionStatus, ()> {
-  let client = PlaidClient::from_env();
+  let client = establish_plaid(&token.user_id).await;
   let response = client
     .item_get(&token.id)
     .await

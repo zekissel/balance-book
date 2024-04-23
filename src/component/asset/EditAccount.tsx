@@ -72,7 +72,7 @@ export function EditAccount({ log, user, type, toggle, cancel, updateAccounts }:
 				<div className="new-trans-main">
 					<li>
 						<label>Last Update:</label>
-						<input type="text" value={log.date.toDateString()} disabled />
+						<input type="text" value={log.date} disabled />
 					</li>
 				</div>
 			)}

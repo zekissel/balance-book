@@ -62,7 +62,7 @@ fn db_file_exists() -> bool {
 // Get the path where the database file should be located.
 fn get_db_path() -> String {
   let home_dir = homedir::get_my_home().unwrap().unwrap();
-  home_dir.to_str().unwrap().to_string() + "/.config/records/db.sqlite"
+  home_dir.to_str().unwrap().to_string() + "/.config/balancebook/archive.db"
 }
 
 /* --------- Interacting with database --------- */
@@ -265,12 +265,16 @@ pub async fn create_user(
   let pwhash = PasswordHash::new(&password_hash).unwrap();
   assert!(Argon2::default().verify_password(password.as_bytes(), &pwhash).is_ok());
 
-  let new_user = AddUser { id: &uuid::Uuid::new_v4().to_string(), uname, pwhash: &pwhash.to_string(), pwsalt: &pwsalt.to_string(), email: None, fname: None, lname: None, dob: None };
-  Some(diesel::insert_into(user::table)
+  let new_user = AddUser { id: &uuid::Uuid::new_v4().to_string(), uname, pwhash: &pwhash.to_string(), pwsalt: &pwsalt.to_string(), dob: None };
+  let user = diesel::insert_into(user::table)
     .values(&new_user)
     .returning(User::as_returning())
     .get_result(&mut establish_connection())
-    .expect("Error saving new user"))
+    .expect("Error saving new user");
+
+  let _ = create_account(None, &user.id, "Checking", "Cash", 0, &chrono::Utc::now().to_string()).await;
+
+  Some(user)
 }
 
 pub async fn read_user_by_uname(name_i: &str) -> Option<User> {
@@ -325,12 +329,22 @@ pub async fn update_user_data(id_i: &str, email_i: Option<&str>, fname_i: Option
     .expect("Error updating user data"))
 }
 
-pub fn delete_user(id_i: &str) {
+pub async fn update_user_plaid(id_i: &str, plaid_id_i: &str, plaid_secret_i: &str) -> Option<User> {
+  use super::schema::user::dsl::*;
+
+  Some(diesel::update(user.find(id_i))
+    .set((plaid_id.eq(plaid_id_i), plaid_secret.eq(plaid_secret_i)))
+    .returning(User::as_returning())
+    .get_result(&mut establish_connection())
+    .expect("Error updating user Plaid info"))
+}
+
+pub async fn delete_user(id_i: &str) -> bool {
   use super::schema::user::dsl::*;
 
   diesel::delete(user.find(id_i))
     .execute(&mut establish_connection())
-    .expect("Error deleting user");
+    .expect("Error deleting user") > 0
 }
 
 
