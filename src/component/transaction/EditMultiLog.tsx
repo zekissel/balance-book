@@ -33,14 +33,15 @@ export default function EditMultiLog({
 			if (t.amount > 0 !== isInc) return true;
 		}
 		return false;
-	}, [editLogs]);
+	}, [editLogs, logs]);
 	const isIncome = useMemo(() => {
 		if (logConflict) return undefined;
 		else {
 			const trans = logs.filter((l) => editLogs.includes(l.id));
+			if (trans.length === 0) return undefined;
 			return trans[0].amount > 0;
 		}
-	}, [logs, editLogs, logConflict]);
+	}, [logConflict, editLogs, logs]);
 
 	const handleSubmitEdit = async () => {
 		for (const id of editLogs) {
@@ -58,9 +59,10 @@ export default function EditMultiLog({
 				accountId: editAccount !== '' ? editAccount : logs.find((l) => l.id === id)?.account_id,
 			};
 
-			invoke('fix_transaction', log);
-			await new Promise((r) => setTimeout(r, 60));
+			await invoke('fix_transaction', log);
+			await new Promise((r) => setTimeout(r, 20));
 		}
+		cancel();
 		refresh();
 	};
 

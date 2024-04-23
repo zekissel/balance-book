@@ -41,6 +41,32 @@ div.profile-card > menu button {
 	margin: 1rem 4rem;
 }
 
+div.generic-card {
+	width: 60%;
+	margin: 0.5rem 1rem;
+	padding: 0.5rem 1rem;
+	border: 1px dashed #739d88;
+	border-radius: 1vw;
+	background-color: rgba(223, 226, 225, 0.695);
+}
+
+div.heading-items {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+}
+
+div.heading-items  button {
+	border-radius: 1rem;
+	width: 4rem;
+	height: 2rem;
+}
+
+div.item-organizer {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
 button.save-user {
 	width: 4rem;
 }
