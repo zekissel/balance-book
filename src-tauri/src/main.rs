@@ -92,6 +92,17 @@ async fn sync_info(user_id: &str, balance: bool) -> Result<Vec<String>, ()> {
   }
   Ok(updated)
 }
+
+#[tauri::command]
+async fn get_status(user_id: &str) -> Result<Vec<link::api::InstitutionStatus>, ()> {
+  let tokens = database::api::read_user_tokens(user_id).await;
+  let mut status: Vec<link::api::InstitutionStatus> = vec![];
+  for token in tokens { 
+    let inst_stat = link::api::read_status(token).await;
+    status.push(inst_stat?);
+  }
+  Ok(status)
+}
   
 
 fn main() {
@@ -105,7 +116,7 @@ fn main() {
       Ok(())
     })
     .plugin(tauri_plugin_oauth::init())
-    .invoke_handler(tauri::generate_handler![new_transaction, get_transactions, fix_transaction, remove_transaction, new_account, get_accounts, fix_account, remove_account, login, register, fix_user, link::auth::authenticate, link::auth::authorize, link::auth::open_link, sync_info])
+    .invoke_handler(tauri::generate_handler![new_transaction, get_transactions, fix_transaction, remove_transaction, new_account, get_accounts, fix_account, remove_account, login, register, fix_user, link::auth::authenticate, link::auth::authorize, link::auth::open_link, sync_info, get_status])
     .run(tauri::generate_context!())
     .expect("Error while running tauri application");
 }

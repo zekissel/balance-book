@@ -1,6 +1,8 @@
 import { User } from '../../typedef';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PlaidLink from './PlaidLink';
+import { invoke } from '@tauri-apps/api';
+import { addHours } from '../../typeassist';
 
 interface ProfileLinkProps {
 	user: User;
@@ -11,6 +13,35 @@ export default function ProfileLink({ user, refreshAcct, refreshTrans }: Profile
 	const [showLink, setShowLink] = useState(localStorage.getItem('auth_state') !== null);
 
 
+	interface InstStatus {
+		name: string;
+		last_update: string;
+		status: string;
+	}
+
+	const [status, setStatus] = useState<InstStatus[]>(localStorage.getItem(`${user.uname}.inc.stat`) !== null ? (localStorage.getItem(`${user.uname}.inc.stat`))!.split(' ').map(i => new Object({ name: i.split('?')[0], last_update: i.split('?')[1], status: i.split('?')[2] }) as InstStatus) : []);
+	useEffect(() => {
+
+		const syncStatus = localStorage.getItem(`${user.uname}.sync.s.date`);
+			const sync = syncStatus
+				? addHours(new Date(syncStatus), 6) < new Date(new Date().toISOString().split('.')[0])
+				: true;
+
+		const fetchStatus = async () => {
+			await invoke('get_status', { userId: user.id })
+				.then((res) => {
+					const stat = res as InstStatus[];
+					setStatus(stat);
+					const store = stat.map(s => `${s.name}?${s.last_update}?${s.status}`).join(' ');
+					localStorage.setItem(`${user.uname}.inc.stat`, store);
+				})
+				.catch(_ => setStatus([]));
+		};
+		if (sync) {
+			fetchStatus();
+			localStorage.setItem(`${user.uname}.sync.s.date`, new Date().toISOString().split('.')[0]);
+		}
+	}, []);
 
 
 	return (
@@ -30,6 +61,18 @@ export default function ProfileLink({ user, refreshAcct, refreshTrans }: Profile
 
 			<div className='profile-card'>
 				Connected accounts
+				{ status.map((s, i) => (
+					<div key={i}>
+						<p>{s.name}</p>
+						<p>Last updated: {s.last_update}</p>
+						<p>Status: {s.status}</p>
+					</div>
+				)) }
+
+				{
+
+					status.length === 0 && <p>Error/No accounts connected</p>
+				}
 			</div>
 			
 		</div>

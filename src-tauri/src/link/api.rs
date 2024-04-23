@@ -1,5 +1,7 @@
 use plaid::PlaidClient;
 use plaid::model::*;
+use serde::Serialize;
+use serde::ser::SerializeStruct;
 
 use crate::database::models::Token;
 
@@ -258,4 +260,45 @@ pub async fn extract_accounts(user_id: &str, access_token: &str) -> Result<bool,
     let _new_acc = crate::database::api::create_account(Some(a_id), user_id, &account_type, account_name, balance, date).await;
   }
   Ok(true)
+}
+
+#[allow(dead_code)]
+pub struct InstitutionStatus {
+  name: String,
+  last_update: String,
+  status: String,
+}
+impl Serialize for InstitutionStatus {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+      S: serde::Serializer,
+  {
+      let mut state = serializer.serialize_struct("InstitutionStatus", 3)?;
+      state.serialize_field("name", &self.name)?;
+      state.serialize_field("last_update", &self.last_update)?;
+      state.serialize_field("status", &self.status)?;
+      state.end()
+  }
+}
+pub async fn read_status(token: Token) -> Result<InstitutionStatus, ()> {
+  let client = PlaidClient::from_env();
+  let response = client
+    .item_get(&token.id)
+    .await
+    .unwrap();
+
+  let recent = response.status.unwrap().transactions.unwrap().last_successful_update.unwrap().to_string();
+  let inst_id = response.item.institution_id.unwrap();
+
+  let response2 = client
+    .institutions_get_by_id(&[&"US".to_owned(), &"CA".to_owned()], &inst_id)
+    .await
+    .unwrap();
+
+  let name = response2.institution.name;
+  let status = match response2.institution.status {
+    Some(is) => is.transactions_updates.unwrap().status,
+    None => "Unknown".to_owned(),
+  };
+  Ok(InstitutionStatus{ name, last_update: recent, status })
 }
