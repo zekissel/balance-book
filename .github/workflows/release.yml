@@ -61,7 +61,11 @@ jobs:
         with:
           tagName: balance-book-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'Balance Book v__VERSION__'
-          releaseBody: 'Initial release'
+          releaseBody: |
+            'Find your system installer:'
+            'Windows 10/11: .exe or .msi'
+            'macOS (M1 us aarch64): .dmg or .app.tar.gz'
+            'Linux: .AppImage or .deb'
           releaseDraft: true
           prerelease: false
           includeUpdaterJson: false
