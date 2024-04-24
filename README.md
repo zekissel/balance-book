@@ -1,7 +1,6 @@
 <h1 align="center">
-  <img src="./.github/img/balance-book-logo.png" alt="Balance Book">
+  <img src="./src-tauri/icons/icon.png" alt="Balance Book Logo" />
 </h1>
-
 
 ## Contents
 1. <a href='#intro'>Introduction</a>
