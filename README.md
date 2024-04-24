@@ -34,7 +34,7 @@ Once you have configured the redirect URL and have working access to the develop
 ### Activity: 
 - list and calendar views of recent transactions. Filter and sort by transaction date, source, category, amount, and account
 
-<img align='center' src="./.github/img/activity.png" alt="Activity view (list)">
+<img align='center' src="./.github/img/list.png" alt="Activity view (list)">
 
 ### Statistics: 
 - multiple charts and graphs to illustrate income and expenses. Adjustable timeframe and filterable fields. Double click charts to see full-screen.
