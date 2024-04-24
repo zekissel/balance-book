@@ -60,7 +60,7 @@ export enum IncomeRoot {
 };
 export const IncomeLeaf = {
 	Salary: ['Monthly', 'Bi-Weekly', 'Weekly', 'Other'],
-	SideJob: ['Gig', 'Freelance', 'Other'],
+	SideJob: ['Contract', 'Freelance', 'Temporary','Other'],
 	Government: ['Welfare', 'Unemployment', 'Pension', 'Taxes', 'Other'],
 	FinanceIncome: ['Transfer', 'Credit', 'Interest', 'Loan', 'Other'],
 	OtherIncome: ['Reimbursement', 'Refund', 'Gifts', 'Other'],

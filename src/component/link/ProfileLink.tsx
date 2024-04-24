@@ -107,7 +107,7 @@ export default function ProfileLink({ user, setUser, refreshAcct, refreshTrans }
 
 					<span>Last refresh: { lastUpdate }</span>
 
-					<button onClick={async () => await fetchAndLog()}>Refresh</button>
+					<button onClick={async () => await fetchAndLog()}><img src='/refresh.svg'/></button>
 				</div>
 
 				<div className='item-organizer'>

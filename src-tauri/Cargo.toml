@@ -24,7 +24,7 @@ dotenv = "0.15.0"
 open = "5.1.2"
 tauri-plugin-oauth = "0.0.0-alpha.0"
 chrono = "0.4.37"
-rusqlite = { version = "0.30.0", features = ["bundled"] }
+##replace-for-windows-build##rusqlite = { version = "0.30.0", features = ["bundled"] }
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
