@@ -51,6 +51,7 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PLAID_ENV: development # plaid env allows for free hobby use
         with:
           tagName: balance-book-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'Balance Book v__VERSION__'
