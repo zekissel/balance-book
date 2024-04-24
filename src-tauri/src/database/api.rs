@@ -129,6 +129,7 @@ pub async fn read_transaction_by_id(id_i: &str) -> Option<Transaction> {
     .ok()
 }
 
+
 pub async fn update_transaction(
   id_i: &str,
   company_i: &str, 
@@ -239,6 +240,11 @@ pub async fn update_account_balance(
 
 pub fn delete_account(id_i: &str) {
   use super::schema::account::dsl::*;
+  use super::schema::transaction::dsl::*;
+
+  diesel::delete(transaction.filter(account_id.eq(id_i)))
+      .execute(&mut establish_connection())
+      .expect("Error deleting transactions");
 
   diesel::delete(account.find(id_i))
     .execute(&mut establish_connection())
@@ -341,6 +347,20 @@ pub async fn update_user_plaid(id_i: &str, plaid_id_i: &str, plaid_secret_i: &st
 
 pub async fn delete_user(id_i: &str) -> bool {
   use super::schema::user::dsl::*;
+  use super::schema::transaction::dsl::*;
+  use super::schema::token::dsl::*;
+
+  let accts = read_account(id_i).await;
+  for acc in accts {
+    diesel::delete(transaction.filter(account_id.eq(&acc.id)))
+      .execute(&mut establish_connection())
+      .expect("Error deleting transactions");
+    delete_account(&acc.id);
+  }
+
+  diesel::delete(token.filter(user_id.eq(id_i)))
+    .execute(&mut establish_connection())
+    .expect("Error deleting user tokens");
 
   diesel::delete(user.find(id_i))
     .execute(&mut establish_connection())

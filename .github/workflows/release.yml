@@ -1,10 +1,10 @@
-name: Publish Release
+name: Draft Release
 
 on:
   workflow_dispatch:
 
 jobs:
-  publish-release:
+  draft-release:
     permissions:
       contents: write
     strategy:

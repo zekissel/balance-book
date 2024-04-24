@@ -114,7 +114,7 @@ export default function ProfileLink({ user, setUser, refreshAcct, refreshTrans }
 				{ status.map((s, i) => (
 					<div key={i}>
 						<p>{s.name}</p>
-						<p>Last updated: {s.last_update}</p>
+						<p>Last successful sync: <br/>{s.last_update}</p>
 						<p>Status: {s.status}</p>
 					</div>
 				)) }
