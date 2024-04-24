@@ -1,5 +1,6 @@
 <h1 align="center">
-  <img src="./src-tauri/icons/icon.png" alt="Balance Book Logo" />
+  <img src="./src-tauri/icons/icon.png" alt="Balance Book Logo" /><br/>
+  Balance Book
 </h1>
 
 ## Contents
