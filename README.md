@@ -25,7 +25,7 @@ The goal of Balance Book is to provide free, useful information and statistics t
 
 <h2 id='start'>Getting Started </h2>
 
-If you have no experience with programming but would like to use this application on your own computer, these instructions are for you:
+If you would like to use this application on your computer, these instructions are for you (no programming experience required):
 
 To use this app, you must sign up for a free account with [Plaid](https://plaid.com/). In order for this project to remain free for myself and all users, each user must bring their own Plaid client_id and Plaid development environment secret (Plaid allows for free API use in hobby projects, and each Plaid client supports 100 bank accounts). 
 
