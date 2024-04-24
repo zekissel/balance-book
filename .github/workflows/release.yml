@@ -47,7 +47,7 @@ jobs:
       - name: bundle sqlite dependency (windows only)
         if: matrix.platform == 'windows-latest'
         run: |
-          src-tauri\Cargo.toml -match '##replace-for-windows-build##' -replace ''
+          (svn info src-tauri\Cargo.toml) -match '##replace-for-windows-build##' -replace ''
 
       - name: install frontend dependencies
         run: npm install
