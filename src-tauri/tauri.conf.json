@@ -33,8 +33,12 @@
 		"bundle": {
 			"active": true,
 			"targets": "all",
-			"identifier": "com.tauri.dev",
-			"icon": ["icons/icon.png", "icons/icon.ico", "icons/icon.icns"]
+			"identifier": "finance.balance-book.app",
+			"publisher": "ZK",
+			"icon": ["icons/icon.png", "icons/icon.ico", "icons/icon.icns"],
+			"category": "Finance",
+			"shortDescription": "Manage personal finances",
+			"longDescription": "Balance Book is a personal finance management app that helps you keep track of your recent transactions and account balances with Plaid banking API."
 		}
 	}
 }
