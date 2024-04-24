@@ -45,7 +45,7 @@ function App() {
 	const [transactions, setTransactions] = useState<Transaction[]>([]);
 
 	const [updated, setUpdated] = useState<string[]>([]);
-	const filterUpdated = (id: string) => setUpdated(updated.filter((u) => u !== id));
+	//const filterUpdated = (id: string) => setUpdated(updated.filter((u) => u !== id));
 
 	const [signalAcct, setSignalAcct] = useState(false);
 	const signalRefreshAcct = () => setSignalAcct(!signalAcct);
