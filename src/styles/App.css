@@ -160,6 +160,11 @@ div.news-main {
 	width: 100%;
 	margin: 0;
 	padding: 0;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: start;
+	align-items: center;
 }
 
 @keyframes load-spin {

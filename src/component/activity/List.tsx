@@ -15,6 +15,7 @@ interface ListProps {
 	more: boolean;
 	restrictAcct: boolean;
 	updated: string[];
+	filterUpdated: (id: string) => void;
 }
 export default function List({
 	transactions,
@@ -26,6 +27,7 @@ export default function List({
 	more,
 	restrictAcct,
 	updated,
+	filterUpdated
 }: ListProps) {
 	const [sortBy, setSortBy] = useState('date');
 	const handleSort = (val: string) => {
@@ -142,6 +144,7 @@ export default function List({
 				setSelectedTransactions([]);
 			} else setSelectedTransactions([...selectedTransactions, transaction]);
 		}
+		if (updated.includes(transaction.id)) filterUpdated(transaction.id);
 	};
 
 	const [editLogs, setEditLogs] = useState<string[]>([]); // list of transaction ids to edit

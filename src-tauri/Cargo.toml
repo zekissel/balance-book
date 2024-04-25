@@ -1,6 +1,6 @@
 [package]
 name = "balance-book"
-version = "0.1.0"
+version = "1.0.0"
 description = "Keep track of personal income expenses"
 authors = ["Zane Kissel"]
 edition = "2021"

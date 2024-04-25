@@ -13,6 +13,7 @@ import Auth from './Auth';
 import '../../styles/App.css';
 
 function App() {
+	/* extract user from LS (necessary because Plaid/Link requires page refresh) */
 	const [user, setUser] = useState<User | null>({
 		id: localStorage.getItem('userid') ?? '',
 		uname: localStorage.getItem('username') ?? '',
@@ -24,16 +25,20 @@ function App() {
 		plaid_secret: localStorage.getItem('plaid_s') ?? '',
 	});
 
+	/* indicates that not all transactions have been fetched from local database */
 	const [moreTrans, setMoreTrans] = useState(false);
+	/* range of transactions to fetch from local database */
 	const [transRange, setTransRange] = useState(
 		sessionStorage.getItem('fetchRange') !== null
 			? Number(sessionStorage.getItem('fetchRange'))
 			: 89,
 	);
+	/* used in List: button activated */
 	const incrementRange = () => {
 		setTransRange(transRange + 90);
 		sessionStorage.setItem('fetchRange', String(transRange + 90));
 	};
+	/* used in Stats/Cal: depends on filter range/calendar day */
 	const setRange = (range: number) => {
 		if (range > transRange) {
 			setTransRange(range);
@@ -41,12 +46,15 @@ function App() {
 		}
 	};
 
+	/* accounts/transactions to be pulled from local DB */
 	const [accounts, setAccounts] = useState<Account[]>([]);
 	const [transactions, setTransactions] = useState<Transaction[]>([]);
 
+	/* marks newly synchronized transactions in List */
 	const [updated, setUpdated] = useState<string[]>([]);
-	//const filterUpdated = (id: string) => setUpdated(updated.filter((u) => u !== id));
+	const filterUpdated = (id: string) => setUpdated(updated.filter((u) => u !== id));
 
+	/* signals to requery local DB for accounts/transactions */
 	const [signalAcct, setSignalAcct] = useState(false);
 	const signalRefreshAcct = () => setSignalAcct(!signalAcct);
 	const [signalTrans, setSignalTrans] = useState(false);
@@ -67,10 +75,11 @@ function App() {
 		} else setAccounts([]);
 	};
 
+	/* utility function */
 	const update = (refresh: () => void): (() => void) => {
 		const timeout = setTimeout(() => {
 			refresh();
-		}, 50);
+		}, 20);
 		return () => clearTimeout(timeout);
 	};
 
@@ -85,27 +94,33 @@ function App() {
 	}, [signalTrans]);
 
 	useEffect(() => {
+		/* remove these so Plaid/Link can fetch a fresh token on initialization */
 		localStorage.removeItem('link_token');
 		localStorage.removeItem('auth_state');
 
 		if (user && user.id !== '') {
+			/* query Plaid API max 4 times per day */
 			const transSyncDate = localStorage.getItem(`${user.uname}.sync.t.date`);
 			const syncTrans = transSyncDate
 				? addHours(new Date(transSyncDate), 6) < new Date(new Date().toISOString().split('.')[0])
 				: true;
 			
 			const sync = async () => {
+				/* instruct Rust to query Plaid API for transaction/account updates */
 				await invoke('sync_info', { userId: user!.id, balance: true })
 					.then((data) => {
+						/* differentiate recently sync'd transactions */
 						const recent = data as string[];
 						setUpdated(recent);
 					})
 			}
 
 			if (syncTrans && user.uname !== '') {
+				/* 1. read Plaid API updates into local DB */
 				sync();
 				localStorage.setItem(`${user.uname}.sync.t.date`, new Date().toISOString().split('.')[0]);
 			}
+			/* 2. read local DB into frontend state variables */
 			update(refreshAccounts);
 			update(refreshTransactions);
 
@@ -175,6 +190,7 @@ function App() {
 											setRange={setRange}
 											more={moreTrans}
 											updated={updated}
+											filterUpdated={filterUpdated}
 										/>
 									}
 								/>

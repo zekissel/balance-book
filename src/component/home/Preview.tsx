@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import ReactECharts from 'echarts-for-react';
 import { Account, AccountType, Transaction } from '../../typedef';
 import { addDays } from '../../typeassist';
 
@@ -69,8 +70,120 @@ export default function Preview({ accounts, transactions }: PreviewProps) {
 						</li>
 					))}
 
+				{ curID === '' && curView && <AccountGraph accounts={focusAccounts} transactions={transactions} /> }
+
 				{ curID !== '' && recentTransactions.length === 0 ? <span>No recent transactions</span> : null }
 			</ol>
 		</div>
 	);
+}
+
+interface AccountGraphProps {
+	accounts: Account[];
+	transactions: Transaction[];
+}
+function AccountGraph({ accounts, transactions }: AccountGraphProps) {
+
+	const range = 30;
+
+	interface SeriesDay {
+		date: Date;
+		total: number;
+		name: string;
+	}
+	const timeFrameTotals: SeriesDay[][] = useMemo(() => {
+
+		let ret: SeriesDay[][] = [];
+
+		for (const account of accounts) {
+			const today = new Date(new Date().toDateString());
+			const totals: SeriesDay[] = Array.from({ length: range + 1 }, (_, i) => {
+				return { date: addDays(today, -i), total: account.balance, name: account.account_name };
+			});
+			const minTime = addDays(today, -range).getTime();
+
+			transactions.filter(t => t.account_id === account.id).forEach((trans) => {
+				if (trans.date.getTime() >= minTime) {
+					let index = totals.findIndex((t) => t.date.toDateString() === trans.date.toDateString());
+					if (index !== -1) {
+						while (index < range) {
+							index += 1;
+							totals[index].total +=
+								(account.account_type !== AccountType.Credit ? -1 : 1) * trans.amount;
+						}
+					} else if (trans.date.getTime() > today.getTime()) {
+						index = range;
+						while (index > -1) {
+							totals[index].total += (trans.account_id === account.id ? -1 : 1) * trans.amount;
+							index -= 1;
+						}
+					}
+				}
+			});
+
+			ret.push(totals.sort((a, b) => a.date.getTime() - b.date.getTime()));
+		}
+		return ret;
+	}, [transactions, accounts]);
+
+	const option = /*useMemo(() => */{
+		//return new Object({
+		color: ['#739d88', '#abc', '#428f68', '#4d7cab'],
+		tooltip: {
+			trigger: 'item',
+			axisPointer: { type: 'line' },
+			formatter: '<b>{b}</b><br/>${c}',
+		},
+		grid: { show: true, top: 20, left: 10, containLabel: true },
+		xAxis: {
+			type: 'category',
+			interval: 0,
+			data: timeFrameTotals.length > 0 ? timeFrameTotals[0].map(
+				(t) => new Object({ value: t.date.toDateString().slice(4, 10), label: { show: true } }),
+			) : [],
+			axisLabel: {
+				rotate: 20,
+				interval: 4,
+			},
+			splitLine: { show: true, lineStyle: { color: '#ffffff' } },
+		},
+		yAxis: {
+			type: 'value',
+			splitLine: { show: true, lineStyle: { color: '#ffffff' } },
+		},
+		series: timeFrameTotals.map((t) =>
+			new Object({
+				name: t[0].name,
+				type: 'line',
+				step: 'end',
+				data: t.map((t, i) => {
+					return new Object({
+						value: t.total / 100,
+						label: {
+							show: i % 3 == 0,
+							position: i % 2 == 0 ? 'top' : 'bottom',
+							formatter: '${c}',
+						},
+					})
+				})
+			}),
+		),
+		title: {
+			text: 'Account Balances',
+			top: -4,
+		},
+		legend: {
+			data: timeFrameTotals.map((t) => t[0].name),
+		},
+		width: '95%',
+		height: '92%',
+		dataZoom: { type: 'inside' },
+	}//)}, [timeFrameTotals]);
+
+
+	return (
+		<div className='stats-graph'>
+			<ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
+		</div>
+	)
 }

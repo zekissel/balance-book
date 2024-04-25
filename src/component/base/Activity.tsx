@@ -23,6 +23,7 @@ interface ActivityProps {
 	setRange: (range: number) => void;
 	more: boolean;
 	updated: string[];
+	filterUpdated: (id: string) => void;
 }
 export default function Activity({
 	transactions,
@@ -32,6 +33,7 @@ export default function Activity({
 	setRange,
 	more,
 	updated,
+	filterUpdated
 }: ActivityProps) {
 	/* filter transactions by object state (filter function declared in typedef) */
 	const [filterGUI, setFilterGUI] = useState(false);
@@ -133,6 +135,7 @@ export default function Activity({
 					more={more}
 					restrictAcct={filters.accounts.length > 0}
 					updated={updated}
+					filterUpdated={filterUpdated}
 				/>
 			) : (
 				<Calendar
