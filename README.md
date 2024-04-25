@@ -29,8 +29,6 @@ If you would like to use this application on your computer, these instructions a
 
 To use this app, you must sign up for a free account with [Plaid](https://plaid.com/). For this project to remain free for myself and all users, each user must bring their own Plaid client_id and Plaid development environment secret (Plaid allows for free API use in hobby projects, and each Plaid client supports 100 bank accounts).
 
-*Each Plaid account can support 100 bank account logins. If your friend has made a Plaid account for this app, you can safely share client_id and dev_secret without fear of leaking financial information (keep in mind: once accounts are added they cannot be removed from the limit).*
-
 After you create an account with Plaid, we need to do a few things:
 <h3 id='plaid'>Configure Plaid: </h3>
 
