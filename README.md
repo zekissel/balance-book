@@ -27,18 +27,18 @@ The goal of Balance Book is to provide users with free, useful information and i
 
 If you would like to use this application on your computer, these instructions are for you (no programming experience required):
 
-To use this app, you must sign up for a free account with [Plaid](https://plaid.com/). In order for this project to remain free for myself and all users, each user must bring their own Plaid client_id and Plaid development environment secret (Plaid allows for free API use in hobby projects, and each Plaid client supports 100 bank accounts). 
-
-*Each Plaid account can support 100 bank account logins. If your friend has made a Plaid account for this app, you can safely share client_id and dev_secret without fear of leaking financial information (keep in mind: once accounts are added they cannot be removed from the limit).*
+To use this app, you must sign up for a free account with [Plaid](https://plaid.com/). For this project to remain free for myself and all users, each user must bring their own Plaid client_id and Plaid development environment secret (Plaid allows for free API use in hobby projects, and each Plaid client supports 100 bank accounts).
 
 After you create an account with Plaid, we need to do a few things:
 <h3 id='plaid'>Configure Plaid: </h3>
 
-1. On the <a href='https://dashboard.plaid.com/overview'/>Dashboard page</a>, you need to Request Development Access. There is a small checklist to follow in order to submit and be approved (may take ~2 days to be approved). This grants your Plaid client access to the Development environment, which is necessary for fetching real-world data.
+1. On the <a href='https://dashboard.plaid.com/overview'/>Dashboard page</a>, you need to Request Development Access. You must verify your email and submit a short application, which may take ~2 days to be approved (Balance Book can be described when a product description is requested). This grants your Plaid client access to the Development environment, which is necessary for fetching real-world data.
 
 2. On the <a href='https://dashboard.plaid.com/developers/api'/>API page</a>, you need to configure the allowed redirect URLs. Add the following redirect URL: ```https://us-central1-balance-book-auth.cloudfunctions.net/balance/callback```, and save changes. This is necessary for OAuth support for institutions.
 
 3. Finally, go to the <a href='https://dashboard.plaid.com/developers/keys'/>Keys page</a>. Copy two of these values to use later: client_id and Development secret. Once you launch the application you can submit these to enable access to real-world data.
+
+> *see <a href='./PLAID.md'>PLAID.md</a> for a picture walkthrough*
 
 Once you have configured the redirect URL and have working access to the development environment:
 <h3 id='app'>Configure Application: </h3>
@@ -65,7 +65,7 @@ Once you have configured the redirect URL and have working access to the develop
 
 <h3 id='activity'>Activity: </h3>
 
-- List and calendar views of recent transactions. Filter and sort by transaction date, source, category, amount, and account
+- List and calendar views of recent transactions. Filter and sort by transaction date, source, category, amount, account, etc.
 
 <img align='center' src="./.github/img/list.png" alt="Activity view (list)">
 
@@ -85,7 +85,7 @@ Once you have configured the redirect URL and have working access to the develop
 
 <h3 id='account'>Accounts: </h3>
 
-- View current and recent account balances, for all types of accounts
+- View current and recent account balances, for all types of financial accounts
 
 <img align='center' src="./.github/img/accounts.png" alt="Accounts view">
 
