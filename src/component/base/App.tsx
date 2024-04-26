@@ -12,6 +12,8 @@ import Profile from './Profile';
 import Auth from './Auth';
 import Settings from './Settings';
 import '../../styles/App.css';
+import Market from './Market';
+import Budget from './Budget';
 
 function App() {
 	/* extract user from LS (necessary because Plaid/Link requires page refresh) */
@@ -29,6 +31,11 @@ function App() {
 	const [settings, setSettings] = useState<SettingOptions>({
 		theme: Theme.System,
 	});
+	const restoreSettings = () => {
+		setSettings({
+			theme: Theme.System,
+		});
+	}
 
 	/* indicates that not all transactions have been fetched from local database */
 	const [moreTrans, setMoreTrans] = useState(false);
@@ -144,12 +151,7 @@ function App() {
 		localStorage.removeItem('dob');
 		localStorage.removeItem('client_id');
 		localStorage.removeItem('plaid_s');
-		localStorage.removeItem('list.perPage')
-		localStorage.removeItem('listView');
-		localStorage.removeItem('stats.boxTypeInc');
-		localStorage.removeItem('stats.categoryChartType');
-		localStorage.removeItem('stats.categoryPieIncome');
-		localStorage.removeItem('stats.historyGraphLine');
+		localStorage.removeItem('list.perPage');
 	};
 	const verify = (user: User) => {
 		clearUserLocalStorage();
@@ -221,7 +223,8 @@ function App() {
 										/>
 									}
 								/>
-								<Route path="/market" element={<>work in progress</>} />
+								<Route path="/market" element={<Market />} />
+								<Route path="/budget" element={<Budget />} />
 								<Route
 									path="/profile"
 									element={
@@ -234,7 +237,7 @@ function App() {
 										/>
 									}
 								/>
-								<Route path="/settings" element={<Settings settings={settings} setSettings={setSettings} />} />
+								<Route path="/settings" element={<Settings settings={settings} setSettings={setSettings} restoreDefault={restoreSettings} />} />
 							</Route>
 						</>
 					)}

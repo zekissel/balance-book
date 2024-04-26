@@ -100,13 +100,13 @@ export default function Profile({
 						id={stateFinancial ? 'dynamic-menu-current' : undefined}
 						onClick={() => setStateFinancial(true)}
 					>
-						Financial
+						<img src='/financial.svg'/>	Financial
 					</button>
 					<button
 						id={!stateFinancial ? 'dynamic-menu-current' : undefined}
 						onClick={() => setStateFinancial(false)}
 					>
-						Personal
+						<img src='/personal.svg'/> Personal
 					</button>
 				</div>
 
@@ -117,7 +117,7 @@ export default function Profile({
 							logout();
 						}}
 					>
-						Logout
+						<img src='/logout.svg'/> Logout
 					</button>
 				</div>
 			</menu>
@@ -137,7 +137,7 @@ export default function Profile({
 								<label>Recovery Email: </label>
 								<input
 									type="email"
-									placeholder="Email (not implemented)"
+									placeholder="(not implemented)"
 									value={email}
 									onChange={(e) => setEmail(e.target.value)}
 								/>

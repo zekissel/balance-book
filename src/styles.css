@@ -17,9 +17,12 @@
 
 
 	--color-primary: #739d88;
-	--color-secondary: #dfe2e0;
-	--color-secondary-dark: #6b6b6b;
-	--color-text: #191919;
-	--color-text-inverse: #f6f6f6;
+	--color-secondary: light-dark(#dfe2e0, #6b6b6b);
+	--color-text: light-dark(#191919, #f6f6f6);
 	--color-highlight: #93ceb4;
+
+	--color-bg: light-dark(#f6f6f6, #787777);
+	--color-bg-secondary: light-dark(#f1f1f1, #7a7c7b);
+
+	--color-panel: light-dark(rgba(223, 226, 225, 0.695), rgba(223, 226, 225, 0.477));
 }

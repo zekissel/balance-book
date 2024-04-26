@@ -60,16 +60,16 @@ export default function StatsPage({
 	const toggleStats = () => setStats(!stats);
 
 	const [sankey, setSankey] = useState(
-		localStorage.getItem('stats.sankey') === 'false' ? false : true,
+		sessionStorage.getItem('stats.sankey') === 'false' ? false : true,
 	);
 	const [historyGraphLine, setHistoryGraphLine] = useState(
-		localStorage.getItem('stats.historyGraphLine') === 'false' ? false : true,
+		sessionStorage.getItem('stats.historyGraphLine') === 'false' ? false : true,
 	);
 	const [categoryPieTypeIncome, setCatPieTypeIncome] = useState<boolean>(
-		localStorage.getItem('stats.categoryPieIncome') === 'true' ? true : false,
+		sessionStorage.getItem('stats.categoryPieIncome') === 'true' ? true : false,
 	);
 	const [boxTypeInc, setBoxTypeInc] = useState<boolean>(
-		localStorage.getItem('stats.boxTypeInc') === 'true' ? true : false,
+		sessionStorage.getItem('stats.boxTypeInc') === 'true' ? true : false,
 	);
 	const [boxRoot, setBoxRoot] = useState<string | null>(null);
 	const usedRoots = useMemo(() => {
@@ -86,15 +86,15 @@ export default function StatsPage({
 	}, [transactions, boxTypeInc]);
 
 	const [categoryChartType, setCategoryChartType] = useState(
-		localStorage.getItem('stats.categoryChartType') !== null
-			? Number(localStorage.getItem('stats.categoryChartType'))
+		sessionStorage.getItem('stats.categoryChartType') !== null
+			? Number(sessionStorage.getItem('stats.categoryChartType'))
 			: 0,
 	);
 	const cycleCategoryChart = (direction: number) => {
 		let index = (categoryChartType + (direction > 0 ? 1 : -1)) % 3;
 		if (index < 0) index = 2;
 		setCategoryChartType(index);
-		localStorage.setItem('stats.categoryChartType', index.toString());
+		sessionStorage.setItem('stats.categoryChartType', index.toString());
 	};
 
 	// MARK: RENDER
@@ -154,7 +154,7 @@ export default function StatsPage({
 					<div className="stats-menu-sep">
 						<button
 							onClick={() => {
-								localStorage.setItem('stats.historyGraphLine', `${!historyGraphLine}`)
+								sessionStorage.setItem('stats.historyGraphLine', `${!historyGraphLine}`)
 								setHistoryGraphLine(!historyGraphLine);
 							}}
 						>
@@ -182,7 +182,7 @@ export default function StatsPage({
 								name="type"
 								onChange={() => {
 									setCatPieTypeIncome(true);
-									localStorage.setItem('stats.categoryPieIncome', 'true');
+									sessionStorage.setItem('stats.categoryPieIncome', 'true');
 								}}
 								defaultChecked={categoryPieTypeIncome}
 							/>
@@ -193,7 +193,7 @@ export default function StatsPage({
 								name="type"
 								onChange={() => {
 									setCatPieTypeIncome(false);
-									localStorage.setItem('stats.categoryPieIncome', 'false');
+									sessionStorage.setItem('stats.categoryPieIncome', 'false');
 								}}
 								defaultChecked={!categoryPieTypeIncome}
 							/>
@@ -241,7 +241,7 @@ export default function StatsPage({
 								onChange={() => {
 									setBoxRoot(null);
 									setBoxTypeInc(true);
-									localStorage.setItem('stats.boxTypeInc', 'true');
+									sessionStorage.setItem('stats.boxTypeInc', 'true');
 								}}
 								defaultChecked={boxTypeInc}
 							/>
@@ -253,7 +253,7 @@ export default function StatsPage({
 								onChange={() => {
 									setBoxRoot(null);
 									setBoxTypeInc(false);
-									localStorage.setItem('stats.boxTypeInc', 'false');
+									sessionStorage.setItem('stats.boxTypeInc', 'false');
 								}}
 								defaultChecked={!boxTypeInc}
 							/>

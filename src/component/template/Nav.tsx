@@ -3,7 +3,6 @@ import '../../styles/Nav.css';
 import { Outlet } from 'react-router';
 import { Link } from 'react-router-dom';
 
-//export interface NavProps { state: State, setState: React.Dispatch<React.SetStateAction<State>> }
 export default function Nav() {
 	const [fullNav, setFullNav] = useState(true);
 	const toggleNav = () => setFullNav(!fullNav);
@@ -47,6 +46,11 @@ export default function Nav() {
 					<Link to="/market">
 						<li id={curPage === '/market' ? 'nav-current' : undefined}>
 							{fullNav ? 'Market' : <img draggable={false} src="/candles.svg" alt="Market" />}
+						</li>
+					</Link>
+					<Link to="/budget">
+						<li id={curPage === '/budget' ? 'nav-current' : undefined}>
+							{fullNav ? 'Budget' : <img draggable={false} src="/budget.svg" alt="Budget" />}
 						</li>
 					</Link>
 				</ul>

@@ -163,6 +163,7 @@ function AccountGraph({ accounts, transactions }: AccountGraphProps) {
 							show: i % 3 == 0,
 							position: i % 2 == 0 ? 'top' : 'bottom',
 							formatter: '${c}',
+							color: 'black',
 						},
 					})
 				})

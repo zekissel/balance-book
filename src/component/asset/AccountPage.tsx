@@ -128,6 +128,7 @@ function AccountCard({ user, account, updateAccount, transactions }: AccountCard
 								show: range == 14 ? true : range < 180 ? i % 5 == 0 : i % 20 == 0,
 								position: i % 2 == 0 ? 'top' : 'bottom',
 								formatter: '${c}',
+								color: 'black',
 							},
 						}),
 				),

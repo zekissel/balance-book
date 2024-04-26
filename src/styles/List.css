@@ -20,7 +20,7 @@ ol.list-main {
 	flex-direction: column;
 
 	list-style: none;
-	background-color: rgba(223, 226, 225, 0.695);
+	background-color: var(--color-panel);
 }
 
 ol.list-main > h2 {
@@ -152,7 +152,7 @@ menu.edit-multi-log {
 	display: flex;
 	justify-content: space-around;
 	align-items: center;
-	background-color: #dbdbdbdd;
+	background-color: light-dark(#dbdbdbdd, #b9b9b9dd);
 
 	position: fixed;
 	border: 2px dashed #abc;
@@ -167,6 +167,14 @@ menu.edit-multi-log div.multi-sep {
 
 menu.edit-multi-log input {
 	max-width: 5rem;
+}
+
+menu.edit-multi-log button {
+	margin: 0.2rem;
+	background-color: var(--color-panel);
+	color: #191919;
+	border-radius: 2vw;
+	border: 1px solid #111;
 }
 
 span.multi-edit-adjust {
@@ -187,7 +195,7 @@ menu.list-view-options {
 	justify-content: space-between;
 
 	list-style: none;
-	background-color: rgba(223, 226, 225, 0.695);
+	background-color: var(--color-panel);
 }
 
 menu.list-view-options input {
@@ -208,6 +216,13 @@ menu.list-view-options div.list-menu-opt {
 
 menu.list-view-options button {
 	margin: 0 0.2rem;
+	background-color: var(--color-panel);
+	color: #191919;
+	border-radius: 2vw;
+	border: 1px solid #111;
+}
+menu.list-view-options button:hover, menu.list-view-options button:disabled {
+	background-color: #b9b9b9;
 }
 
 div.list-menu-container {
@@ -232,7 +247,7 @@ div.list-sort button {
 	border-radius: 0.8rem;
 }
 
-button.active-sort-filter {
+button#active-sort-filter {
 	background-color: #739d8899;
 }
 

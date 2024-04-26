@@ -1,5 +1,5 @@
 menu.dynamic-menu {
-	background-color: light-dark(var(--color-secondary), var(--color-secondary-dark));
+	background-color: var(--color-secondary);
 	height: 3rem;
 	width: 100%;
 	margin: 0;
@@ -19,19 +19,19 @@ div.dynamic-menu-main > button {
 	padding: 0.2rem 0.5rem;
 	border-radius: 1vw;
 	cursor: pointer;
-	background-color: light-dark(var(--color-secondary), var(--color-secondary-dark));
+	background-color: var(--color-secondary);
 	border: none;
-	border-bottom: 2px solid light-dark(var(--color-secondary-dark), var(--color-secondary));
+	border-bottom: 2px solid light-dark(#6b6b6b, #dfe2e0);
 }
 
 div.dynamic-menu-main > button:hover {
 	background-color: var(--color-highlight);
-	color: var(--color-text);
+	color: #191919;
 }
 
 button#dynamic-menu-current, button.fetch-more:hover {
 	background-color: var(--color-highlight);
-	color: var(--color-text);
+	color: #191919;
 }
 
 /* potentially needed for calendar and list */
@@ -39,8 +39,8 @@ button.fetch-more {
 	width: 20%;
 	margin: 0 auto;
 	border-radius: 1vw;
-	background-color: light-dark(var(--color-secondary), var(--color-secondary-dark));
+	background-color: var(--color-secondary);
 	border: none;
-	border-bottom: 2px solid light-dark(var(--color-secondary-dark), var(--color-secondary));
+	border-bottom: 2px solid light-dark(#6b6b6b, #dfe2e0);
 }
 

@@ -30,7 +30,7 @@ export default function Auth({ verify, logout }: AuthProps) {
 	}, []);
 
 	const [name, setName] = useState(localStorage.getItem('username') ?? '');
-	const [pass, setPass] = useState(localStorage.getItem('pass') ?? '');
+	const [pass, setPass] = useState(sessionStorage.getItem('pass') ?? '');
 	const [confirmPass, setConfirmPass] = useState('');
 	const navigate = useNavigate();
 

@@ -12,7 +12,7 @@ interface AssetsProps {
 	signalRefresh: () => void;
 }
 export default function Assets({ user, accounts, transactions, signalRefresh }: AssetsProps) {
-	const [curView, setCurView] = useState<AccountType>(matchView(localStorage.getItem('accView')));
+	const [curView, setCurView] = useState<AccountType>(matchView(sessionStorage.getItem('accView')));
 	function matchView(view: string | null) {
 		switch (view) {
 			case '0':
@@ -79,7 +79,7 @@ export default function Assets({ user, accounts, transactions, signalRefresh }: 
 						id={curView === AccountType.Checking ? 'dynamic-menu-current' : undefined}
 						onClick={() => {
 							setCurView(AccountType.Checking);
-							localStorage.setItem('accView', '0');
+							sessionStorage.setItem('accView', '0');
 						}}
 					>
 						<img src="/card.svg" />
@@ -89,7 +89,7 @@ export default function Assets({ user, accounts, transactions, signalRefresh }: 
 						id={curView === AccountType.Credit ? 'dynamic-menu-current' : undefined}
 						onClick={() => {
 							setCurView(AccountType.Credit);
-							localStorage.setItem('accView', '1');
+							sessionStorage.setItem('accView', '1');
 						}}
 					>
 						<img src="/credit.svg" />
@@ -99,7 +99,7 @@ export default function Assets({ user, accounts, transactions, signalRefresh }: 
 						id={curView === AccountType.Savings ? 'dynamic-menu-current' : undefined}
 						onClick={() => {
 							setCurView(AccountType.Savings);
-							localStorage.setItem('accView', '2');
+							sessionStorage.setItem('accView', '2');
 						}}
 					>
 						<img src="/bank.svg" />
@@ -109,7 +109,7 @@ export default function Assets({ user, accounts, transactions, signalRefresh }: 
 						id={curView === AccountType.Investment ? 'dynamic-menu-current' : undefined}
 						onClick={() => {
 							setCurView(AccountType.Investment);
-							localStorage.setItem('accView', '3');
+							sessionStorage.setItem('accView', '3');
 						}}
 					>
 						<img src="/trend.svg" />
@@ -119,7 +119,7 @@ export default function Assets({ user, accounts, transactions, signalRefresh }: 
 						id={curView === AccountType.Loan ? 'dynamic-menu-current' : undefined}
 						onClick={() => {
 							setCurView(AccountType.Loan);
-							localStorage.setItem('accView', '4');
+							sessionStorage.setItem('accView', '4');
 						}}
 					>
 						<img src="/loan.svg" />

@@ -13,7 +13,7 @@ nav {
 	padding: 0;
 	position: relative;
 	z-index: 10;
-	background-color: light-dark(var(--color-secondary), var(--color-secondary-dark));
+	background-color: var(--color-secondary);
 	border-right: 2px solid var(--color-primary);
 
 	user-select: none;
@@ -42,9 +42,9 @@ nav {
 	font-size: 20px;
 	font-weight: 550;
 
-	color: light-dark(var(--color-text), var(--color-text-inverse));
-	background-color: light-dark(var(--color-secondary), var(--color-secondary-dark));
-	border-bottom: 2px solid light-dark(var(--color-secondary-dark), var(--color-secondary));
+	color: var(--color-text);
+	background-color: var(--color-secondary);
+	border-bottom: 2px solid light-dark(#6b6b6b, #dfe2e0);
 	border-radius: 1vw;
 }
 
@@ -56,18 +56,18 @@ a {
 	text-align: center;
 }
 .nav-extra {
-	background-color: var(--color-text);
+	background-color: #191919;
 }
 .nav-top > li {
 	background-color: #acacac;
 }
 .nav-inverse > li {
-	background-color: light-dark(var(--color-secondary), var(--color-secondary-dark));
+	background-color: var(--color-secondary);
 }
 
 .nav-core li:hover,
 .nav-extra li:hover,
 .nav-top li:hover, #nav-current, .nav-core li:active {
 	background-color: var(--color-highlight);
-	color: var(--color-text);
+	color: #191919;
 }

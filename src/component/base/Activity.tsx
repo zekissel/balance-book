@@ -59,7 +59,7 @@ export default function Activity({
 
 	/* toggle between list and calendar view, toggle GUI for adding a new transaction */
 	const [listView, setListView] = useState(
-		localStorage.getItem('listView') === 'false' ? false : true,
+		sessionStorage.getItem('listView') === 'false' ? false : true,
 	);
 	const [addLogGUI, setAddLogGUI] = useState(false);
 	const toggleAddLog = () => setAddLogGUI(!addLogGUI);
@@ -75,7 +75,7 @@ export default function Activity({
 						id={listView ? 'dynamic-menu-current' : undefined}
 						onClick={() => {
 							setListView(true);
-							localStorage.removeItem('listView');
+							sessionStorage.removeItem('listView');
 						}}
 						disabled={listView}
 					>
@@ -85,7 +85,7 @@ export default function Activity({
 						id={!listView ? 'dynamic-menu-current' : undefined}
 						onClick={() => {
 							setListView(false);
-							localStorage.setItem('listView', 'false');
+							sessionStorage.setItem('listView', 'false');
 						}}
 						disabled={!listView}
 					>

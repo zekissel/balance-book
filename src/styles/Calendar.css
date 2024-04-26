@@ -5,15 +5,15 @@ table {
 
 	border-radius: 1rem;
 	padding: 0.2rem;
-	background-color: #ccc;
+	background-color: light-dark(#ccc, #a8a8a8);
 	border: 2px solid #739d88;
 }
 
 tr:nth-child(odd) {
-	background-color: #f2f2f2;
+	background-color: light-dark(#f2f2f2, #c8c8c8);
 }
 tr:nth-child(even) {
-	background-color: #e2e2e2;
+	background-color: light-dark(#e2e2e2, #d8d8d8);
 }
 
 td,
@@ -44,10 +44,10 @@ menu.calendar-menu {
 }
 
 .calendar-menu-today {
-	background-color: #f2f2f2;
+	background-color: var(--color-panel);
+	border: 1px solid var(--color-primary);
 	padding: 0.3rem 0.5rem;
 	border-radius: 1vw;
-	border: none;
 	cursor: pointer;
 }
 
@@ -56,7 +56,7 @@ menu.calendar-menu {
 }
 
 .calendar-shift {
-	background-color: #f2f2f2;
+	background-color: var(--color-panel);
 	padding: 0.5rem;
 	border-radius: 1vw;
 
@@ -76,6 +76,11 @@ menu.calendar-menu {
 	padding: 0.1rem;
 	font-size: 1.5rem;
 	text-align: center;
+
+	background-color: var(--color-panel);
+	color: #191919;
+	border-radius: 2vw;
+	border: 1px solid #111;
 }
 
 .calendar-day {

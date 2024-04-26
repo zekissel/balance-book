@@ -109,8 +109,8 @@ export default function List({
 	}, [transactions, accounts, sortBy]);
 
 	const [perPage, setPerPage] = useState(
-		localStorage.getItem('list.perPage') !== null
-			? Number(localStorage.getItem('list.perPage'))
+		sessionStorage.getItem('list.perPage') !== null
+			? Number(sessionStorage.getItem('list.perPage'))
 			: 50,
 	);
 	const [page, setPage] = useState(0);
@@ -172,42 +172,42 @@ export default function List({
 					<h5>Sort:</h5>
 					<button
 						onClick={() => handleSort('date')}
-						className={sortBy.includes('date') ? 'active-sort-filter' : ''}
+						id={sortBy.includes('date') ? 'active-sort-filter' : ''}
 					>
 						<img src={sortBy === 'date' ? '/sort-up.svg' : '/sort-down.svg'} />
 						Date
 					</button>
 					<button
 						onClick={() => handleSort('store')}
-						className={sortBy.includes('store') ? 'active-sort-filter' : ''}
+						id={sortBy.includes('store') ? 'active-sort-filter' : ''}
 					>
 						<img src={sortBy === 'store' ? '/sort-z-a.svg' : '/sort-a-z.svg'} />
 						Store
 					</button>
 					<button
 						onClick={() => handleSort('amount')}
-						className={sortBy.includes('amount') ? 'active-sort-filter' : ''}
+						id={sortBy.includes('amount') ? 'active-sort-filter' : ''}
 					>
 						<img src={sortBy === 'amount' ? '/sort-up.svg' : '/sort-down.svg'} />
 						Amount
 					</button>
 					<button
 						onClick={() => handleSort('category')}
-						className={sortBy.includes('category') ? 'active-sort-filter' : ''}
+						id={sortBy.includes('category') ? 'active-sort-filter' : ''}
 					>
 						<img src={sortBy === 'category' ? '/sort-z-a.svg' : '/sort-a-z.svg'} />
 						Category
 					</button>
 					<button
 						onClick={() => handleSort('type')}
-						className={sortBy.includes('type') ? 'active-sort-filter' : ''}
+						id={sortBy.includes('type') ? 'active-sort-filter' : ''}
 					>
 						<img src="/sort.svg" />
 						Type
 					</button>
 					<button
 						onClick={() => handleSort('account')}
-						className={sortBy.includes('account') ? 'active-sort-filter' : ''}
+						id={sortBy.includes('account') ? 'active-sort-filter' : ''}
 					>
 						<img src={sortBy === 'account' ? '/sort-z-a.svg' : '/sort-a-z.svg'} />
 						Account
@@ -356,7 +356,7 @@ function ListMenu({ logs, page, perPage, setPage, setPerPage }: ListMenuProps) {
 					id="perpage"
 					value={perPage}
 					onChange={(e) => {
-						localStorage.setItem('list.perPage', e.target.value);
+						sessionStorage.setItem('list.perPage', e.target.value);
 						setPerPage(Number(e.target.value));
 						setPage(Math.min(page, Math.floor(logs.length / Number(e.target.value))));
 					}}

@@ -29,6 +29,13 @@ input {
 	background-color: light-dark(#f1f1f1, #a0a0a0);
 }
 
+input::placeholder {
+	color: #0000008c;
+}
+input::-ms-input-placeholder { /* Edge 12 -18 */
+  color: #0000008c;
+}
+
 main {
 	display: flex;
 	flex-direction: column;
@@ -44,7 +51,7 @@ main {
 div.logo {
 	width: 100%;
 	margin: 0 auto;
-	background-color: light-dark(#f1f1f1, #787777);
+	background-color: var(--color-bg-secondary);
 }
 /*
 @keyframes bg-glow {
@@ -130,7 +137,8 @@ div.home-preview {
 	width: 98.3%;
 	border-radius: 1vw;
 	height: 15rem;
-	background-color: #f0f3f2;
+	/*background-color: #f0f3f2;*/
+	background-color: var(--color-panel);
 	border: 1px dashed #739d88;
 }
 
@@ -156,9 +164,9 @@ div.preview-acct-select button {
 	padding: 0.2rem 0.5rem;
 	border-radius: 1vw;
 	cursor: pointer;
-	background-color: #dfe2e0;
+	background-color: var(--color-secondary);
 	border: none;
-	border-bottom: 2px solid #6b6b6b;
+	border-bottom: 2px solid var(--color-secondary-dark);
 }
 button#preview-type-active {
 	background-color: #93ceb4;
@@ -166,7 +174,7 @@ button#preview-type-active {
 
 a {
 	text-decoration: none;
-	color: #333;
+	color: light-dark(#333, #eee);
 }
 
 div.news-main {
@@ -197,16 +205,4 @@ div.news-main {
 	top: 40%;
 	left: 43%;
 	z-index: 200;
-}
-
-.settings-list {
-	display: flex;
-	flex-direction: column;
-	justify-content: start;
-	align-items: start;
-
-	width: 100%;
-	height: 100%;
-	margin: 0 auto;
-	padding: 2rem;
 }
