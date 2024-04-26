@@ -9,6 +9,11 @@ export interface User {
 	plaid_secret: string | null;
 }
 
+export enum Theme { System = 'sys', Light = 'light', Dark = 'dark' }
+export interface SettingOptions {
+	theme: Theme;
+}
+
 export enum DataState {
 	Loading,
 	Success,

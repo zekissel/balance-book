@@ -4,6 +4,8 @@ body {
 	width: 100vw;
 	margin: 0;
 	padding: 0;
+
+	
 }
 
 .app {
@@ -13,6 +15,18 @@ body {
 	padding: 0;
 	height: 100vh;
 	width: 100vw;
+}
+
+.app.dark {
+	color-scheme: dark;
+}
+.app.light {
+	color-scheme: light;
+}
+
+input {
+	color: #151515;
+	background-color: light-dark(#f1f1f1, #a0a0a0);
 }
 
 main {
@@ -30,7 +44,7 @@ main {
 div.logo {
 	width: 100%;
 	margin: 0 auto;
-	background-color: #f1f1f1;
+	background-color: light-dark(#f1f1f1, #787777);
 }
 /*
 @keyframes bg-glow {
@@ -183,4 +197,16 @@ div.news-main {
 	top: 40%;
 	left: 43%;
 	z-index: 200;
+}
+
+.settings-list {
+	display: flex;
+	flex-direction: column;
+	justify-content: start;
+	align-items: start;
+
+	width: 100%;
+	height: 100%;
+	margin: 0 auto;
+	padding: 2rem;
 }

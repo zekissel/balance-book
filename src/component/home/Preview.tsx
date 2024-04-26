@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { Account, AccountType, Transaction } from '../../typedef';
 import { addDays } from '../../typeassist';

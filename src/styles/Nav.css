@@ -13,8 +13,8 @@ nav {
 	padding: 0;
 	position: relative;
 	z-index: 10;
-	background-color: #dfe2e0;
-	border-right: 2px solid #739d88;
+	background-color: light-dark(var(--color-secondary), var(--color-secondary-dark));
+	border-right: 2px solid var(--color-primary);
 
 	user-select: none;
 	-webkit-user-select: none;
@@ -42,9 +42,9 @@ nav {
 	font-size: 20px;
 	font-weight: 550;
 
-	color: #191919;
-	background-color: #dfe2e0;
-	border-bottom: 2px solid #6b6b6b;
+	color: light-dark(var(--color-text), var(--color-text-inverse));
+	background-color: light-dark(var(--color-secondary), var(--color-secondary-dark));
+	border-bottom: 2px solid light-dark(var(--color-secondary-dark), var(--color-secondary));
 	border-radius: 1vw;
 }
 
@@ -56,24 +56,18 @@ a {
 	text-align: center;
 }
 .nav-extra {
-	background-color: #191919;
+	background-color: var(--color-text);
 }
 .nav-top > li {
 	background-color: #acacac;
 }
 .nav-inverse > li {
-	background-color: #dfe2e0;
+	background-color: light-dark(var(--color-secondary), var(--color-secondary-dark));
 }
 
 .nav-core li:hover,
 .nav-extra li:hover,
-.nav-top li:hover {
-	background-color: #93ceb4;
-	color: #191919;
-}
-
-#nav-current,
-.nav-core li:active {
-	background-color: #93ceb4;
-	color: #191919;
+.nav-top li:hover, #nav-current, .nav-core li:active {
+	background-color: var(--color-highlight);
+	color: var(--color-text);
 }

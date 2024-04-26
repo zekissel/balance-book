@@ -1,10 +1,10 @@
 menu.dynamic-menu {
-	background-color: #dfe2e0;
+	background-color: light-dark(var(--color-secondary), var(--color-secondary-dark));
 	height: 3rem;
 	width: 100%;
 	margin: 0;
 	padding: 0;
-	border-bottom: 2px solid #739d88;
+	border-bottom: 2px solid var(--color-primary);
 
 	display: flex;
 	flex-direction: row;
@@ -19,19 +19,19 @@ div.dynamic-menu-main > button {
 	padding: 0.2rem 0.5rem;
 	border-radius: 1vw;
 	cursor: pointer;
-	background-color: #dfe2e0;
+	background-color: light-dark(var(--color-secondary), var(--color-secondary-dark));
 	border: none;
-	border-bottom: 2px solid #6b6b6b;
+	border-bottom: 2px solid light-dark(var(--color-secondary-dark), var(--color-secondary));
 }
 
 div.dynamic-menu-main > button:hover {
-	background-color: #93ceb4;
-	color: #191919;
+	background-color: var(--color-highlight);
+	color: var(--color-text);
 }
 
-button#dynamic-menu-current {
-	background-color: #93ceb4;
-	color: #191919;
+button#dynamic-menu-current, button.fetch-more:hover {
+	background-color: var(--color-highlight);
+	color: var(--color-text);
 }
 
 /* potentially needed for calendar and list */
@@ -39,12 +39,8 @@ button.fetch-more {
 	width: 20%;
 	margin: 0 auto;
 	border-radius: 1vw;
-	background-color: #dfe2e0;
+	background-color: light-dark(var(--color-secondary), var(--color-secondary-dark));
 	border: none;
-	border-bottom: 2px solid #6b6b6b;
+	border-bottom: 2px solid light-dark(var(--color-secondary-dark), var(--color-secondary));
 }
 
-button.fetch-more:hover {
-	background-color: #93ceb4;
-	color: #191919;
-}

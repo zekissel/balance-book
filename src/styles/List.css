@@ -13,7 +13,7 @@ ol.list-main {
 	width: 92%;
 	margin: 0.5rem auto;
 	padding: 0.5rem 1rem;
-	border: 1px dashed #739d88;
+	border: 1px dashed var(--color-primary);
 	border-radius: 1vw;
 
 	display: flex;
@@ -62,7 +62,7 @@ div.list-item {
 	margin: 0.2rem 0;
 	padding: 0.2rem;
 	border-radius: 0.5rem;
-	border: 1px dashed #739d88;
+	border: 1px dashed var(--color-primary);
 
 	display: grid;
 	grid-template-columns: 0.7fr 1.2fr 1fr 1.2fr 1.2fr 0.8fr;
@@ -104,7 +104,7 @@ span.list-item-source {
 	font-weight: 500;
 }
 
-span.trans-updated { background-color: #739d88; }
+span.trans-updated { background-color: var(--color-primary); }
 
 span.list-item-amount {
 	font-family: 'Courier New', Courier, monospace;

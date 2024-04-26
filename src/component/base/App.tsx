@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api';
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Transaction, Account, User } from '../../typedef';
+import { Transaction, Account, User, SettingOptions, Theme } from '../../typedef';
 import { getTransactions, getAccounts, addHours } from '../../typeassist';
 import Nav from '../template/Nav';
 import Home from './Home';
@@ -10,6 +10,7 @@ import Stats from './Stats';
 import Assets from './Assets';
 import Profile from './Profile';
 import Auth from './Auth';
+import Settings from './Settings';
 import '../../styles/App.css';
 
 function App() {
@@ -23,6 +24,10 @@ function App() {
 		dob: localStorage.getItem('dob') ? new Date(localStorage.getItem('dob') as string) : null,
 		plaid_id: localStorage.getItem('client_id') ?? '',
 		plaid_secret: localStorage.getItem('plaid_s') ?? '',
+	});
+
+	const [settings, setSettings] = useState<SettingOptions>({
+		theme: Theme.System,
 	});
 
 	/* indicates that not all transactions have been fetched from local database */
@@ -167,7 +172,7 @@ function App() {
 
 	// MARK: - RENDER
 	return (
-		<div className="app">
+		<div className={"app " + settings.theme}>
 			<BrowserRouter>
 				<Routes>
 					<Route path="/" element={<Auth verify={verify} logout={logout} />} />
@@ -229,7 +234,7 @@ function App() {
 										/>
 									}
 								/>
-								<Route path="/settings" element={<>work in progress</>} />
+								<Route path="/settings" element={<Settings settings={settings} setSettings={setSettings} />} />
 							</Route>
 						</>
 					)}

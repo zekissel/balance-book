@@ -20,7 +20,7 @@ div.page-main {
 	width: calc(100% - 2px);
 	overflow: hidden;
 	overflow-y: scroll;
-	border: 1px solid #739d88;
+	border: 1px solid var(--color-primary);
 
 	display: flex;
 	flex-direction: column;
