@@ -58,15 +58,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PLAID_ENV: development # plaid dev env allows for free hobby use
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           tagName: balance-book-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'Balance Book v__VERSION__'
           releaseBody: |
-            'Find your system installer:'
-            'Windows 10/11: .exe or .msi'
-            'macOS (M1 us aarch64): .dmg or .app.tar.gz (needs decompressing)'
-            'Linux: .AppImage or .deb'
+            Find the installer for your system below:
+            - Windows 10/11: .exe or .msi
+            - MacOS (M1 use aarch64): .dmg or .app.tar.gz
+            - Linux: .AppImage or .deb
           releaseDraft: true
           prerelease: false
-          includeUpdaterJson: false
+          includeDebug: true
+          includeUpdaterJson: true
+          updaterJsonKeepUniversal: true
           args: ${{ matrix.args }}

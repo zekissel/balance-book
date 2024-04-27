@@ -16,6 +16,7 @@
 - <a href='#dev'>For Developers</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;- <a href='#stack'>Stack</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;- <a href='#arch'>Architecture</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <a href='#contribute'>Contributing</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;- <a href='#misc'>Misc</a><br/>
 
 <h2 id='intro'>Introduction </h2>
@@ -134,7 +135,15 @@ When the user requests to initialize the Plaid/Link process:
 
 All relavant backend code can be found at ./src-tauri/src/link/auth.rs and relavant frontend code can be found at ./src/component/link/PlaidLink.tsx.
 
+<h3 id='contribute'>Contributing: </h3>
+
+If you would like to contribute for any reason, feel free to make a PR. I ask that you thoroughly explain any changes that you make, as well as what necessitated the change. I will prioritize merging bug fixes over new features.
+
 <h3 id='misc'>Misc: </h3>
+
+#### Developing Locally
+
+To run the source code locally (using ```npm run tauri dev``` from the root directory, after installing npm dependencies), the file ./src-tauri/.env should be present, with the contents: "PLAID_ENV=development". This variable cannot be configured upon Plaid client instantiation from within plaid-rs at the moment.
 
 #### Required HTTPS redirect
 
@@ -143,11 +152,11 @@ Plaid requires confirming a HTTPS redirect that financial institutions can send 
 
 #### Planned Features
 
-1. News on home page; 2-3 recent financial articles pulled from a public API yet to be determined (configurable what kinds of articles are fetched).
+1. News on home page; 2-3 recent financial articles pulled from a public API yet to be determined (configurable what kinds of articles are fetched). Minimal information necessary: article title, picture, date, and external link (to default browser)
 
 2. Market tab; activity from investment accounts, including stock and crypto trades. Search functionality for publicly traded stocks (no plans for enacting trades/making payments from within app)
 
-3. Budget tab; set one-time or recurring budgets. Ex: save $200 for concert tickets by X-date (one-time), or limit fast food expense to $75 per month (recurring). Configurable if budgets appear on other pages (activity, stats, accounts).
+3. Budget tab; set one-time or recurring budgets. Ex: save $300 for concert tickets by X-date (one-time), or limit fast food expense to $75 per month (recurring). Configurable if budgets appear on other pages (activity, stats, accounts).
 
 4. Collapsable view for account page: hide graphs and see more accounts at once without scrolling
 
@@ -155,7 +164,7 @@ Plaid requires confirming a HTTPS redirect that financial institutions can send 
 
 6. Email or phone verification and egress (solely for account recovery)
 
-7. Client ID, secret, and access key encryption on datastore. (Possible full database encryption? Doesn't seem easy with Diesel)
+7. Client ID, secret, and access key encryption on datastore. (Possible full database encryption? -> Rusqlcipher. Doesn't seem easy with Diesel)
 
 8. Settings:
 
@@ -164,6 +173,8 @@ Plaid requires confirming a HTTPS redirect that financial institutions can send 
   - misc: exclude routes (home, stats, market, budget)
 
   - home: option to replace account preview with budgets, news source
+
+  - stats: use outliers for boxplot yes/no, disable specific graphs
 
 - advanced: 
 
