@@ -70,7 +70,6 @@ jobs:
             - Linux: .AppImage or .deb
           releaseDraft: true
           prerelease: false
-          includeDebug: true
           includeUpdaterJson: true
           updaterJsonKeepUniversal: true
           args: ${{ matrix.args }}
