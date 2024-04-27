@@ -16,6 +16,7 @@
 - <a href='#dev'>For Developers</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;- <a href='#stack'>Stack</a><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;- <a href='#arch'>Architecture</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <a href='#misc'>Misc</a><br/>
 
 <h2 id='intro'>Introduction </h2>
 
@@ -39,7 +40,7 @@ After you create an account with Plaid, we need to do a few things:
 2. To connect to live data, Plaid and US financial institutions require the Plaid client to register for OAuth access (OAuth allows for this application to initiate logins to your private bank). To register for OAuth access, proceed through the checklist found <a href='https://dashboard.plaid.com/settings/compliance/us-oauth-institutions'/>here</a>. 
 - Required actions:
 
-  - applyi for Production access (this will be necessary after June 20 anyways)
+  - apply for Production access
 
   - configure application display information (not necessary that you provide identical information, but you may use the icon at ./src-tauri/icons/app-icon.png and brand color #739D88; it is necessary that you provide a unique application name)
 
@@ -132,7 +133,9 @@ When the user requests to initialize the Plaid/Link process:
 
 All relavant backend code can be found at ./src-tauri/src/link/auth.rs and relavant frontend code can be found at ./src/component/link/PlaidLink.tsx.
 
-#### Misc
+<h3 id='misc'>Misc: </h3>
+
+#### Required HTTPS redirect
 
 Plaid requires confirming a HTTPS redirect that financial institutions can send users to after account verification. Currently, I personally host the redirect URL that is hardcoded into the application, which lowers the barrier to entry for everyone. You can find the exact code I host at ./server/main.go. GCP offers 2 million free cloud function invocations per month, which I dont expect to surpass anytime soon. However, if you find that the redirect URL in the second to last step of <a href='#plaid'>Configure Plaid</a> does not redirect to localhost (you can test this right now by pasting the URL in your address bar), you must host the server yourself and configure the redirect URL in ./src/component/link/PlaidLink.tsx:getServerURL and your Plaid dashboard.
 
@@ -155,6 +158,17 @@ Plaid requires confirming a HTTPS redirect that financial institutions can send 
 
 8. Settings:
 
-- general: exclude routes (home, market, budget)
-- home: option to replace account preview with budgets, news source
-- advanced: configure HTTPS redirect to provide Plaid, configure path where database is stored, import/export DB user info to/from CSV/json?
+- general:
+
+  - misc: exclude routes (home, market, budget)
+
+  - home: option to replace account preview with budgets, news source
+
+- advanced: 
+
+  - configure HTTPS redirect to provide Plaid
+
+  - configure path where database is stored
+
+  - import/export DB user info to/from CSV/json?
+
