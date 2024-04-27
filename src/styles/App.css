@@ -27,6 +27,9 @@ body {
 input {
 	color: #151515;
 	background-color: light-dark(#f1f1f1, #a0a0a0);
+	border: 1px solid #939393;
+	border-radius: .5vw;
+	min-height: 1.1rem;
 }
 
 input::placeholder {

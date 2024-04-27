@@ -40,21 +40,22 @@ After you create an account with Plaid, we need to do a few things:
 2. To connect to live data, Plaid and US financial institutions require the Plaid client to register for OAuth access (OAuth allows for this application to initiate logins to your private bank). To register for OAuth access, proceed through the checklist found <a href='https://dashboard.plaid.com/settings/compliance/us-oauth-institutions'/>here</a>. 
 - Required actions:
 
-  - apply for Production access
+  - **Apply for Production access**: This is a multi-page form; at the end you will be prompted to select a billing plan and enter payment information. As long as you keep your client ID and secret private and connect only to your personal financial institutions, you won't incur any charges. Until 20 June 2024, you should use your development secret for hobby-use. After that, free testing will be available in production (README will be updated).
 
-  - configure application display information (not necessary that you provide identical information, but you may use the icon at ./src-tauri/icons/app-icon.png and brand color #739D88; it is necessary that you provide a unique application name)
+  - **Configure application display information**: it is not necessary that you provide identical information as I have shown, but you may use the icon at ./src-tauri/icons/app-icon.png and brand color #739D88; it is necessary that you provide a unique application name.
 
-  - configure company profile; you may use whatever name you like, but I suggest making it explicit that the associated legal entity is fake (i.e. My Fake Entity). However, this shouldn't matter -- the only person using your Plaid client is you.
+  - **Configure company profile**: you may use whatever name you like, but I suggest making it explicit that the associated legal entity is fake (i.e. My Fake Entity). However, this shouldn't matter -- the only person using your Plaid client is you.
 
-  - sign Plaid MSA (completed upon requesting Production access)
+  - **Sign Plaid MSA**: should have been completed upon requesting Production access
 
-  - complete security questionnaire. There is no picture-by-picture walkthough for this; answer each question to the best of your knowledge, and put "No" if you don't understand. For your reference, this application does not share any information with any computer other than the one it was downloaded on.
+  - **Complete security questionnaire**: there is no picture-by-picture walkthough for this part; answer each question to the best of your knowledge, and put "No" if you don't understand. For your reference, this application does not share any information with any computer other than the one it was downloaded on.
 
 3. On the <a href='https://dashboard.plaid.com/developers/api'/>API page</a>, you need to configure the allowed redirect URLs. Add the following redirect URL: ```https://us-central1-balance-book-auth.cloudfunctions.net/balance/callback```, and save changes. This is necessary because of Plaid's security policies.
 
 4. Finally, go to the <a href='https://dashboard.plaid.com/developers/keys'/>Keys page</a>. Copy two of these values to use later: client ID and development secret. Once you launch the application you can submit these to enable access to real-world data.
 
-Once you have configured the redirect URL and have working access to the development environment:
+Once you have configured the redirect URL, have working access to the development environment, and have been approved for OAuth:
+
 <h3 id='app'>Configure Application: </h3>
 
 1. Go to <a href='https://github.com/zekissel/balance-book/releases'/>Releases</a> on this repository page. Download the appropriate installer for your system (Windows, MacOS, Linux).
@@ -86,13 +87,13 @@ Once you have configured the redirect URL and have working access to the develop
 
 <h3 id='stats'>Statistics: </h3>
 
-- Multiple graphs to illustrate income and expenses. Adjustable timeframe and filterable fields. Select to view different graph or double-click to view fullscreen.
+- Multiple graphs to illustrate income and expenses. Adjustable timeframe and filterable fields. Select to change graph view or double-click to toggle fullscreen.
 
 <img align='center' src="./.github/img/statistics.png" alt="Statistics view">
 
 ---
 
-<img align='center' src="./.github/img/statistics2.png" alt="Statistics alt view">
+<img align='center' src="./.github/img/statistics2.png" alt="Statistics example alternate view">
 
 
 
@@ -160,7 +161,7 @@ Plaid requires confirming a HTTPS redirect that financial institutions can send 
 
 - general:
 
-  - misc: exclude routes (home, market, budget)
+  - misc: exclude routes (home, stats, market, budget)
 
   - home: option to replace account preview with budgets, news source
 
