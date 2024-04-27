@@ -64,7 +64,7 @@ jobs:
           releaseBody: |
             'Find your system installer:'
             'Windows 10/11: .exe or .msi'
-            'macOS (M1 us aarch64): .dmg or .app.tar.gz'
+            'macOS (M1 us aarch64): .dmg or .app.tar.gz (needs decompressing)'
             'Linux: .AppImage or .deb'
           releaseDraft: true
           prerelease: false
