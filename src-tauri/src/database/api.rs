@@ -328,11 +328,32 @@ pub async fn update_user_password(id_i: &str, password_i: &str) -> User {
 pub async fn update_user_data(id_i: &str, email_i: Option<&str>, fname_i: Option<&str>, lname_i: Option<&str>, dob_i: Option<&str>) -> Option<User> {
   use super::schema::user::dsl::*;
 
-  Some(diesel::update(user.find(id_i))
-    .set((email.eq(email_i), fname.eq(fname_i), lname.eq(lname_i), dob.eq(dob_i)))
+  let return_user = diesel::update(user.find(id_i))
+    .set((fname.eq(fname_i), lname.eq(lname_i), dob.eq(dob_i)))
     .returning(User::as_returning())
     .get_result(&mut establish_connection())
-    .expect("Error updating user data"))
+    .expect("Error updating user data");
+
+    match email_i {
+      Some(_) => match read_user_by_email(email_i.unwrap()).await {
+        Some(_) => Some(return_user),
+        None => {
+          Some(diesel::update(user.find(id_i))
+          .set(email.eq(email_i))
+          .returning(User::as_returning())
+          .get_result(&mut establish_connection())
+          .expect("Error updating user data"))
+        },
+      },
+      None => {
+        Some(diesel::update(user.find(id_i))
+        .set(email.eq(None::<String>))
+        .returning(User::as_returning())
+        .get_result(&mut establish_connection())
+        .expect("Error updating user data"))
+      },
+    }
+
 }
 
 pub async fn update_user_plaid(id_i: &str, plaid_id_i: &str, plaid_secret_i: &str) -> Option<User> {

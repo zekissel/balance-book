@@ -70,6 +70,7 @@ async fn fix_user(id: &str, password: &str, new_pass: Option<&str>, email: Optio
           Some(new_pass) => database::api::update_user_password(id, new_pass).await,
           None => user,
         };
+        /* modify return value to differentiate between wrong password and email collisions */
         Ok(database::api::update_user_data(id, email, fname, lname, dob).await)
       },
     },
