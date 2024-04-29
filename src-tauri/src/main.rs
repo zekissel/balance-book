@@ -1,6 +1,9 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::env;
+use std::error::Error;
+
 use database::models::Account;
 use database::models::Transaction;
 use database::models::User;
@@ -122,8 +125,8 @@ async fn get_status(user_id: &str) -> Result<Vec<link::api::InstitutionStatus>, 
 }
   
 
-fn main() {
-  dotenv::dotenv().ok();
+fn main() -> Result<(), Box<dyn Error>> {
+  dotenvy::dotenv()?;
   tauri::Builder::default()
     .setup(|_app| {
       // Initialize the database.
@@ -135,4 +138,6 @@ fn main() {
     .invoke_handler(tauri::generate_handler![new_transaction, get_transactions, fix_transaction, remove_transaction, new_account, get_accounts, fix_account, remove_account, login, register, fix_user, update_user_link, remove_user, link::auth::authenticate, link::auth::authorize, link::auth::open_link, sync_info, get_status])
     .run(tauri::generate_context!())
     .expect("Error while running tauri application");
+
+  Ok(())
 }
