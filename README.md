@@ -152,6 +152,8 @@ Plaid requires confirming a HTTPS redirect that financial institutions can send 
 
 #### Planned Features
 
+0. upgrade to tauri v2
+
 1. News on home page; 2-3 recent financial articles pulled from a public API yet to be determined (configurable what kinds of articles are fetched). Minimal information necessary: article title, picture, date, and external link (to default browser)
 
 2. Market tab; activity from investment accounts, including stock and crypto trades. Search functionality for publicly traded stocks (no plans for enacting trades/making payments from within app)

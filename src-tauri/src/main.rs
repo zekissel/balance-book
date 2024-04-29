@@ -126,7 +126,8 @@ async fn get_status(user_id: &str) -> Result<Vec<link::api::InstitutionStatus>, 
   
 
 fn main() -> Result<(), Box<dyn Error>> {
-  dotenvy::dotenv()?;
+  //dotenvy::dotenv()?;
+  dotenv::dotenv().ok();
   tauri::Builder::default()
     .setup(|_app| {
       // Initialize the database.
