@@ -152,7 +152,9 @@ Plaid requires confirming a HTTPS redirect that financial institutions can send 
 
 #### Planned Features
 
-0. upgrade to tauri v2
+0. use tuari-stronghold for securely storing client ID, secret, access token
+
+0. use statemanagement for handling auth state
 
 1. News on home page; 2-3 recent financial articles pulled from a public API yet to be determined (configurable what kinds of articles are fetched). Minimal information necessary: article title, picture, date, and external link (to default browser)
 
@@ -186,3 +188,4 @@ Plaid requires confirming a HTTPS redirect that financial institutions can send 
 
   - import/export DB user info to/from CSV/json?
 
+0. upgrade to tauri v2
