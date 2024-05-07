@@ -34,8 +34,8 @@ export default function StatsMain({ logs, accounts, startDate, endDate }: StatsM
         <div className='w-3/4 h-[calc(100%-0.5rem)] m-0.5 bg-panel flex flex-col justify-between items-center rounded-lg border border-dashed border-bbgray3 '>
             { !graphType1 ? <CategoryBar logs={logs} /> : <div className='w-full h-full'>test</div> }
 
-            <GraphControl justify='end'>
-              <button className='z-200 mx-1 rounded-lg hover:bg-highlight ' onClick={toggleGraph1}><img src={ graphType1 ? '/stats/bar.svg' : '/stats/info.svg' } /></button>
+            <GraphControl>
+              <button className='z-200 mx-0.5 rounded-lg hover:bg-highlight px-0.5 ' onClick={toggleGraph1}><img src={ graphType1 ? '/stats/bar.svg' : '/stats/info.svg' } /></button>
             </GraphControl>
         </div>
       </section>
@@ -44,17 +44,17 @@ export default function StatsMain({ logs, accounts, startDate, endDate }: StatsM
       <section className='h-[calc(33.33%-1rem)] w-[calc(100%-0.25rem)] flex flex-row '>
         <div className='w-3/5 h-[calc(100%-0.5rem)] m-0.5 bg-panel flex flex-col justify-center items-center rounded-lg border border-dashed border-bbgray3 '>
           <NetByDay />
-          <GraphControl justify='start'>
-            <button className='z-200 mx-1 rounded-lg hover:bg-highlight ' onClick={toggleGraph2}><img src={ graphType2 ? '/stats/line.svg' : '/stats/bar.svg' } /></button>
+          <GraphControl>
+            <button className='z-200 mx-0.5 rounded-lg hover:bg-highlight px-0.5 ' onClick={toggleGraph2}><img src={ graphType2 ? '/stats/line.svg' : '/stats/bar.svg' } /></button>
           </GraphControl>
         </div>
 
         <div className='w-2/5 h-[calc(100%-0.5rem)] m-0.5 bg-panel flex flex-col justify-center items-center rounded-lg border border-dashed border-bbgray3 '>
           <PieBurst />
-          <GraphControl justify='end'>
+          <GraphControl>
             <>
-              <button className='z-200 mx-1 rounded-lg hover:bg-highlight ' onClick={cycle3Prev}><img src={'/stats/' + (graphType3 === 0 ? 'burst' : (graphType3 === 1 ? 'pie' : 'map')) + '.svg' } /></button>
-              <button className='z-200 mx-1 rounded-lg hover:bg-highlight ' onClick={cycle3Next}><img src={'/stats/' + (graphType3 === 0 ? 'map' : (graphType3 === 1 ? 'burst' : 'pie')) + '.svg' } /></button>
+              <button className='z-200 mx-0.5 rounded-lg hover:bg-highlight px-0.5 ' onClick={cycle3Prev}><img src={'/stats/' + (graphType3 === 0 ? 'burst' : (graphType3 === 1 ? 'pie' : 'map')) + '.svg' } /></button>
+              <button className='z-200 mx-0.5 rounded-lg hover:bg-highlight px-0.5 ' onClick={cycle3Next}><img src={'/stats/' + (graphType3 === 0 ? 'map' : (graphType3 === 1 ? 'burst' : 'pie')) + '.svg' } /></button>
             </>
           </GraphControl>
         </div>
@@ -74,12 +74,11 @@ export default function StatsMain({ logs, accounts, startDate, endDate }: StatsM
 
 interface GraphControlProps {
   children: JSX.Element;
-  justify: 'start' | 'end';
 }
-function GraphControl ({ children, justify }: GraphControlProps) {
+function GraphControl ({ children }: GraphControlProps) {
 
   return (
-    <menu className={`w-full h-5 flex flex-row justify-${justify} items-center`}>
+    <menu className={`w-full h-5 flex flex-row justify-end items-center`}>
       <div className='bg-light1 px-1 rounded-lg border-b-2 border-b-solid border-b-bbgray2 flex flex-row items-center'>
         { children }
       </div>

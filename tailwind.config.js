@@ -34,7 +34,11 @@ export default {
       highlight: `#93ceb4`,
       panel: `#dfe2e1b1`,
     },
-    extend: {},
+    extend: {
+      animation: {
+        'spin-slow': 'spin 3s linear infinite',
+      },
+    },
   },
   plugins: [],
 }

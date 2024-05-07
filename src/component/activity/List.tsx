@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Transaction, Account, getTransactions, getAccounts, Category, formatAccount, formatAmount, formatDate, formatCategory } from "../../typedef";
-import { Filter } from "../Filter";
+import { Filter, anyFiltersActive } from "../Filter";
 import ViewLog from "./ViewLog";
 import ViewMultiLog from "./MultiLog";
+import loading from '../../assets/loading.svg';
 
 interface ListProps { 
   filters: Filter;
@@ -10,6 +11,9 @@ interface ListProps {
   update: () => void;
 }
 export default function List({ filters, signal, update }: ListProps) {
+
+  enum DataState { Loading, Success }
+  const [dataState, setDataState] = useState<DataState>(DataState.Loading);
 
   const [curPage, setCurPage] = useState(1);
   const [perPage, setPerPage] = useState(25);
@@ -59,18 +63,24 @@ export default function List({ filters, signal, update }: ListProps) {
     return 0;
   }, [selected]);
 
-  const fetchLogs = async () => {
-    setSelectLogs([]);
-    setAccounts(await getAccounts());
-    
-    const [trans, count] = await getTransactions(filters, { current_page: curPage, page_size: perPage, sort_field: sortBy.field, sort_asc: sortBy.order === 1});
-    setLogs(trans);
-    setTotalLogs(count);
-  }
+  
 
   useEffect(() => {
+    setDataState(DataState.Loading);
+    const fetchLogs = async () => {
+      setSelectLogs([]);
+      const [trans, count] = await getTransactions(filters, { current_page: curPage, page_size: perPage, sort_field: sortBy.field, sort_asc: sortBy.order === 1});
+      setLogs(trans);
+      setTotalLogs(count);
+    }
     fetchLogs();
+    setDataState(DataState.Success);
   }, [signal]);
+
+  useEffect(() => {
+    const fetchAccounts = async () => { setAccounts(await getAccounts()) }
+    fetchAccounts();
+  }, []);
 
 
   const getColor = (amount: number, category: Category) => {
@@ -119,9 +129,15 @@ export default function List({ filters, signal, update }: ListProps) {
           ))
         }
 
-        { logs.length === 0 &&
-          <li className='w-11/12 bg-bbgray3 '>
-            <span>No logs found</span>
+        { dataState === DataState.Success && logs.length === 0 &&
+          <li className='w-full bg-bbgray1 mt-2 py-2 text-center '>
+            <span>No transactions found { anyFiltersActive(filters) && `(filters active)` }</span>
+          </li>
+        }
+
+        { dataState === DataState.Loading &&
+          <li className='absolute top-[calc(7.5rem)] left-32 w-[calc(85%)] h-[calc(80%)] flex flex-col items-center justify-center rounded-3xl '>
+            <img className='h-24 animate-spin-slow ' src={loading} alt='loading' />
           </li>
         }
 
