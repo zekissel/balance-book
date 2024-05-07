@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api";
-import { Filter } from "./component/Filter";
+import { Filter } from "./component/filter";
 
 export interface User {
   id: string;

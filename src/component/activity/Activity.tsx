@@ -2,7 +2,7 @@ import { useState } from "react"
 import Menu, { MenuButton } from "../Menu"
 import FilterBar from "../FilterMenu";
 import List from "./List";
-import { anyFiltersActive, empty_filter } from "../Filter";
+import { anyFiltersActive, empty_filter } from "../filter";
 import AddLog from "./AddLog";
 import Calendar from "./Calendar";
 

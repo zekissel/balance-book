@@ -1,16 +1,14 @@
-import ReactECharts from 'echarts-for-react';
 import { Transaction } from '../../typedef';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import ZoomChart from './ZoomChart';
 import { titleOptions, xAxisOptions, yAxisOptions } from './graph';
 
 interface GraphProps {
   logs: Transaction[];
+	full: boolean;
+	toggleFull: () => void;
 }
-export default function CategoryBar({ logs }: GraphProps) {
-
-  const [full, setFull] = useState(false);
-	const toggleFull = () => setFull(!full);
+export default function CategoryBar({ logs, full, toggleFull }: GraphProps) {
 
   const categoryTotals = useMemo(() => {
 		const totals: { [key: string]: number } = {};
@@ -49,7 +47,7 @@ export default function CategoryBar({ logs }: GraphProps) {
 							
 						}),
 				),
-		[categoryTotals],
+		[categoryTotals, full],
 	);
 
   const option = {
@@ -88,8 +86,6 @@ export default function CategoryBar({ logs }: GraphProps) {
 
 
   return (
-    <ZoomChart full={full} toggleFull={toggleFull}>
-      <ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
-    </ZoomChart>
+    <ZoomChart full={full} toggleFull={toggleFull} option={option} />
   )
 }

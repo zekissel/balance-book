@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Transaction, Account, getTransactions, getAccounts, Category, formatAccount, formatAmount, formatDate, formatCategory } from "../../typedef";
-import { Filter, anyFiltersActive } from "../Filter";
+import { Filter, anyFiltersActive } from "../filter";
 import ViewLog from "./ViewLog";
 import ViewMultiLog from "./MultiLog";
 import loading from '../../assets/loading.svg';

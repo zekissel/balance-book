@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import Menu, { MenuButton } from "../Menu"
-import { anyFiltersActive, empty_filter, Filter } from "../Filter";
+import { anyFiltersActive, empty_filter, Filter } from "../filter";
 import FilterBar from "../FilterMenu";
 import { Account, Transaction, getAccounts, getCalendarTransactions, addDays } from "../../typedef";
 import StatsMain from "./StatsMain";

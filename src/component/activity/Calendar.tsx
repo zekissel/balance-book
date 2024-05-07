@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { Filter } from "../Filter";
+import { Filter } from "../filter";
 import { Account, Transaction, getAccounts, getCalendarTransactions, addDays } from "../../typedef";
 import ViewLog from "./ViewLog";
 import ViewMultiLog from "./MultiLog";

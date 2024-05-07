@@ -38,3 +38,11 @@ export const yAxisOptions = (full: boolean) => {
     },
   });
 }
+
+export function generateChartColor(index: number, isIncome: boolean) {
+	const incomeColors = ['#739d88', '#86C4A5', '#9CFACB', '#BADACA', '#50A47A', '#42C483'];
+	const expenseColors = ['#f6d6aa', '#D8AA69', '#AB8755', '#E8AD5A', '#DAC25F', '#FADC65'];
+	return isIncome
+		? incomeColors[index % incomeColors.length]
+		: expenseColors[index % expenseColors.length];
+}

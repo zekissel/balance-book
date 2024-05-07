@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import TreeSelect from "./TreeSelect";
 import { ExpenseLeaf, IncomeLeaf, Account, getAccounts, addDays } from "../typedef";
-import { Filter } from "./Filter";
+import { Filter } from "./filter";
 
 interface FilterBarProps {
   filters: Filter;
