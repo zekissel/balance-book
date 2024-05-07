@@ -12,6 +12,12 @@
 	"tauri": {
 		"allowlist": {
 			"all": false,
+			"fs": {
+				"all": true
+			},
+			"path": {
+				"all": true
+			},
 			"shell": {
 				"all": false,
 				"open": true
@@ -20,10 +26,10 @@
 		"windows": [
 			{
 				"title": "Balance Book",
-				"width": 1360,
-				"height": 1020,
-				"resizable": false,
-				"maximizable": false,
+				"width": 1080,
+				"height": 720,
+				"resizable": true,
+				"maximizable": true,
 				"minimizable": true
 			}
 		],
@@ -35,7 +41,13 @@
 			"targets": "all",
 			"identifier": "finance.balance-book.app",
 			"publisher": "ZK",
-			"icon": ["icons/icon.png", "icons/icon.ico", "icons/icon.icns"],
+			"icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
 			"category": "Finance",
 			"shortDescription": "Manage personal finances",
 			"longDescription": "Balance Book is a personal finance management app that helps you log and visualize your recent transactions and account balances."
@@ -43,7 +55,7 @@
 		"updater": {
       "active": true,
       "endpoints": [
-        "https://github.com/zekissel/balance-book/releases/download/v1.0.1/latest.json"
+        "https://github.com/zekissel/balance-book/releases/download/v1.0.0/latest.json"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEExMEY0NUMzN0Q4MUI5RUIKUldUcnVZRjl3MFVQb2ExMXQ0QWdWd09iOSt4TU40bGFRVFZRN3Rheis5NUxsRmJLVVhZMFJSUEkK",
 			"windows": {

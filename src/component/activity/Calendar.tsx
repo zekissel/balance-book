@@ -1,30 +1,63 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Account, Day, Month, Transaction } from '../../typedef';
-import { addDays } from '../../typeassist';
-import ViewLog from '../transaction/ViewLog';
-import ViewDay from './ViewDay';
-import '../../styles/Calendar.css';
+import { useState, useEffect, useMemo, useRef } from "react";
+import { Filter } from "../Filter";
+import { Account, Transaction, getAccounts, getCalendarTransactions, addDays } from "../../typedef";
+import ViewLog from "./ViewLog";
+import ViewMultiLog from "./MultiLog";
 
-interface CalendarProps {
-	logs: Transaction[];
-	accounts: Account[];
-	updateLog: () => void;
-	showFilter: boolean;
-	setRange: (range: number) => void;
-	signalRefresh: () => void;
+interface CalendarProps { 
+  filters: Filter;
+  signal: boolean;
+  update: () => void;
 }
-export default function Calendar({
-	logs,
-	accounts,
-	updateLog,
-	showFilter,
-	setRange,
-	signalRefresh,
-}: CalendarProps) {
-	const curDate = useRef(new Date());
-	const calDate = useRef(new Date(curDate.current.setHours(0, 0, 0, 0)));
+export default function Calendar({ filters, signal, update }: CalendarProps) {
 
-	const [week1, setWeek1] = useState<Day[]>([]);
+  const currentDate = useRef(new Date());
+  const calendarDate = useRef(new Date(currentDate.current.setHours(0, 0, 0, 0)));
+
+  const [logs, setLogs] = useState<Transaction[]>([]);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+
+  const [selectLogs, setSelectLogs] = useState<string[]>([]);
+  const updateSelected = (transId: string) => {
+    if (selectLogs.includes(transId)) setSelectLogs(selectLogs.filter(t => t !== transId));
+    else setSelectLogs([...selectLogs, transId]);
+  }
+  const selected: Transaction[] = useMemo(() => {
+    return logs.filter(t => selectLogs.includes(t.id));
+  }, [selectLogs, logs]);
+  const selectedType = useMemo(() => {
+    const leafs = selected.map(t => t.category.split('>')[1]);
+    if (leafs.includes('Credit') || leafs.includes('Transfer')) return 0;
+    const inFlow = selected.filter(t => t.amount > 0);
+    if (inFlow.length === selected.length) return 1;
+    const outFlow = selected.filter(t => t.amount < 0);
+    if (outFlow.length === selected.length) return -1;
+    return 0;
+  }, [selected]);
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      setSelectLogs([]);
+
+      const filter: Filter = { ...filters, 
+        start_date: filters.start_date ?? addDays(calendarDate.current, -21),
+        end_date: filters.end_date ?? addDays(calendarDate.current, 21),
+      };
+      const trans = await getCalendarTransactions(filter);
+      setLogs(trans);
+    }
+    fetchLogs();
+  }, [signal, calendarDate.current]);
+
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      setAccounts(await getAccounts());
+    }
+    fetchAccounts();
+  }, []);
+
+
+  const [week1, setWeek1] = useState<Day[]>([]);
 	const [week2, setWeek2] = useState<Day[]>([]);
 	const [week3, setWeek3] = useState<Day[]>([]);
 	const [week4, setWeek4] = useState<Day[]>([]);
@@ -36,7 +69,7 @@ export default function Calendar({
 	);
 	const yearRange = useMemo(() => {
 		if (logs.length === 0)
-			return Array.from({ length: 8 }, (_, i) => curDate.current.getFullYear() - 3 + i);
+			return Array.from({ length: 8 }, (_, i) => currentDate.current.getFullYear() - 3 + i);
 		const minYear =
 			logs
 				.reduce((min, log) => {
@@ -52,8 +85,8 @@ export default function Calendar({
 						return logYear > max.date.getFullYear() ? log : max;
 					})
 					.date.getFullYear(),
-				curDate.current.getFullYear(),
-			) + 5;
+				currentDate.current.getFullYear(),
+			) + 3;
 		return Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
 	}, [logs]);
 
@@ -67,12 +100,12 @@ export default function Calendar({
 
 	function fillWeek(offset: number = 0) {
 		const week: Day[] = [0, 1, 2, 3, 4, 5, 6].map((i) => ({
-			date: addDays(calDate.current, i - calDate.current.getDay() + offset),
+			date: addDays(calendarDate.current, i - calendarDate.current.getDay() + offset),
 			transactions: [],
 		}));
 
-		for (let i = 0; i < calDate.current.getDay(); i++) fillDay(week, i);
-		for (let i = calDate.current.getDay(); i < 7; i++) fillDay(week, i);
+		for (let i = 0; i < calendarDate.current.getDay(); i++) fillDay(week, i);
+		for (let i = calendarDate.current.getDay(); i < 7; i++) fillDay(week, i);
 		for (let i = 0; i < 7; i++) {
 			week[i].transactions = week[i].transactions.sort((a, b) => {
 				return a.amount > b.amount ? -1 : 1;
@@ -90,8 +123,8 @@ export default function Calendar({
 		setWeek5(fillWeek(14));
 	};
 
-	const shiftWeeks = (direction: number) => {
-		calDate.current = addDays(calDate.current, direction * 7);
+  const shiftWeeks = (direction: number) => {
+		calendarDate.current = addDays(calendarDate.current, direction * 7);
 		initWeeks();
 	};
 
@@ -103,132 +136,97 @@ export default function Calendar({
 
 	useEffect(() => {
 		initWeeks();
-	}, [logs, calDate.current]);
+	}, [logs, calendarDate.current]);
 
-	useEffect(() => {
-		const range = Math.floor(
-			(new Date().getTime() + 7 * (1000 * 60 * 60 * 24) - calDate.current.getTime()) /
-				(1000 * 60 * 60 * 24),
-		);
-		setRange(range);
-		signalRefresh();
-	}, [calDate.current]);
 
-	const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([]);
-	const [selectedDay, setSelectedDay] = useState<Day[]>([]);
-	const updateSelectedTransactions = (transaction: Transaction) => {
-		if (selectedTransactions.includes(transaction)) {
-			setSelectedTransactions(
-				selectedTransactions.filter((t) => JSON.stringify(t) !== JSON.stringify(transaction)),
-			);
-		} else {
-			setSelectedTransactions([...selectedTransactions, transaction]);
-		}
-	};
-	const updateSelectedDays = (day: Day) => {
-		if (selectedDay.includes(day)) {
-			setSelectedDay(selectedDay.filter((d) => JSON.stringify(d) !== JSON.stringify(day)));
-		} else {
-			setSelectedDay([...selectedDay, day]);
-		}
-	};
+  return (
+    <>
+      <menu className='h-8 flex flex-row justify-between bg-panel ' onWheel={processWheel}>
+        <li className='flex flex-row justify-center items-center '>
+          <button onClick={() => shiftWeeks(-1)}><img src='/misc/previous.svg' /></button>
 
-	return (
-		<div className={showFilter ? 'main-down-shift page-main' : 'page-main'}>
-			<menu className="calendar-menu" onWheel={processWheel}>
-				<span
-					className="calendar-menu-today"
-					onClick={() => {
-						calDate.current = curDate.current;
-						initWeeks();
-					}}
-				>
-					{curDate.current.toDateString()}
-				</span>
-
-				<span className="calendar-shift">
-					<button onClick={() => shiftWeeks(-1)}>
-						<img src="/left-arrow.svg" />
-					</button>
-
-					<select
-						value={calDate.current.getMonth()}
-						onChange={(e) => {
-							calDate.current = new Date(
-								new Date(calDate.current.setMonth(Number(e.target.value))).setDate(7),
+          <select 
+            value={calendarDate.current.getMonth()}
+            onChange={(e) => {
+							calendarDate.current = new Date(
+								new Date(calendarDate.current.setMonth(Number(e.target.value))).setDate(7),
 							);
 							initWeeks();
 						}}
-					>
-						{Month.map((month, index) => (
+          >
+            {Month.map((month, index) => (
 							<option key={index} value={index}>
 								{month}
 							</option>
 						))}
-					</select>
+          </select>
 
-					<select
-						value={calDate.current.getFullYear()}
-						onChange={(e) => {
-							calDate.current = new Date(calDate.current.setFullYear(Number(e.target.value)));
+          <select 
+            value={calendarDate.current.getFullYear()}
+            onChange={(e) => {
+							calendarDate.current = new Date(calendarDate.current.setFullYear(Number(e.target.value)));
 							initWeeks();
 						}}
-					>
-						{yearRange.map((year, index) => (
+          >
+            {yearRange.map((year, index) => (
 							<option key={index} value={year}>
 								{year}
 							</option>
 						))}
-					</select>
+          </select>
 
-					<button onClick={() => shiftWeeks(1)}>
-						<img src="/right-arrow.svg" />
-					</button>
-				</span>
-			</menu>
+          <button onClick={() => shiftWeeks(1)}><img src='/misc/next.svg' /></button>
+        </li>
 
-			<table>
-				<thead>
-					<tr>
-						<th>Sun</th>
-						<th>Mon</th>
-						<th>Tue</th>
-						<th>Wed</th>
-						<th>Thu</th>
-						<th>Fri</th>
-						<th>Sat</th>
-					</tr>
-				</thead>
+        <li className='flex flex-row justify-center items-center '>
+          <button className='bg-light2 rounded-lg px-1 mr-2 hover:opacity-75' onClick={() => {
+						calendarDate.current = currentDate.current;
+						initWeeks();
+					}}>{currentDate.current.toDateString().slice(4)}</button>
+        </li>
+      </menu>
 
-				<tbody>
-					{weeks.map((week, i) => (
-						<tr key={i}>
+      <table className='w-full h-[calc(100vh-5rem)] '>
+        <thead className='h-8'>
+          <tr className='bg-panel '>
+            <th>Sun</th>
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+            <th>Sat</th>
+          </tr>
+        </thead>
+        <tbody className='w-full h-[calc(100vh-7rem)]'>
+          {weeks.map((week, i) => (
+						<tr key={i} className='h-1/5 w-full overflow-hidden '>
 							{week.map((day, index) => (
-								<td key={index} onClick={() => updateSelectedDays(day)}>
-									<div className="calendar-day">
+								<td className='w-[calc(14.28%)] min-w-[calc(14.28%)] h-[calc((100vh-7rem)/5)] border border-bbgray1 border-solid overflow-hidden ' key={index} onClick={() => {/*updateSelectedDays(day)*/}}>
+									<div className='flex flex-col justify-start items-end w-full h-full max-h-[calc(((100vh-7rem)/5))] overflow-hidden '>
 										<span
-											className="day-tag"
+											className='flex flex-col justify-center items-center rounded-xl px-0.5 '
 											style={
-												day.date.toDateString() === curDate.current.toDateString()
+												day.date.toDateString() === currentDate.current.toDateString()
 													? todayStyle
 													: undefined
 											}
 										>
 											{day.date.getDate()}
 										</span>
-										<div className="day-items">
+										<div className='overflow-hidden overflow-y-auto w-full h-full'>
 											{day.transactions.map((trans, index) => (
 												<span
-													className={trans.amount < 0 ? 'cal-exp' : 'cal-inc'}
+													className={(!['Transfer', 'Credit'].includes(trans.category.split('>')[1]) ? (trans.amount < 0 ? 'bg-negative2 ' : 'bg-primary3 '): 'bg-neutral2 ') + 'text-sm rounded-lg flex flex-row overflow-hidden hover:opacity-75 border-dashed border-2 ' + (selectLogs.includes(trans.id) ? 'border-neutral1 ' : (!['Transfer', 'Credit'].includes(trans.category.split('>')[1]) ? (trans.amount < 0 ? 'border-negative2 ' : 'border-primary3 '): 'border-neutral2 '))}
 													key={index}
 													onClick={(e) => {
-														updateSelectedTransactions(trans);
+														updateSelected(trans.id);
 														e.stopPropagation();
 													}}
 												>
 													{' '}
-													{trans.amount < 0 ? '-' : '+'} ${Math.abs(trans.amount / 100)}{' '}
-													{trans.company}
+													{trans.amount < 0 ? '-' : '+'}${Math.abs(trans.amount / 100)}{' '}
+													{trans.store}
 												</span>
 											))}
 										</div>
@@ -237,36 +235,40 @@ export default function Calendar({
 							))}
 						</tr>
 					))}
-				</tbody>
-			</table>
+        </tbody>
+      </table>
 
-			{selectedTransactions.length > 0 &&
-				selectedTransactions.map((trans, index) => (
-					<ViewLog
-						key={index}
-						transaction={trans}
-						accounts={accounts}
-						toggle={() =>
-							setSelectedTransactions(
-								selectedTransactions.filter((t) => JSON.stringify(t) !== JSON.stringify(trans)),
-							)
-						}
-						updateLog={updateLog}
-					/>
-				))}
+      { selectLogs.length === 1 &&
+        <ViewLog transaction={selected[0]} account={accounts.find(a => a.id === selected[0].account_id)!} update={update} close={() => setSelectLogs([])} />
+      }
 
-			{selectedDay.length > 0 &&
-				selectedDay.map((day, index) => (
-					<ViewDay
-						key={index}
-						day={day}
-						toggle={() =>
-							setSelectedDay(selectedDay.filter((d) => JSON.stringify(d) !== JSON.stringify(day)))
-						}
-					/>
-				))}
-		</div>
-	);
+      { selectLogs.length > 1 &&
+        <ViewMultiLog transactions={selected} accounts={accounts} type={selectedType} update={update} close={() => setSelectLogs([])} />
+      }
+
+    </>
+  )
+}
+
+const Month = [
+	'January',
+	'February',
+	'March',
+	'April',
+	'May',
+	'June',
+	'July',
+	'August',
+	'September',
+	'October',
+	'November',
+	'December',
+];
+
+
+interface Day {
+	date: Date;
+	transactions: Transaction[];
 }
 
 const todayStyle = {

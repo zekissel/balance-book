@@ -1,372 +1,187 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Transaction, Account } from '../../typedef';
-import { getCategoryColor } from '../../typeassist';
-import ViewLog from '../transaction/ViewLog';
-import '../../styles/List.css';
-import EditMultiLog from '../transaction/EditMultiLog';
+import { useEffect, useMemo, useState } from "react";
+import { Transaction, Account, getTransactions, getAccounts, Category, formatAccount, formatAmount, formatDate, formatCategory } from "../../typedef";
+import { Filter } from "../Filter";
+import ViewLog from "./ViewLog";
+import ViewMultiLog from "./MultiLog";
 
-interface ListProps {
-	transactions: Transaction[];
-	accounts: Account[];
-	updateLog: () => void;
-	showFilter: boolean;
-	incRange: () => void;
-	signalRefresh: () => void;
-	more: boolean;
-	restrictAcct: boolean;
-	updated: string[];
-	filterUpdated: (id: string) => void;
+interface ListProps { 
+  filters: Filter;
+  signal: boolean;
+  update: () => void;
 }
-export default function List({
-	transactions,
-	accounts,
-	updateLog,
-	showFilter,
-	incRange,
-	signalRefresh,
-	more,
-	restrictAcct,
-	updated,
-	filterUpdated
-}: ListProps) {
-	const [sortBy, setSortBy] = useState('date');
-	const handleSort = (val: string) => {
-		if (val === sortBy) {
-			setSortBy(`!${val}`);
-		} else {
-			setSortBy(val);
-		}
-	};
+export default function List({ filters, signal, update }: ListProps) {
 
-	const logs = useMemo(() => {
-		let ret = restrictAcct
-			? transactions
-			: transactions.filter((t) => !['Transfer', 'Credit'].includes(t.category.split('>')[1]));
+  const [curPage, setCurPage] = useState(1);
+  const [perPage, setPerPage] = useState(25);
+  const updatePerPage = (perPage: number) => setPerPage(perPage);
 
-		let rel: Transaction[] = [];
-		if (!restrictAcct) {
-			const rela = transactions.filter((t) =>
-				['Transfer', 'Credit'].includes(t.category.split('>')[1]),
-			);
-			rel = rela
-				.map((t) => {
-					const amt = t.amount;
-					const rel_t = rela.find((rt) => rt.amount === -amt);
-					if (rel_t) {
-						const acct = accounts.find((a) => a.id === rel_t.account_id);
-						rela.splice(rela.indexOf(rel_t), 1);
-						return {
-							id: t.id,
-							date: t.date,
-							amount: amt,
-							category: t.category,
-							desc: t.desc,
-							account_id: t.account_id,
-							company: acct ? `${acct.account_type.slice(0, 5)}:${acct.account_name}` : t.company,
-						} as Transaction;
-					}
-					return null;
-				})
-				.filter((t) => t !== null) as Transaction[];
-			ret = ret.concat(rel);
-		}
+  interface Sorter { 
+    field: 'date' | 'store' | 'category' | 'amount' | 'type' | 'account';
+    order: -1 | 1;
+  }
+  const [sortBy, setSortBy] = useState<Sorter>({ field: 'date', order: -1 });
+  const getSVG = (field: string, order: -1 | 1) => {
+    let ret = '';
+    if (field === 'Date') ret = '/misc/sort-down.svg';
+    if (field === 'Store') ret = '/misc/sort-a-z.svg';
+    if (field === 'Category') ret = '/misc/sort-a-z.svg';
+    if (field === 'Amount') ret = '/misc/sort-down.svg';
+    if (field === 'Type') return '/misc/sort.svg';
+    if (field === 'Account') ret = '/misc/sort-a-z.svg';
 
-		ret = ret.sort((a, b) => {
-			switch (sortBy) {
-				case 'date':
-					return b.date.getTime() - a.date.getTime();
-				case '!date':
-					return a.date.getTime() - b.date.getTime();
-				case 'amount':
-					return Math.abs(b.amount) - Math.abs(a.amount);
-				case '!amount':
-					return Math.abs(a.amount) - Math.abs(b.amount);
-				case 'type': {
-					if (['Transfer', 'Credit'].includes(a.category.split('>')[1])) return 1;
-					return b.amount - a.amount;
-				}
-				case '!type': {
-					if (['Transfer', 'Credit'].includes(a.category.split('>')[1])) return -1;
-					return a.amount - b.amount;
-				}
-				case 'store':
-					return a.company.localeCompare(b.company);
-				case '!store':
-					return b.company.localeCompare(a.company);
-				case 'category':
-					return a.category.localeCompare(b.category);
-				case '!category':
-					return b.category.localeCompare(a.category);
-				case 'account':
-					return a.account_id.localeCompare(b.account_id);
-				case '!account':
-					return b.account_id.localeCompare(a.account_id);
-				default:
-					return b.date.getTime() - a.date.getTime();
-			}
-		});
-		return ret;
-	}, [transactions, accounts, sortBy]);
+    if (sortBy.field === field.toLowerCase() && order > 0) {
+      ret = ret.replace('down', 'up').replace('a-z', 'z-a');
+    }
+    return ret;
+  }
 
-	const [perPage, setPerPage] = useState(
-		sessionStorage.getItem('list.perPage') !== null
-			? Number(sessionStorage.getItem('list.perPage'))
-			: 50,
-	);
-	const [page, setPage] = useState(0);
+  const [totalLogs, setTotalLogs] = useState(0);
 
-	const curView = useMemo(
-		() => logs.slice(page * perPage, page * perPage + perPage),
-		[logs, page, perPage],
-	);
+  const [logs, setLogs] = useState<Transaction[]>([]);
+  const [accounts, setAccounts] = useState<Account[]>([]);
 
-	const topMenu = useRef<HTMLDivElement>(null);
-	const scrollBehavior = useRef<ScrollBehavior>('instant');
-	useEffect(() => {
-		topMenu.current?.scrollIntoView({ behavior: scrollBehavior.current });
-		scrollBehavior.current = 'smooth';
-	}, [page]);
 
-	const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([]);
-	const updateSelected = (transaction: Transaction) => {
-		if (selectedTransactions.includes(transaction) || editLogs.includes(transaction.id)) {
-			setSelectedTransactions(
-				selectedTransactions.filter((t) => JSON.stringify(t) !== JSON.stringify(transaction)),
-			);
-			setEditLogs(editLogs.filter((e) => e !== transaction.id));
-		} else {
-			const selected = selectedTransactions
-				.map((t) => t.id)
-				.concat(editLogs)
-				.concat([transaction.id]);
-			if (selected.length > 1) {
-				setEditLogs(selected);
-				setSelectedTransactions([]);
-			} else setSelectedTransactions([...selectedTransactions, transaction]);
-		}
-		if (updated.includes(transaction.id)) filterUpdated(transaction.id);
-	};
+  const [selectLogs, setSelectLogs] = useState<string[]>([]);
+  const updateSelected = (transId: string) => {
+    if (selectLogs.includes(transId)) setSelectLogs(selectLogs.filter(t => t !== transId));
+    else setSelectLogs([...selectLogs, transId]);
+  }
+  const selected: Transaction[] = useMemo(() => {
+    return logs.filter(t => selectLogs.includes(t.id));
+  }, [selectLogs, logs]);
+  const selectedType = useMemo(() => {
+    const leafs = selected.map(t => t.category.split('>')[1]);
+    if (leafs.includes('Credit') || leafs.includes('Transfer')) return 0;
+    const inFlow = selected.filter(t => t.amount > 0);
+    if (inFlow.length === selected.length) return 1;
+    const outFlow = selected.filter(t => t.amount < 0);
+    if (outFlow.length === selected.length) return -1;
+    return 0;
+  }, [selected]);
 
-	const [editLogs, setEditLogs] = useState<string[]>([]); // list of transaction ids to edit
-	const handleEditSelect = (id: string) => {
-		if (editLogs.includes(id)) setEditLogs(editLogs.filter((e) => e !== id));
-		else setEditLogs([...editLogs, id]);
-	};
+  const fetchLogs = async () => {
+    setSelectLogs([]);
+    setAccounts(await getAccounts());
+    
+    const [trans, count] = await getTransactions(filters, { current_page: curPage, page_size: perPage, sort_field: sortBy.field, sort_asc: sortBy.order === 1});
+    setLogs(trans);
+    setTotalLogs(count);
+  }
 
-	useEffect(() => signalRefresh(), []);
+  useEffect(() => {
+    fetchLogs();
+  }, [signal]);
 
-	return (
-		<div className={showFilter ? 'main-down-shift page-main' : 'page-main'}>
-			{editLogs.length > 0 && (
-				<EditMultiLog
-					editLogs={editLogs}
-					logs={logs}
-					accounts={accounts}
-					cancel={() => setEditLogs([])}
-					refresh={signalRefresh}
-				/>
-			)}
 
-			<menu className="list-view-options">
-				<div className="list-sort">
-					<h5>Sort:</h5>
-					<button
-						onClick={() => handleSort('date')}
-						id={sortBy.includes('date') ? 'active-sort-filter' : ''}
-					>
-						<img src={sortBy === 'date' ? '/sort-up.svg' : '/sort-down.svg'} />
-						Date
-					</button>
-					<button
-						onClick={() => handleSort('store')}
-						id={sortBy.includes('store') ? 'active-sort-filter' : ''}
-					>
-						<img src={sortBy === 'store' ? '/sort-z-a.svg' : '/sort-a-z.svg'} />
-						Store
-					</button>
-					<button
-						onClick={() => handleSort('amount')}
-						id={sortBy.includes('amount') ? 'active-sort-filter' : ''}
-					>
-						<img src={sortBy === 'amount' ? '/sort-up.svg' : '/sort-down.svg'} />
-						Amount
-					</button>
-					<button
-						onClick={() => handleSort('category')}
-						id={sortBy.includes('category') ? 'active-sort-filter' : ''}
-					>
-						<img src={sortBy === 'category' ? '/sort-z-a.svg' : '/sort-a-z.svg'} />
-						Category
-					</button>
-					<button
-						onClick={() => handleSort('type')}
-						id={sortBy.includes('type') ? 'active-sort-filter' : ''}
-					>
-						<img src="/sort.svg" />
-						Type
-					</button>
-					<button
-						onClick={() => handleSort('account')}
-						id={sortBy.includes('account') ? 'active-sort-filter' : ''}
-					>
-						<img src={sortBy === 'account' ? '/sort-z-a.svg' : '/sort-a-z.svg'} />
-						Account
-					</button>
-				</div>
-			</menu>
+  const getColor = (amount: number, category: Category) => {
+    if (['Transfer', 'Credit'].includes(category.split('>')[1])) return 'bg-neutral2 ';
+    if (amount < 0) return 'bg-negative2 ';
+    else return 'bg-primary3 ';
+  }
 
-			<div className="list-menu-container" ref={topMenu}>
-				<ListMenu
-					logs={logs}
-					page={page}
-					perPage={perPage}
-					setPage={setPage}
-					setPerPage={setPerPage}
-				/>
-			</div>
 
-			<ol className="list-main">
-				{curView.map((transaction) => (
-					<li
-						key={transaction.id}
-						className={'item-base' + (editLogs.includes(transaction.id) ? ' edit-list-active' : '')}
-					>
-						<input
-							type="checkbox"
-							className="list-checkbox"
-							checked={editLogs.includes(transaction.id)}
-							onChange={() => handleEditSelect(transaction.id)}
-						/>
+  return (
+    <>
+      <div className='flex flex-col h-12 pb-1 md:flex-row-reverse '>
+        <menu className='w-full h-12 flex flex-row justify-around bg-light1 md:w-2/3 '>
 
-						<div
-							className={
-								(transaction.amount < 0 ? 'list-item-expense' : 'list-item-income') +
-								' list-item' +
-								(['Transfer', 'Credit'].includes(transaction.category.split('>')[1])
-									? ' list-item-transfer'
-									: '')
-							}
-							onClick={() => updateSelected(transaction)}
-						>
-							<span className="list-item-date">
-								{transaction.date.toDateString().split(' ').slice(0, 3).join(' ')}
-							</span>
-							<span className={"list-item-source" + (updated.includes(transaction.id) ? ' trans-updated' : '')}> {transaction.company}</span>
-							<span className="list-item-amount">
-								{' '}
-								{['Transfer', 'Credit'].includes(transaction.category.split('>')[1])
-									? '$'
-									: transaction.amount < 0
-										? `-$`
-										: `+$`}
-								{Math.abs(transaction.amount / 100).toFixed(2)}
-							</span>
-							<span
-								className="list-item-category"
-								style={{ backgroundColor: getCategoryColor(transaction.category) }}
-							>
-								{transaction.category.split('>')[1]
-									? `${transaction.category.split('>')[0].slice(0, 6)}>${transaction.category.split('>')[1].slice(0, 9)}`
-									: `${transaction.category.slice(0, 18)}`}
-							</span>
-							<span className="list-item-desc"> - {transaction.desc}</span>
-							<span className="list-item-account">{`${accounts.find((a) => a.id === transaction.account_id)?.account_type.slice(0, 5)}:${accounts.find((a) => a.id === transaction.account_id)?.account_name}`}</span>
-						</div>
-					</li>
-				))}
+          { ['Date', 'Store', 'Category', 'Amount', 'Type', 'Account'].map(field => (
+            <button
+              key={field}
+              className={'flex flex-row h-fit mx-0 mt-2 p-1 rounded ' + (sortBy.field === field.toLowerCase() ? 'bg-primary2 ' : 'bg-bbgray1 hover:bg-bbgray3 ')}
+              onClick={() => {setSortBy({ field: field.toLowerCase() as Sorter['field'], order: sortBy.field === field.toLowerCase() ? (-1 * sortBy.order) as (-1 | 1) : -1 }); update()}}
+            ><img src={getSVG(field, sortBy.order)} />{ field }</button>
+          )) }
+        </menu>
 
-				{curView.length === 0 && <div className="empty-list">No transactions found</div>}
+        <Control maxPage={Math.ceil(totalLogs / perPage)} curPage={curPage} setCurPage={setCurPage} perPage={perPage} setPerPage={updatePerPage} update={update} />
+      </div>
 
-				{more && page >= Math.floor(logs.length / perPage) && (
-					<button
-						onClick={() => {
-							incRange();
-							signalRefresh();
-						}}
-						className="fetch-more"
-					>
-						Load 90 Days ({Number(sessionStorage.getItem('fetchRange') ?? 89) + 91})
-					</button>
-				)}
-			</ol>
+      <ol className='w-[calc(100%-1rem)] h-[calc(100%-8rem)] md:h-[calc(100%-6rem)] m-1 mx-auto flex flex-col bg-light2 mt-8 md:mt-0 overflow-y-auto'>
+        { 
+          logs.map((log) => (
+            <li key={log.id} className='w-[calc(100%-1.3rem)] p-1 m-auto my-1 bg-panel rounded flex flex-row items-center justify-around hover:opacity-75 ' onClick={() => updateSelected(log.id)}>
 
-			<ListMenu
-				logs={logs}
-				page={page}
-				perPage={perPage}
-				setPage={setPage}
-				setPerPage={setPerPage}
-			/>
+              <input className='mr-2' type='checkbox' checked={selectLogs.includes(log.id)} onChange={(e) => {updateSelected(log.id); e.stopPropagation()}} />
 
-			{selectedTransactions.length > 0 &&
-				selectedTransactions.map((trans) => (
-					<ViewLog
-						key={`${trans.id}:viewlog`}
-						transaction={trans}
-						accounts={accounts}
-						toggle={() =>
-							setSelectedTransactions(
-								selectedTransactions.filter((t) => JSON.stringify(t) !== JSON.stringify(trans)),
-							)
-						}
-						updateLog={updateLog}
-					/>
-				))}
-		</div>
-	);
+              <div className={'w-full grid grid-cols-4 gap-2 md:grid-cols-[.8fr_1.2fr_.8fr_1.6fr_1fr_1fr] border-dashed border rounded ' + (selectLogs.includes(log.id) ? 'border-neutral1 bg-neutral3' : 'border-panel ')} >
+                <span className='text-xs font-mono font-semibold'>{ formatDate(log.date) }</span>
+                <span className='font-serif '>{ log.store }</span>
+                
+                <span className='justify-self-end bg-white rounded-lg px-1 font-semibold font-mono'>{ formatAmount(log.amount, ['Transfer', 'Credit'].includes(log.category.split('>')[1])) }</span>
+                <span className={'font-medium w-fit px-1 rounded-lg ' + getColor(log.amount, log.category)}>{ formatCategory(log.category) }</span>
+                
+
+                <span className='hidden justify-self-end md:grid '>{ log.desc }</span>
+                <span className='hidden justify-self-end text-xs font-mono font-semibold pr-1 md:grid '>{ formatAccount(log.account_id, accounts) }</span>
+              </div>
+            </li>
+          ))
+        }
+
+        { logs.length === 0 &&
+          <li className='w-11/12 bg-bbgray3 '>
+            <span>No logs found</span>
+          </li>
+        }
+
+      </ol>
+
+      { selectLogs.length === 1 &&
+        <ViewLog transaction={selected[0]} account={accounts.find(a => a.id === selected[0].account_id)!} update={update} close={() => setSelectLogs([])} />
+      }
+
+      { selectLogs.length > 1 &&
+        <ViewMultiLog transactions={selected} accounts={accounts} type={selectedType} update={update} close={() => setSelectLogs([])} />
+      }
+    </>
+  )
 }
 
-interface ListMenuProps {
-	logs: Transaction[];
-	page: number;
-	perPage: number;
-	setPage: React.Dispatch<React.SetStateAction<number>>;
-	setPerPage: React.Dispatch<React.SetStateAction<number>>;
+
+
+interface ControlProps {
+  maxPage: number;
+  curPage: number;
+  setCurPage: (perPage: number) => void;
+  perPage: number;
+  setPerPage: (perPage: number) => void;
+  update: () => void;
 }
-function ListMenu({ logs, page, perPage, setPage, setPerPage }: ListMenuProps) {
-	const handlePage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		const am = e.target.value;
-		if (!am) {
-			setPage(0);
-		} else if (am.match(/^\d{1,}?$/)) {
-			const newPage = Math.max(0, Number(am) - 1);
-			if (newPage <= Math.floor(logs.length / perPage)) setPage(newPage);
-		}
-	};
+function Control ({ maxPage, curPage, setCurPage, perPage, setPerPage, update }: ControlProps) {
 
-	return (
-		<menu className="list-view-options">
-			<div className="list-menu-opt">
-				<button onClick={() => setPage(page - 1)} disabled={page <= 0}>
-					<img src="/left-arrow.svg" />
-				</button>
-				<input type="text" value={`${page + 1}`} onChange={handlePage} />
-				<span>{` / ${Math.floor(logs.length / perPage) + 1}`} </span>
-				<button
-					onClick={() => setPage(page + 1)}
-					disabled={page >= Math.floor(logs.length / perPage)}
-				>
-					<img src="/right-arrow.svg" />
-				</button>
-			</div>
+  const handleNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const am = e.target.value;
+		if (!am || am.match(/^\d{1,}$/)) {
+			if (Number(am) <= maxPage && Number(am) >= 1) setCurPage(Number(am));
+      update();
+    }
+  }
 
-			<div className="list-menu-opt">
-				<label htmlFor="perpage">Per page: </label>
-				<select
-					id="perpage"
-					value={perPage}
-					onChange={(e) => {
-						sessionStorage.setItem('list.perPage', e.target.value);
-						setPerPage(Number(e.target.value));
-						setPage(Math.min(page, Math.floor(logs.length / Number(e.target.value))));
-					}}
-				>
-					<option value={25}>25</option>
-					<option value={50}>50</option>
-					<option value={100}>100</option>
-					<option value={250}>250</option>
-				</select>
-			</div>
-		</menu>
-	);
+  return (
+    <menu className='w-full h-12 flex flex-row justify-between bg-light1 md:w-1/3 '>
+      <div className='flex flex-row items-center m-2'>
+        <button className={'bg-bbgray1 rounded-lg ' + (curPage > 1 ? 'hover:bg-bbgray3 ' : '')} disabled={curPage <= 1} onClick={() => {setCurPage(curPage - 1); update()}}>
+          <img src='/misc/previous.svg' draggable={false} />
+        </button>
+
+        <input className='w-8 text-center rounded ' type='text' value={curPage} onChange={handleNumber} />
+        <span>{ ` / ${maxPage}` }</span>
+
+        <button className={'bg-bbgray1 rounded-lg ' + (curPage < maxPage ? 'hover:bg-bbgray3 ' : '')} disabled={curPage >= maxPage} onClick={() => {setCurPage(curPage + 1); update()}}>
+          <img src='/misc/next.svg' draggable={false} />
+        </button>
+      </div>
+
+      <div className='flex flex-row items-center m-2'>
+        <label className='text-sm ' htmlFor='perpage'>Per page: </label>
+        <select id='perpage' value={perPage} onChange={(e) => {setPerPage(Number(e.target.value)); setCurPage(1); update()}}>
+          <option value={25}>25</option>
+          <option value={50}>50</option>
+          <option value={100}>100</option>
+          <option value={200}>200</option>
+        </select>
+      </div>
+    </menu>
+  )
 }

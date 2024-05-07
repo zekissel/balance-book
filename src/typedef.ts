@@ -1,30 +1,43 @@
+import { invoke } from "@tauri-apps/api";
+import { Filter } from "./component/Filter";
+
 export interface User {
+  id: string;
+  name: string;
+  email: string | null;
+}
+
+export interface Account {
 	id: string;
-	uname: string;
-	email: string | null;
-	fname: string | null;
-	lname: string | null;
-	dob: Date | null;
-	plaid_id: string | null;
-	plaid_secret: string | null;
+	type: AccountType;
+	name: string;
+	balance: number;
+	date: Date;
+  user_id: string;
 }
 
-export enum Theme { System = 'sys', Light = 'light', Dark = 'dark' }
-export interface SettingOptions {
-	theme: Theme;
+export interface Transaction {
+	id: string;
+	store: string;
+	amount: number;
+	category: Category;
+	date: Date;
+	desc: string;
+	account_id: string;
 }
 
-export enum DataState {
-	Loading,
-	Success,
-	Error,
+export enum AccountType {
+	Checking = 'Checking',
+	Credit = 'Credit',
+	Savings = 'Savings',
+	Investment = 'Investment',
+	Loan = 'Loan',
 }
 
-export function getEnumKeys<T extends string, TEnumValue extends string | number>(enumVariable: {
-	[key in T]: TEnumValue;
-}) {
-	return Object.keys(enumVariable) as Array<T>;
-}
+
+export type Category = 
+  `${IncomeRoot}>${typeof IncomeLeaf[IncomeRoot][number]}` | 
+  `${ExpenseRoot}>${typeof ExpenseLeaf[ExpenseRoot][number]}`;
 
 export enum ExpenseRoot {
 	Home = 'Home',
@@ -34,7 +47,6 @@ export enum ExpenseRoot {
 	Healthcare = 'Healthcare',
 	Personal = 'Personal',
 	Services = 'Services',
-	General = 'General',
 	Studio = 'Studio',
 	Entertainment = 'Entertainment',
 	Travel = 'Travel',
@@ -56,6 +68,11 @@ export const ExpenseLeaf = {
 	Other: ['Non-Essentials', 'Gifts', 'Pets', 'Charity', 'Other'],
 };
 
+export const CrossLeaf = {
+	Finance: ['Transfer', 'Credit', 'Other'],
+	Other: ['Other'],
+};
+
 export enum IncomeRoot {
 	Salary = 'Salary',
 	SideJob = 'SideJob',
@@ -71,127 +88,73 @@ export const IncomeLeaf = {
 	OtherIncome: ['Reimbursement', 'Refund', 'Gifts', 'Other'],
 };
 
-export type Category = `${IncomeRoot | ExpenseRoot}>${string}`;
 
-export interface Transaction {
-	id: string;
-	company: string;
-	amount: number;
-	category: Category;
-	date: Date;
-	desc: string;
-	account_id: string;
+export async function getAccounts(): Promise<Account[]> {
+	return await invoke('fetch_account').then((data) => {
+		const acc = data as Account[];
+		//acc.forEach((e) => (e.date = new Date(e.date)));
+		return acc;//.sort((a, b) => (a.date > b.date ? -1 : 1));
+	});
 }
 
-export interface Day {
-	date: Date;
-	transactions: Transaction[];
-}
-
-export const Month = [
-	'January',
-	'February',
-	'March',
-	'April',
-	'May',
-	'June',
-	'July',
-	'August',
-	'September',
-	'October',
-	'November',
-	'December',
-];
-
-export interface Account {
-	id: string;
-	user_id: string;
-	account_type: AccountType;
-	account_name: string;
-	balance: number;
-	date: string;
-}
-
-export enum AccountType {
-	Checking = 'Checking',
-	Credit = 'Credit',
-	Savings = 'Savings',
-	Investment = 'Investment',
-	Loan = 'Loan',
-}
-
-export const filtersActiveStyle = { backgroundColor: `#a0bacb` };
-export const menuActiveStyle = {
-	backgroundColor: `#93ceb4`,
-	color: `#191919`,
-};
-
-export interface Filter {
-	type: string;
-	startDate: Date | null;
-	endDate: Date | null;
-	category: string[];
-	source: string[];
-	lowAmount: string;
-	highAmount: string;
-	accounts: string[];
-}
-
-export function anyFiltersActive(filter: Filter): boolean {
-	return (
-		filter.type !== `all` ||
-		filter.startDate !== null ||
-		filter.endDate !== null ||
-		filter.category.length > 0 ||
-		filter.source[0].length > 0 ||
-		Number(filter.lowAmount) !== 0 ||
-		Number(filter.highAmount) !== 0 ||
-		filter.accounts.length > 0
+export async function getTransactions(
+	filters: Filter,
+	index: { current_page: number, page_size: number, sort_field: string, sort_asc: boolean }
+): Promise<[Transaction[], number]> {
+	return await invoke('fetch_transaction', { filters, index }).then(
+		(data) => {
+			const [trans, count] = data as [Transaction[], number];
+			trans.forEach((t) => {
+				t.date = new Date(new Date(t.date).toUTCString().split(' ').slice(0, 4).join('-'));
+			});
+			return [trans, count];
+		},
 	);
 }
 
-export function filterTransactions({
-	transactions,
-	filters,
-}: {
-	transactions: Transaction[];
-	filters: Filter;
-}): Transaction[] {
-	let ret: Transaction[] = [];
+export async function getCalendarTransactions(
+	filters: Filter,
+): Promise<Transaction[]> {
+	return await invoke('fetch_transaction_calendar', { filters }).then(
+		(data) => {
+			const trans = data as Transaction[];
+			return trans.map((t) => new Object({
+				...t,
+				date: new Date(new Date(t.date).toUTCString().split(' ').slice(0, 4).join('-')),
+			}) as Transaction);
+		},
+	);
+}
 
-	if (filters.type === `expense` || filters.type === `all`)
-		ret = ret.concat(transactions.filter((t) => t.amount < 0));
-	if (filters.type === `income` || filters.type === `all`)
-		ret = ret.concat(transactions.filter((t) => t.amount > 0));
-
-	if (filters.startDate !== null)
-		ret = ret.filter((t) => t.date.getTime() >= filters.startDate!.getTime());
-	if (filters.endDate !== null)
-		ret = ret.filter((t) => t.date.getTime() <= filters.endDate!.getTime());
-
-	if (filters.category.length > 0) {
-		const exclude = filters.category.includes('X');
-		if (!exclude) ret = ret.filter((t) => filters.category.includes(t.category.toString()));
-		else ret = ret.filter((t) => !filters.category.includes(t.category.toString()));
+const matchAccountType = (type: string | undefined) => {
+	switch (type) {
+		case 'Checking': return 'Check';
+		case 'Credit': return 'Cred';
+		case 'Savings': return 'Sav';
+		case 'Investment': return 'Inv';
+		case 'Loan': return 'Loan';
+		default: return 'Other';
 	}
+}
+export const formatAccount = (id: string, accounts: Account[]) => {
+	if (id === 'Multiple') return 'Multiple';
+	return `${matchAccountType(accounts.find(a => a.id === id)?.type)}:${accounts.find(a => a.id === id)?.name}`;
+}
 
-	if (filters.source[0].length > 0)
-		ret = ret.filter((t) => {
-			// match partial names
-			const sources = filters.source.map((s: string) => s.toUpperCase().trim());
-			return sources.some((s: string) => t.company.toUpperCase().includes(s));
-		});
+/* format date like DOW MON DAY */
+export const formatDate = (date: Date) => {
+	return date.toDateString().slice(0, 10);
+}
 
-	if (Number(filters.lowAmount) > 0)
-		ret = ret.filter((t) => Math.abs(t.amount / 100) >= Number(filters.lowAmount));
-	if (Number(filters.highAmount) > 0)
-		ret = ret.filter((t) => Math.abs(t.amount / 100) <= Number(filters.highAmount));
+export const formatAmount = (amount: number | 'Multiple', transfer: boolean) => {
+	if (amount === 'Multiple') return 'Multiple';
+	return `${transfer !== true ? (amount > 0 ? `+` : `-`) : ''}$${Math.abs(amount / 100).toFixed(2)}`
+}
 
-	if (filters.accounts.length > 0) {
-		const exclude = filters.accounts.includes('X');
-		if (!exclude) ret = ret.filter((t) => filters.accounts.includes(t.account_id));
-		else ret = ret.filter((t) => !filters.accounts.includes(t.account_id));
-	}
+export const formatCategory = (category: Category) => {
+	return `${category.split('>')[0].slice(0, 6)}>${category.split('>')[1]/*.slice(0, 8)*/}`;
+}
 
-	return ret.sort((a, b) => b.date.getTime() - a.date.getTime());
+export function addDays(date: Date, days: number) {
+	return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days, 0, 0, 0, 0);
 }
