@@ -332,7 +332,7 @@ pub async fn read_account(
     .load::<Account>(&mut establish_connection(app_handle))
     .ok()
 }
-
+/*
 pub async fn read_account_by_id(app_handle: tauri::AppHandle, id_i: &str) -> Option<Account> {
   use super::schema::account::dsl::*;
 
@@ -340,7 +340,7 @@ pub async fn read_account_by_id(app_handle: tauri::AppHandle, id_i: &str) -> Opt
     .filter(id.eq(id_i))
     .first::<Account>(&mut establish_connection(app_handle))
     .ok()
-}
+} */
 
 pub async fn update_account(
   app_handle: tauri::AppHandle,
@@ -491,24 +491,31 @@ pub async fn update_user_data(
   match name_i {
     Some(_) => match read_user_by_name(app_handle.clone(), name_i.unwrap()).await {
       Some(_) => return None,
-      None => (),
+      None => {
+        let u = diesel::update(user.find(id_i))
+          .set(name.eq(name_i.unwrap()))
+          .returning(User::as_returning())
+          .get_result(&mut establish_connection(app_handle.clone()))
+          .ok();
+        if email_i.is_none() { return u }
+      },
     },
     None => (),
-  };
+  }
 
   match email_i {
     Some(_) => match read_user_by_email(app_handle.clone(), email_i.unwrap()).await {
       Some(_) => return None,
-      None => (),
+      None => {
+        diesel::update(user.find(id_i))
+          .set(email.eq(email_i.unwrap()))
+          .returning(User::as_returning())
+          .get_result(&mut establish_connection(app_handle))
+          .ok()
+      },
     },
-    None => (),
-  };
-
-  diesel::update(user.find(id_i))
-    .set((name.eq(name_i.unwrap()), email.eq(email_i.unwrap())))
-    .returning(User::as_returning())
-    .get_result(&mut establish_connection(app_handle))
-    .ok()
+    None => None,
+  }
 }
 
 pub async fn delete_user(app_handle: tauri::AppHandle, id_i: &str) -> bool {

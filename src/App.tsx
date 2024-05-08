@@ -47,7 +47,7 @@ function App() {
               <Route path='/accounts' element={<Accounts />} />
               <Route path='/market' element={<Market />} />
 
-              <Route path='/profile' element={<Profile user={user} logout={logout} />} />
+              <Route path='/profile' element={<Profile user={user} setUser={verifyUser} logout={logout} />} />
               <Route path='/settings' element={<Settings />} />
 
             </Route>

@@ -201,6 +201,40 @@ async fn register(handle: tauri::AppHandle, state: State<'_, AuthState>, name: &
 }
 
 #[tauri::command]
+async fn fix_user(handle: tauri::AppHandle, state: State<'_, AuthState>, name: Option<&str>, password: &str, email:  Option<&str>, new_pass: Option<&str>) -> Result<User, String> {
+  let user = state.user.lock().await.take();
+  if user.is_none() { return Err("Application error! (1)".to_owned()); }
+
+  let mut ret = "Failed to update user";
+
+  match dbase::api::verify_user(handle.clone(), &user.as_ref().unwrap().name, password).await {
+    Some(_) => {
+      match new_pass {
+        Some(np) => {
+          let _ = dbase::api::update_user_password(handle.clone(), &user.as_ref().unwrap().id, np).await;
+          ret = "Updated user password";
+        },
+        None => (),
+      };
+      match dbase::api::update_user_data(handle, &user.as_ref().unwrap().id, name, email).await {
+        Some(u) => {
+          state.user.lock().await.replace(u.clone());
+          Ok(u)
+        },
+        None => {
+          state.user.lock().await.replace(user.clone().expect("Application error! (3)"));
+          Err(ret.to_owned())
+        }
+      }
+    },
+    None => { 
+      state.user.lock().await.replace(user.clone().expect("Application error! (2)"));
+      return Err("Invalid password".to_owned())
+    }
+  }
+}
+
+#[tauri::command]
 async fn logout(_handle: tauri::AppHandle, state: State<'_, AuthState>, _id: &str) -> Result<(), ()> {
   state.user.lock().await.take();
   Ok(())
@@ -257,7 +291,7 @@ fn main() {
       }).build())
     .plugin(tauri_plugin_oauth::init())
     .manage(AuthState { user: Mutex::new(None) })
-    .invoke_handler(tauri::generate_handler![login, register, logout, remove_user, fetch_account, fetch_transaction, fetch_transaction_calendar, new_account, new_transaction, fix_transaction, remove_transaction])
+    .invoke_handler(tauri::generate_handler![login, register, fix_user, logout, remove_user, fetch_account, fetch_transaction, fetch_transaction_calendar, new_account, new_transaction, fix_transaction, remove_transaction])
     .run(tauri::generate_context!())
     .expect("Error while running tauri application");
 }
