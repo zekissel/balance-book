@@ -8,6 +8,7 @@ import CategoryPie from "./CategoryPie";
 import SunMap from "./SunMap";
 import TreeAlt from "./Tree";
 import Sankey from "./Sankey";
+import StatsList from "./StatsList";
 
 interface StatsMainProps {
   logs: Transaction[];
@@ -58,7 +59,11 @@ export default function StatsMain({ logs, accounts, startDate, endDate }: StatsM
         { !(full.box || full.pie || full.netDay || full.sankey || full.info) ? <Panel logs={logs} startDate={startDate} endDate={endDate} /> : <></> }
 
         <div className={'w-3/4 h-[calc(100%-0.5rem)] m-0.5 flex flex-col justify-between items-center rounded-lg border border-dashed ' + (!full.info ? ((full.box || full.pie || full.netDay || full.sankey) ? 'hidden bg-light1 ' : 'relative -z-3 bg-panel border-bbgray3 ') : 'bg-light2 border-light2 ')}>
-            { !graphType1 ? <CategoryBar logs={logs} full={full.info} toggleFull={() => setFull({ ...full, info: !full.info })} /> : <div className='w-full h-full'>test</div> }
+            { !graphType1 ? 
+              <CategoryBar logs={logs} full={full.info} toggleFull={() => setFull({ ...full, info: !full.info })} /> 
+            : 
+              <StatsList transactions={logs} full={full.info} toggleFull={() => setFull({ ...full, info: !full.info })} />
+            }
 
             <GraphControl full={full.info}>
               <GraphButton onClick={toggleGraph1}>
@@ -118,8 +123,7 @@ export default function StatsMain({ logs, accounts, startDate, endDate }: StatsM
           <BoxPlot trans={logs} isIncome={graph4Income} root={graph4Root} full={full.box} toggleFull={() => setFull({ ...full, box: !full.box })} />
           <GraphControl 
             full={full.box}
-            toggle={
-              full.box ?
+            toggle={ !full.box ?
               <>
                 <button className={'text-sm z-200 mx-0.5 rounded-lg hover:bg-highlight px-0.5 ' + (graph4Income ? 'bg-primary3 ' : '')} onClick={() => {setGraph4Income(true); setGraph4Root(null)}}>Income</button>
                 <button className={'text-sm z-200 mx-0.5 rounded-lg hover:bg-highlight px-0.5 ' + (!graph4Income ? 'bg-primary3 ' : '')} onClick={() => {setGraph4Income(false); setGraph4Root(null)}}>Expense</button>
@@ -188,7 +192,7 @@ interface GraphButtonProps {
 function GraphButton ({ children, onClick }: GraphButtonProps) {
 
   return (
-    <button className='z-200 mx-0.5 rounded-lg hover:bg-highlight px-0.5 ' onClick={onClick}>
+    <button className='relative z-200 mx-0.5 rounded-lg hover:bg-highlight px-0.5 ' onClick={onClick}>
       { children }
     </button>
   )

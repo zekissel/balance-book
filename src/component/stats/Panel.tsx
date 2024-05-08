@@ -9,7 +9,7 @@ interface PanelProps {
 export default function Panel ({ logs, startDate, endDate }: PanelProps) {
 
   const netBalance = useMemo(() => {
-    return logs.filter(l => !['Transfer', 'Credit'].includes(l.category.split('>')[1])).reduce((acc, log) => acc + log.amount, 0);
+    return logs./*filter(l => !['Transfer', 'Credit'].includes(l.category.split('>')[1])).*/reduce((acc, log) => acc + log.amount, 0);
   }, [logs]);
 
   const [deposits, depositTotal] = useMemo(() => {

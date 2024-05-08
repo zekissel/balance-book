@@ -97,7 +97,7 @@ export default function SunMap({ trans, treemap, income, full, toggleFull }: Gra
 		},
 	};
 	const sunburstOption = {
-		title: titleOptions(`${income ? 'Income' : 'Expense'} Total by Category`, full),
+		title: titleOptions(`${(income ? 'Income' : 'Expense')} Total by Category`, full),
 		series: [
 			{
 				type: 'sunburst',
@@ -127,7 +127,7 @@ export default function SunMap({ trans, treemap, income, full, toggleFull }: Gra
 
 	const option = useMemo(() => {
 		return treemap ? treemapOption : sunburstOption;
-	}, [treemap, income, trans]);
+	}, [treemap, income, trans, full]);
 
 	return (
 		<ZoomChart full={full} toggleFull={toggleFull} option={option} />

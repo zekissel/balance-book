@@ -150,7 +150,7 @@ export default function Sankey({ transactions, accounts, full, toggleFull }: Gra
 			triggerOn: 'mousemove',
 			formatter: '<em>{b}</em> : <b>${c}</b>',
 		},
-		width: full ? '81%' : '75%',
+		width: full ? '77%' : '75%',
 		height: full ? '75%' : '87%',
 		series: [
 			{
@@ -160,7 +160,7 @@ export default function Sankey({ transactions, accounts, full, toggleFull }: Gra
 				},
 				nodeAlign: 'right',
 				top: full ? '13%': '10%',
-				left: '3%',
+				left: full ? '7%' : '3%',
 				bottom: '5%',
 				label: {
 					color: full ? '#fff' : '#333',
