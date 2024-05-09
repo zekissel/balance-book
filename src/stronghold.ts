@@ -1,6 +1,6 @@
 import { Stronghold } from 'tauri-plugin-stronghold-api';
 
-export const STORAGE_NAME = 'vault.hold';
+const STORAGE_NAME = 'vaults/vault.';
 
 export function useSecureStorage(userid: string) {
   async function getClient(stronghold: Stronghold) {
@@ -11,18 +11,18 @@ export function useSecureStorage(userid: string) {
     }
   }
 
-  const save = async (key: string, value: string, password: string) => {
-    const storagePath = await getStoragePath();
-    const stronghold = await Stronghold.load(storagePath, password);
+  const save = async (key: string, value: string, userid: string) => {
+    const storagePath = await getStoragePath(userid);
+    const stronghold = await Stronghold.load(storagePath, userid);
     const client = await getClient(stronghold);
     const store = client.getStore();
     await store.insert(key, Array.from(new TextEncoder().encode(value)));
     await stronghold.save();
   };
 
-  const load = async (key: string, password: string) => {
-    const storagePath = await getStoragePath();
-    const stronghold = await Stronghold.load(storagePath, password);
+  const load = async (key: string, userid: string) => {
+    const storagePath = await getStoragePath(userid);
+    const stronghold = await Stronghold.load(storagePath, userid);
     const client = await getClient(stronghold);
     const store = client.getStore();
     const value = await store.get(key);
@@ -30,9 +30,9 @@ export function useSecureStorage(userid: string) {
     return decoded;
   };
 
-  const getStoragePath = async () => {
+  const getStoragePath = async (userid: string) => {
     const { appDataDir } = await import('@tauri-apps/api/path');
-    return `${await appDataDir()}${STORAGE_NAME}`;
+    return `${await appDataDir()}${STORAGE_NAME}${userid.slice(0, 8)}`;
   };
 
   return { save, load };

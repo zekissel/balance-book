@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::env;
 use fin::models::PlaidKey;
 use serde::Deserialize;
 use tauri::State;
@@ -308,10 +309,10 @@ fn main() {
         ..Default::default()
       };
 
-      let salt = b"some_long_and_secure_random_salt";
+      let salt = env::var("STRONGHOLD_SALT").unwrap();
       let key = argon2::hash_raw(
         pw.as_ref(),
-        salt,
+        salt.as_bytes(),
         &config,
       )
       .expect("failed to hash password");

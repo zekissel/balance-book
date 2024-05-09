@@ -7,7 +7,6 @@ import { PlaidKey } from './profile/Link';
 interface SyncProps { user: User }
 export default function Sync({ user }: SyncProps) {
 
-
   const { save, load } = useSecureStorage(user.id);
 
   const [retry, setRetry] = useState<number>(0);
@@ -26,7 +25,7 @@ export default function Sync({ user }: SyncProps) {
         .catch(() => setRetry(retry + 1));
     }
 
-    loadPlaidInfo();
+    if (retry <= 5) loadPlaidInfo();
   }, [retry]);
 
   useEffect(() => {

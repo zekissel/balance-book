@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { removeFile, BaseDirectory } from '@tauri-apps/api/fs';
 import { User } from "../../typedef";
 import { invoke } from "@tauri-apps/api";
 import { useNavigate } from "react-router-dom";
@@ -51,15 +52,18 @@ export default function Personal({ user, setUser, logout }: PersonalProps) {
 
   const deleteUser = async () => {
     
-    console.log('Deleting user now...');
     await invoke('remove_user', { pw: curPass })
       .then((resp) => {
-        console.log('resp came in: ', resp);
         if (resp as boolean === false) { setError('Error deleting user'); return }
+        removeVault();
         logout();
         nav('/');
       })
       .catch((e) => setError(e))
+  }
+
+  const removeVault = async () => {
+    await removeFile(`vaults/vault.${user.id.slice(0, 8)}`, { dir: BaseDirectory.AppData });
   }
 
   const isDisabled = () => {
