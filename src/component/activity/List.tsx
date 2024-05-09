@@ -107,10 +107,10 @@ export default function List({ filters, signal, update }: ListProps) {
         <Control maxPage={Math.ceil(totalLogs / perPage)} curPage={curPage} setCurPage={setCurPage} perPage={perPage} setPerPage={updatePerPage} update={update} />
       </div>
 
-      <ol className='w-[calc(100%-1rem)] h-[calc(100%-8rem)] md:h-[calc(100%-6rem)] m-1 mx-auto flex flex-col bg-light2 mt-8 md:mt-0 overflow-y-auto'>
+      <ol className='w-[calc(100%-0.5rem)] h-[calc(100%-8rem)] md:h-[calc(100%-6rem)] m-1 mx-auto flex flex-col bg-light2 mt-8 md:mt-0 overflow-y-auto'>
         { 
           logs.map((log) => (
-            <li key={log.id} className='w-[calc(100%-1.3rem)] p-1 m-auto my-1 bg-panel rounded flex flex-row items-center justify-around hover:opacity-80 ' onClick={() => updateSelected(log.id)}>
+            <li key={log.id} className='w-[calc(100%-1rem)] p-1 ml-1 mr-auto my-1 bg-panel rounded flex flex-row items-center justify-around hover:opacity-80 ' onClick={() => updateSelected(log.id)}>
 
               <input className='mr-2' type='checkbox' checked={selectLogs.includes(log.id)} onChange={(e) => {updateSelected(log.id); e.stopPropagation()}} />
 

@@ -59,20 +59,28 @@ export default function Financial({ user }: FinancialProps) {
         </span>
       </menu>
 
-      <menu className='flex flex-col w-2/3 m-2 p-2 bg-panel rounded-lg '>
+      <menu className='flex flex-col w-2/3 m-2 my-8 p-2 bg-panel rounded-lg '>
 
-        <button className={'text-white w-fit px-2 rounded-lg mx-auto mt-2 ' + (isDisabled() ? 'bg-bbgray1 ' : 'bg-neutral1 hover:opacity-80 ')} onClick={isDisabled() ? undefined : toggleStartLink}>Link Bank Account</button>
+        <button className={'text-white text-lg w-fit px-2 rounded-lg mx-auto mt-2 ' + (isDisabled() ? 'bg-bbgray1 ' : 'bg-primary hover:opacity-80 ')} onClick={isDisabled() ? undefined : toggleStartLink}>Link Bank Account</button>
 
         { startLink && <PlaidLink user={user} pKey={plaidKey} /> }
 
       </menu>
 
-      <ol className='flex flex-col w-2/3 m-2 p-2 bg-panel rounded-lg '>
-
-        <li>connected accounts </li>
-
-      </ol>
+      <InstitutionInfo />
 
     </div>
+  )
+}
+
+
+function InstitutionInfo () {
+
+  return (
+    <ol className='flex flex-col w-2/3 m-2 p-2 bg-panel rounded-lg '>
+
+      <li>connected accounts </li>
+
+    </ol>
   )
 }
