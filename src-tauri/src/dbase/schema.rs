@@ -30,3 +30,11 @@ diesel::table! {
     email -> Nullable<Text>,  /* unique */
   }
 }
+
+diesel::table! {
+  token (id) {
+    id -> Text,
+    user_id -> Text,
+    cursor -> Nullable<Text>,
+  }
+}

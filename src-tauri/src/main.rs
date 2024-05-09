@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use fin::models::PlaidKey;
 use serde::Deserialize;
 use tauri::State;
 use dbase::models::{Account, Trans, User};
@@ -260,6 +261,34 @@ async fn remove_user(handle: tauri::AppHandle, state: State<'_, AuthState>, pw: 
   }
 }
 
+#[tauri::command]
+async fn sync_info(handle: tauri::AppHandle, user_id: &str, key: PlaidKey) -> Result<Vec<String>, ()> {
+  let mut updated: Vec<String> = vec![];
+  let tokens = dbase::api::read_token(handle.clone(), user_id).await;
+  for token in tokens { 
+    let _ = fin::api::fetch_balance(handle.clone(), key.clone(), token.clone()).await;
+    let changed = fin::api::fetch_transactions(handle.clone(), key.clone(), token.clone()).await;
+    match changed {
+      Ok(c) => {
+        for t_id in c { updated.push(t_id); }
+      },
+      Err(_) => (),
+    }
+  }
+  Ok(updated)
+}
+
+#[tauri::command]
+async fn get_status(handle: tauri::AppHandle, user_id: &str, key: PlaidKey) -> Result<Vec<fin::api::InstitutionStatus>, ()> {
+  let tokens = dbase::api::read_token(handle.clone(), user_id).await;
+  let mut status: Vec<fin::api::InstitutionStatus> = vec![];
+  for token in tokens { 
+    let inst_stat = fin::api::read_status(key.clone(), token).await;
+    status.push(inst_stat?);
+  }
+  Ok(status)
+}
+
 
 fn main() {
   dotenv::dotenv().ok();
@@ -291,7 +320,7 @@ fn main() {
       }).build())
     .plugin(tauri_plugin_oauth::init())
     .manage(AuthState { user: Mutex::new(None) })
-    .invoke_handler(tauri::generate_handler![login, register, fix_user, logout, remove_user, fetch_account, fetch_transaction, fetch_transaction_calendar, new_account, new_transaction, fix_transaction, remove_transaction])
+    .invoke_handler(tauri::generate_handler![login, register, fix_user, logout, remove_user, fetch_account, fetch_transaction, fetch_transaction_calendar, new_account, new_transaction, fix_transaction, remove_transaction, fin::auth::authenticate, fin::auth::authorize, fin::auth::open_link, sync_info, get_status])
     .run(tauri::generate_context!())
     .expect("Error while running tauri application");
 }

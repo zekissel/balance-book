@@ -9,7 +9,7 @@ use diesel_migrations::{ embed_migrations, EmbeddedMigrations, MigrationHarness 
 
 use crate::Filters;
 
-use super::models::{ Account, AddAccount, Trans, AddTrans, User, AddUser };
+use super::models::{ Account, AddAccount, Trans, AddTrans, User, AddUser, Token, AddToken };
 
 /* 
 use argon2::{
@@ -173,6 +173,15 @@ async fn sort_query(
   query
 }
 
+pub async fn read_trans_by_id(app_handle: tauri::AppHandle, t_id: &str) -> Option<Trans> {
+  use super::schema::trans::dsl::*;
+
+  trans
+    .filter(id.eq(t_id))
+    .first::<Trans>(&mut establish_connection(app_handle))
+    .ok()
+}
+
 pub async fn read_trans(
   app_handle: tauri::AppHandle,
   filters: Filters,
@@ -202,6 +211,36 @@ pub async fn count_trans(
     .expect("Error counting transactions")
 }
 
+pub async fn fix_trans(handle: tauri::AppHandle, id: &str, store: Option<&str>, amount: Option<i32>, category: Option<&str>, date: Option<&str>, desc: Option<&str>, account_id: Option<&str>) -> Option<Trans> {
+
+  let mut transaction = None;
+  match store {
+    Some(_) => transaction = update_trans_store(handle.clone(), id, store.unwrap()).await,
+    None => (),
+  };
+  match amount {
+    Some(_) => transaction = update_trans_amount(handle.clone(), id, amount.unwrap()).await,
+    None => (),
+  };
+  match category {
+    Some(_) => transaction = update_trans_category(handle.clone(), id, category.unwrap()).await,
+    None => (),
+  };
+  match date {
+    Some(_) => transaction = update_trans_date(handle.clone(), id, date.unwrap()).await,
+    None => (),
+  };
+  match desc {
+    Some(_) => transaction = update_trans_desc(handle.clone(), id, desc.unwrap()).await,
+    None => (),
+  };
+  match account_id {
+    Some(_) => transaction = update_trans_account(handle.clone(), id, account_id.unwrap()).await,
+    None => (),
+  };
+
+  transaction
+}
 
 pub async fn update_trans_store(
   app_handle: tauri::AppHandle,
@@ -571,4 +610,46 @@ pub async fn verify_user(
     .ok();
 
   user_o
+}
+
+pub async fn deposit_token(
+  app_handle: tauri::AppHandle,
+  user_id_i: &str,
+  access_token: &str
+) -> Option<Token> {
+  use super::schema::token;
+
+  let new_token = AddToken { id: access_token, user_id: user_id_i };
+
+  diesel::insert_into(token::table)
+    .values(&new_token)
+    .returning(Token::as_returning())
+    .get_result(&mut establish_connection(app_handle.clone()))
+    .ok()
+}
+
+pub async fn read_token(
+  app_handle: tauri::AppHandle,
+  user_id_i: &str
+) -> Vec<Token> {
+  use super::schema::token::dsl::*;
+
+  token
+    .filter(user_id.eq(user_id_i))
+    .load::<Token>(&mut establish_connection(app_handle))
+    .expect("Error fetching user tokens")
+}
+
+pub async fn update_cursor(
+  app_handle: tauri::AppHandle,
+  token_id_i: &str,
+  cursor_i: &str
+) -> Option<Token> {
+  use super::schema::token::dsl::*;
+
+  diesel::update(token.find(token_id_i))
+    .set(cursor.eq(cursor_i))
+    .returning(Token::as_returning())
+    .get_result(&mut establish_connection(app_handle))
+    .ok()
 }

@@ -11,6 +11,7 @@ import Accounts from "./component/account/Accounts";
 import Market from "./component/market/Market";
 import Home from "./component/home/Home";
 import Settings from "./component/settings/Settings";
+import Sync from "./component/Sync";
 
 function App() {
 
@@ -54,6 +55,8 @@ function App() {
           }
         </Routes>
       </BrowserRouter>
+
+      { user !== null && <Sync user={user} /> }
     </div>
   );
 }

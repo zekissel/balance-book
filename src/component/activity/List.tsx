@@ -110,20 +110,20 @@ export default function List({ filters, signal, update }: ListProps) {
       <ol className='w-[calc(100%-1rem)] h-[calc(100%-8rem)] md:h-[calc(100%-6rem)] m-1 mx-auto flex flex-col bg-light2 mt-8 md:mt-0 overflow-y-auto'>
         { 
           logs.map((log) => (
-            <li key={log.id} className='w-[calc(100%-1.3rem)] p-1 m-auto my-1 bg-panel rounded flex flex-row items-center justify-around hover:opacity-75 ' onClick={() => updateSelected(log.id)}>
+            <li key={log.id} className='w-[calc(100%-1.3rem)] p-1 m-auto my-1 bg-panel rounded flex flex-row items-center justify-around hover:opacity-80 ' onClick={() => updateSelected(log.id)}>
 
               <input className='mr-2' type='checkbox' checked={selectLogs.includes(log.id)} onChange={(e) => {updateSelected(log.id); e.stopPropagation()}} />
 
               <div className={'w-full grid grid-cols-4 gap-2 md:grid-cols-[.8fr_1.2fr_.8fr_1.6fr_1fr_1fr] border-dashed border rounded ' + (selectLogs.includes(log.id) ? 'border-neutral1 bg-neutral3' : 'border-panel ')} >
-                <span className='text-xs font-mono font-semibold'>{ formatDate(log.date) }</span>
-                <span className='font-serif '>{ log.store }</span>
+                <span className='text-xs font-mono font-semibold overflow-hidden '>{ formatDate(log.date) }</span>
+                <span className='font-serif overflow-hidden w-full '>{ log.store }</span>
                 
-                <span className='justify-self-end bg-white rounded-lg px-1 font-semibold font-mono'>{ formatAmount(log.amount, ['Transfer', 'Credit'].includes(log.category.split('>')[1])) }</span>
-                <span className={'font-medium w-fit px-1 rounded-lg ' + getColor(log.amount, log.category)}>{ formatCategory(log.category) }</span>
+                <span className='justify-self-end bg-white rounded-lg px-1 font-semibold font-mono h-fit '>{ formatAmount(log.amount, ['Transfer', 'Credit'].includes(log.category.split('>')[1])) }</span>
+                <span className={'font-medium w-fit px-1 rounded-lg h-fit ' + getColor(log.amount, log.category)}>{ formatCategory(log.category) }</span>
                 
 
-                <span className='hidden justify-self-end md:grid '>{ log.desc }</span>
-                <span className='hidden justify-self-end text-xs font-mono font-semibold pr-1 md:grid '>{ formatAccount(log.account_id, accounts) }</span>
+                <span className='hidden justify-self-end md:grid overflow-hidden w-[calc(120%)] '>{ log.desc }</span>
+                <span className='hidden justify-self-end text-right text-xs font-mono font-semibold pr-1 md:grid '>{ formatAccount(log.account_id, accounts) }</span>
               </div>
             </li>
           ))

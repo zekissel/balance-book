@@ -15,6 +15,7 @@
     "echarts-for-react": "^3.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-plaid-link": "^3.5.1",
     "tauri-plugin-stronghold-api": "github:tauri-apps/tauri-plugin-stronghold#v1"
   },
   "devDependencies": {

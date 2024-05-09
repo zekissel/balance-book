@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { User } from "../../typedef";
 import { useSecureStorage } from "../../stronghold";
 import { useNavigate } from "react-router-dom";
+import PlaidLink, { PlaidKey } from "./Link";
 
 interface FinancialProps { user: User }
 export default function Financial({ user }: FinancialProps) {
@@ -10,23 +11,31 @@ export default function Financial({ user }: FinancialProps) {
   const nav = useNavigate();
   const { save, load } = useSecureStorage(user.id);
 
+  const [startLink, setStartLink] = useState<boolean>(false);
+  const toggleStartLink = () => setStartLink(!startLink);
+
   const [plaidClientID, setPlaidClientID] = useState<string>('');
   const [plaidSecret, setPlaidSecret] = useState<string>('');
 
+  const [retry, setRetry] = useState<number>(0);
+  const plaidKey = useMemo(() => {
+    return new Object({ client_id: plaidClientID, secret: plaidSecret }) as PlaidKey;
+  }, [plaidClientID, plaidSecret]);
+
   useEffect(() => {
     const loadPlaidInfo = async () => {
-      await load('plaid-client-id', 'temp-pw').then(id => setPlaidClientID(id))
-        .catch(() => console.log('No plaid client id found'));
-      await load('plaid-secret', 'temp-pw').then(secret => setPlaidSecret(secret))
-        .catch(() => console.log('No plaid secret found'));
+      await load('plaid-client-id', user.id).then(id => {if (id !== '') setPlaidClientID(id)})
+        .catch(() => setRetry(retry + 1));
+      await load('plaid-secret', user.id).then(secret => {if (secret !== '') setPlaidSecret(secret)})
+        .catch(() => setRetry(retry + 1));
     }
 
     loadPlaidInfo();
-  }, []);
+  }, [retry]);
 
   const savePlaidInfo = async () => {
-    await save('plaid-client-id', plaidClientID, 'temp-pw');
-    await save('plaid-secret', plaidSecret, 'temp-pw');
+    await save('plaid-client-id', plaidClientID, user.id);
+    await save('plaid-secret', plaidSecret, user.id);
   }
   
   const isDisabled = () => {
@@ -52,7 +61,9 @@ export default function Financial({ user }: FinancialProps) {
 
       <menu className='flex flex-col w-2/3 m-2 p-2 bg-panel rounded-lg '>
 
-        <button className={'text-white w-fit px-2 rounded-lg mx-auto mt-2 ' + (isDisabled() ? 'bg-bbgray1 ' : 'bg-neutral1 hover:opacity-80 ')} onClick={isDisabled() ? () => {} :undefined}>Link Bank Account</button>
+        <button className={'text-white w-fit px-2 rounded-lg mx-auto mt-2 ' + (isDisabled() ? 'bg-bbgray1 ' : 'bg-neutral1 hover:opacity-80 ')} onClick={isDisabled() ? undefined : toggleStartLink}>Link Bank Account</button>
+
+        { startLink && <PlaidLink user={user} pKey={plaidKey} /> }
 
       </menu>
 

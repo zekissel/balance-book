@@ -5,6 +5,7 @@ use serde::ser::SerializeStruct;
 use super::schema::trans;
 use super::schema::account;
 use super::schema::user;
+use super::schema::token;
 
 
 #[derive(Queryable, Selectable)]
@@ -117,6 +118,35 @@ impl Serialize for User {
     state.serialize_field("id", &self.id)?;
     state.serialize_field("name", &self.name)?;
     state.serialize_field("email", &self.email)?;
+    state.end()
+  }
+}
+
+
+#[derive(Queryable, Selectable, Clone)]
+#[diesel(table_name = crate::dbase::schema::token)]
+#[diesel(check_for_backend(diesel::sqlite::Sqlite))]
+pub struct Token {
+    pub id: String,
+    pub user_id: String,
+    pub cursor: Option<String>,
+}
+
+#[derive(Insertable)]
+#[diesel(table_name = token)]
+pub struct AddToken<'a> {
+  pub id: &'a str,
+  pub user_id: &'a str,
+}
+
+impl Serialize for Token {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where S: serde::Serializer,
+  {
+    let mut state = serializer.serialize_struct("Token", 3)?;
+    state.serialize_field("id", &self.id)?;
+    state.serialize_field("user_id", &self.user_id)?;
+    state.serialize_field("cursor", &self.cursor)?;
     state.end()
   }
 }
