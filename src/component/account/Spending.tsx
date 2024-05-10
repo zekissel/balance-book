@@ -14,7 +14,16 @@ export default function SpendingAccounts({ accounts }: SpendingProps) {
 
   return (
     <main>
-      { accounts.map(a => (<li>{ a.name } {a.type}</li>)) }
+
+
+
+      { 
+        accounts.map(a => (
+          <li key={a.id}>
+            { a.name } {a.type}
+          </li>
+        ))
+      }
     </main>
   )
 }

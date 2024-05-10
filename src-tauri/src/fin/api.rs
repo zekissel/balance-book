@@ -1,11 +1,10 @@
 use plaid::PlaidClient;
 use plaid::model::*;
-use serde::Serialize;
-use serde::ser::SerializeStruct;
 
 use super::map::extract_category;
 use crate::dbase::models::Token;
 use super::models::PlaidKey;
+use super::models::InstitutionStatus;
 
 static PLAID_VERSION: &str = "2020-09-14";
 
@@ -159,24 +158,7 @@ pub async fn extract_accounts(handle: tauri::AppHandle, user_id: &str, key: Plai
   Ok(true)
 }
 
-#[allow(dead_code)]
-pub struct InstitutionStatus {
-  name: String,
-  last_update: String,
-  status: String,
-}
-impl Serialize for InstitutionStatus {
-  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-  where
-      S: serde::Serializer,
-  {
-      let mut state = serializer.serialize_struct("InstitutionStatus", 3)?;
-      state.serialize_field("name", &self.name)?;
-      state.serialize_field("last_update", &self.last_update)?;
-      state.serialize_field("status", &self.status)?;
-      state.end()
-  }
-}
+
 pub async fn read_status(key: PlaidKey, token: Token) -> Result<InstitutionStatus, ()> {
   let client = establish_plaid(key).await;
   let response = client
@@ -200,7 +182,10 @@ pub async fn read_status(key: PlaidKey, token: Token) -> Result<InstitutionStatu
 
   let name = response2.institution.name;
   let status = match response2.institution.status {
-    Some(is) => is.transactions_updates.unwrap().status,
+    Some(is) => match is.transactions_updates {
+      Some(tu) => tu.status,
+      None => "Unknown".to_owned(),
+    },
     None => "Unknown".to_owned(),
   };
   Ok(InstitutionStatus{ name, last_update: recent, status })

@@ -56,6 +56,9 @@ export default function Personal({ user, setUser, logout }: PersonalProps) {
       .then((resp) => {
         if (resp as boolean === false) { setError('Error deleting user'); return }
         removeVault();
+        localStorage.removeItem(`${user.id.slice(0, 8)}.sync`);
+        localStorage.removeItem(`${user.id.slice(0, 8)}.sync.fin.inst.status`);
+        localStorage.removeItem(`${user.id.slice(0, 8)}.fin.inst.status`);
         logout();
         nav('/');
       })

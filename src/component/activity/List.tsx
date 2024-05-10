@@ -82,7 +82,6 @@ export default function List({ filters, signal, update }: ListProps) {
     fetchAccounts();
   }, []);
 
-
   const getColor = (amount: number, category: Category) => {
     if (['Transfer', 'Credit'].includes(category.split('>')[1])) return 'bg-neutral2 ';
     if (amount < 0) return 'bg-negative2 ';

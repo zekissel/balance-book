@@ -85,16 +85,17 @@ pub async fn create_trans(
     .ok()
 }
 
-async fn construct_trans_query(filters: Filters) -> BoxedSelectStatement<'static, (Text, Text, Integer, Text, Text, Text, Text), FromClause<super::schema::trans::table>, Sqlite, ()> {
+async fn construct_trans_query(user_accounts: Vec<String>, filters: Filters) -> BoxedSelectStatement<'static, (Text, Text, Integer, Text, Text, Text, Text), FromClause<super::schema::trans::table>, Sqlite, ()> {
   use super::schema::trans;
   use super::schema::trans::dsl::*;
 
-  let accts = filters.account.clone();
   let exclude_accounts = filters.account.contains(&"X".to_owned());
   let exclude_stores = filters.store.contains(&"X".to_owned());
   let exclude_categories = filters.category.contains(&"X".to_owned());
 
   let mut query = trans::table.into_boxed();
+  query = query.filter(account_id.eq_any(user_accounts));
+
   if filters.start_date.is_some() {
     query = query.filter(date.ge(filters.start_date.unwrap()));
   }
@@ -103,9 +104,9 @@ async fn construct_trans_query(filters: Filters) -> BoxedSelectStatement<'static
   }
 
   if exclude_accounts {
-    query = query.filter(account_id.ne_all(accts));
-  } else if accts.len() > 0 {
-    query = query.filter(account_id.eq_any(accts));
+    query = query.filter(account_id.ne_all(filters.account));
+  } else if filters.account.len() > 0 {
+    query = query.filter(account_id.eq_any(filters.account));
   }
 
   if exclude_stores {
@@ -184,11 +185,12 @@ pub async fn read_trans_by_id(app_handle: tauri::AppHandle, t_id: &str) -> Optio
 
 pub async fn read_trans(
   app_handle: tauri::AppHandle,
+  user_accounts: Vec<String>,
   filters: Filters,
   index: Option<crate::Index>,
 ) -> Option<Vec<Trans>> {
 
-  let mut query = construct_trans_query(filters).await;
+  let mut query = construct_trans_query(user_accounts, filters).await;
 
   if index.is_some() {
     query = sort_query(query, index.unwrap()).await;
@@ -201,9 +203,10 @@ pub async fn read_trans(
 
 pub async fn count_trans(
   app_handle: tauri::AppHandle,
+  user_accounts: Vec<String>,
   filters: Filters,
 ) -> i64 {
-  let query = construct_trans_query(filters).await;
+  let query = construct_trans_query(user_accounts, filters).await;
 
   query
     .count()

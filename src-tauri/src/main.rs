@@ -141,7 +141,8 @@ async fn fetch_account(handle: tauri::AppHandle, state: State<'_, AuthState>) ->
     Some(user) => {
       let accounts = dbase::api::read_account(handle, &user.id).await;
       match accounts {
-        Some(accounts) => Ok(accounts),
+        Some(accounts) => { 
+          Ok(accounts)},
         None => Err(())
       }
     },
@@ -159,8 +160,13 @@ async fn fetch_transaction(
   let user = state.user.lock().await;
   if user.is_none() { return Err(()); }
 
-  match dbase::api::read_trans(handle.clone(), filters.clone(), Some(index)).await {
-    Some(trans) => Ok((trans, dbase::api::count_trans(handle, filters).await)),
+  let user_accounts = match dbase::api::read_account(handle.clone(), &user.as_ref().unwrap().id).await {
+    Some(accounts) => accounts.iter().map(|a| a.id.clone()).collect(),
+    None => vec![],
+  };
+
+  match dbase::api::read_trans(handle.clone(), user_accounts.clone(), filters.clone(), Some(index)).await {
+    Some(trans) => Ok((trans, dbase::api::count_trans(handle, user_accounts, filters).await)),
     None => Err(()),
   }
 }
@@ -174,7 +180,12 @@ async fn fetch_transaction_calendar(
   let user = state.user.lock().await;
   if user.is_none() { return Err(()); }
 
-  match dbase::api::read_trans(handle.clone(), filters.clone(), None).await {
+  let user_accounts = match dbase::api::read_account(handle.clone(), &user.as_ref().unwrap().id).await {
+    Some(accounts) => accounts.iter().map(|a| a.id.clone()).collect(),
+    None => vec![],
+  };
+
+  match dbase::api::read_trans(handle.clone(), user_accounts, filters.clone(), None).await {
     Some(trans) => Ok(trans),
     None => Err(()),
   }
@@ -280,9 +291,9 @@ async fn sync_info(handle: tauri::AppHandle, user_id: &str, key: PlaidKey) -> Re
 }
 
 #[tauri::command]
-async fn get_status(handle: tauri::AppHandle, user_id: &str, key: PlaidKey) -> Result<Vec<fin::api::InstitutionStatus>, ()> {
+async fn get_status(handle: tauri::AppHandle, user_id: &str, key: PlaidKey) -> Result<Vec<fin::models::InstitutionStatus>, ()> {
   let tokens = dbase::api::read_token(handle.clone(), user_id).await;
-  let mut status: Vec<fin::api::InstitutionStatus> = vec![];
+  let mut status: Vec<fin::models::InstitutionStatus> = vec![];
   for token in tokens { 
     let inst_stat = fin::api::read_status(key.clone(), token).await;
     status.push(inst_stat?);

@@ -38,12 +38,12 @@ export default function Sync({ user }: SyncProps) {
         })
     }
 
-    const syncDate = localStorage.getItem(`${user.id}.sync`);
+    const syncDate = localStorage.getItem(`${user.id.slice(0, 8)}.sync`);
 		const allowSync = syncDate ? addHours(new Date(syncDate), 6) < new Date(new Date().toISOString().split('.')[0]) : true;
 
     if (pID !== '' && pSecret !== '' && allowSync) {
       sync();
-      localStorage.setItem(`${user.id}.sync`, new Date().toISOString().split('.')[0]);
+      localStorage.setItem(`${user.id.slice(0, 8)}.sync`, new Date().toISOString().split('.')[0]);
     }
   }, [pID, pSecret]);
 
@@ -53,7 +53,7 @@ export default function Sync({ user }: SyncProps) {
   );
 }
 
-function addHours(date: Date, hours: number) {
+export function addHours(date: Date, hours: number) {
 	return new Date(
 		date.getFullYear(),
 		date.getMonth(),
