@@ -384,18 +384,16 @@ pub async fn read_account_by_id(app_handle: tauri::AppHandle, id_i: &str) -> Opt
     .ok()
 } */
 
-pub async fn update_account(
+pub async fn update_account_name(
   app_handle: tauri::AppHandle,
   id_i: &str,
-  name_i: &str, 
-  type_i: &str, 
-  balance_i: i32,
+  name_i: &str,
   date_i: &str
 ) -> Option<Account> {
   use super::schema::account::dsl::*;
 
   diesel::update(account.find(id_i))
-    .set((type_.eq(type_i), name.eq(name_i), balance.eq(balance_i), date.eq(date_i)))
+    .set((name.eq(name_i), date.eq(date_i)))
     .returning(Account::as_returning())
     .get_result(&mut establish_connection(app_handle))
     .ok()
@@ -411,6 +409,21 @@ pub async fn update_account_balance(
 
   diesel::update(account.find(id_i))
     .set((balance.eq(balance_i), date.eq(date_i)))
+    .returning(Account::as_returning())
+    .get_result(&mut establish_connection(app_handle))
+    .ok()
+}
+
+pub async fn update_account_type(
+  app_handle: tauri::AppHandle,
+  id_i: &str, 
+  type_i: &str, 
+  date_i: &str
+) -> Option<Account> {
+  use super::schema::account::dsl::*;
+
+  diesel::update(account.find(id_i))
+    .set((type_.eq(type_i), date.eq(date_i)))
     .returning(Account::as_returning())
     .get_result(&mut establish_connection(app_handle))
     .ok()

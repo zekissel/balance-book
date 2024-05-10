@@ -54,6 +54,61 @@ async fn new_account(handle: tauri::AppHandle, state: State<'_, AuthState>, type
 }
 
 #[tauri::command]
+async fn fix_account(
+  handle: tauri::AppHandle,
+  state: State<'_, AuthState>,
+  id: &str,
+  name: Option<&str>,
+  type_: Option<&str>,
+  balance: Option<i32>,
+  date: &str,
+) -> Result<Option<Account>, ()> {
+  
+    let user = state.user.lock().await;
+    if user.is_none() { return Err(()); }
+  
+    match user.as_ref() {
+      Some(_) => {
+        let mut acct = None;
+        match name {
+          Some(_) => acct = dbase::api::update_account_name(handle.clone(), id, name.unwrap(), date).await,
+          None => (),
+        };
+        match type_ {
+          Some(_) => acct = dbase::api::update_account_type(handle.clone(), id, type_.unwrap(), date).await,
+          None => (),
+        };
+        match balance {
+          Some(_) => acct = dbase::api::update_account_balance(handle.clone(), id, balance.unwrap(), date).await,
+          None => (),
+        };
+
+        Ok(acct)
+      },
+      None => Err(()),
+    }
+  
+}
+
+#[tauri::command]
+async fn remove_account(
+  handle: tauri::AppHandle,
+  state: State<'_, AuthState>,
+  id: &str,
+) -> Result<(), ()> {
+  let user = state.user.lock().await;
+  if user.is_none() { return Err(()); }
+
+  match user.as_ref() {
+    Some(_) => {
+      dbase::api::delete_account(handle, id).await;
+      Ok(())
+    },
+    None => Err(()),
+  }
+}
+
+#[tauri::command]
 async fn new_transaction(
   handle: tauri::AppHandle, 
   state: State<'_, AuthState>, 
@@ -332,7 +387,7 @@ fn main() {
       }).build())
     .plugin(tauri_plugin_oauth::init())
     .manage(AuthState { user: Mutex::new(None) })
-    .invoke_handler(tauri::generate_handler![login, register, fix_user, logout, remove_user, fetch_account, fetch_transaction, fetch_transaction_calendar, new_account, new_transaction, fix_transaction, remove_transaction, fin::auth::authenticate, fin::auth::authorize, fin::auth::open_link, sync_info, get_status])
+    .invoke_handler(tauri::generate_handler![login, register, fix_user, logout, remove_user, fetch_account, remove_account, fetch_transaction, fetch_transaction_calendar, new_account, fix_account, new_transaction, fix_transaction, remove_transaction, fin::auth::authenticate, fin::auth::authorize, fin::auth::open_link, sync_info, get_status])
     .run(tauri::generate_context!())
     .expect("Error while running tauri application");
 }

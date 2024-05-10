@@ -12,7 +12,7 @@ export interface Account {
 	type: AccountType;
 	name: string;
 	balance: number;
-	date: Date;
+	date: string;//Date;
   user_id: string;
 }
 
@@ -92,7 +92,7 @@ export const IncomeLeaf = {
 export async function getAccounts(): Promise<Account[]> {
 	return await invoke('fetch_account').then((data) => {
 		const acc = data as Account[];
-		//acc.forEach((e) => (e.date = new Date(e.date)));
+		//acc.forEach((a) => (a.date =  new Date(a.date)))
 		return acc;//.sort((a, b) => (a.date > b.date ? -1 : 1));
 	});
 }

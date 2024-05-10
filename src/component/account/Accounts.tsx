@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from "react"
 import Menu, { MenuButton } from "../Menu"
 import AddAccount from "./AddAccount";
-import { Account, getAccounts } from "../../typedef";
-import SpendingAccounts from "./Spending";
-import SavingAccounts from "./Saving";
-import OtherAccounts from "./Other";
+import { Account, getAccounts, Transaction, getCalendarTransactions, addDays } from "../../typedef";
+import { empty_filter, Filter } from "../filter";
+import AccountView from "./AccountView";
 
 interface AccountsProps { }
 export default function Accounts({}: AccountsProps) {
@@ -18,6 +17,7 @@ export default function Accounts({}: AccountsProps) {
   const [signal, setSignal] = useState<boolean>(false);
   const refresh = () => setSignal(!signal);
 
+  const [logs, setLogs] = useState<Transaction[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
 
   const spendAccounts = useMemo(() => {
@@ -36,6 +36,28 @@ export default function Accounts({}: AccountsProps) {
     async function fetchAccounts() { setAccounts(await getAccounts()) }
     fetchAccounts();
   }, [signal]);
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      const filter: Filter = { ...empty_filter, 
+        start_date: addDays(new Date(), -31),
+        end_date: addDays(new Date(), 0),
+      };
+      const trans = await getCalendarTransactions(filter);
+      setLogs(trans);
+    }
+    fetchLogs();
+  }, []);
+
+  const relaventLogs = useMemo(() => {
+    return logs.filter(t => {
+      switch (state) {
+        case UIState.Spend: return spendAccounts.map(a => a.id).includes(t.account_id);
+        case UIState.Save: return saveAccounts.map(a => a.id).includes(t.account_id);
+        case UIState.Other: return otherAccounts.map(a => a.id).includes(t.account_id);
+      }
+    })
+  }, [logs, state]);
 
   return (
     <div className='w-full'>
@@ -57,17 +79,12 @@ export default function Accounts({}: AccountsProps) {
       { showAddAccount && <AddAccount cancel={() => {refresh(); toggleAddAccount();}} />}
 
       
-      { state === UIState.Spend &&
-        <SpendingAccounts accounts={spendAccounts} />
-      }
-
-      { state === UIState.Save &&
-        <SavingAccounts accounts={saveAccounts} />
-      }
-
-      { state === UIState.Other &&
-        <OtherAccounts accounts={otherAccounts} />
-      }
+      <AccountView 
+        accounts={state === UIState.Spend ? spendAccounts : (state === UIState.Save ? saveAccounts : otherAccounts)} 
+        types={state === UIState.Spend ? { type1: 'Checking', type2: 'Credit' } : (state === UIState.Save ? { type1: 'Savings', type2: 'Investment' } : { type1: 'Loan', type2: 'Other' })}
+        logs={relaventLogs}
+        refresh={refresh}
+      />
 
     </div>
   )
