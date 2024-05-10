@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api';
 import { useNavigate } from 'react-router-dom';
 import { User } from '../../typedef';
+import FloatBG from './FloatBG';
 
 interface AuthProps {
   verifyUser: (user: User) => void;
@@ -52,9 +53,11 @@ export default function Auth ({ verifyUser }: AuthProps) {
 
   return (
     <main className='w-screen h-screen flex flex-col justify-center items-center'>
+
+      <FloatBG />
       
       <menu 
-        className='flex flex-col justify-center items-start border-primary border-2 border-solid rounded-2xl p-8 px-16 bg-panel'
+        className='flex flex-col justify-center items-start border-primary border-2 border-solid rounded-2xl p-8 px-16 bg-panel absolute '
       >
 
         <label htmlFor='name'>Username</label>

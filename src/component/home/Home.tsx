@@ -1,5 +1,6 @@
 import { useState } from "react"
 import Menu, { MenuButton } from "../Menu"
+import Logo from "./Logo";
 
 interface HomeProps { }
 export default function Home({}: HomeProps) {
@@ -24,17 +25,21 @@ export default function Home({}: HomeProps) {
         }
       />
       
-      { state === UIState.Dashboard &&
-        <>dashboard</>
-      }
+      <main>
+        { state === UIState.Dashboard &&
+          <>
+            <Logo />
+          </>
+        }
 
-      { state === UIState.Budget &&
-        <>budget</>
-      }
+        { state === UIState.Budget &&
+          <>budget</>
+        }
 
-      { state === UIState.News &&
-        <>news</>
-      }
+        { state === UIState.News &&
+          <>news</>
+        }
+      </main>
 
     </div>
   )

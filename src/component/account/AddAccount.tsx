@@ -117,6 +117,9 @@ export function EditAccount ({ acct, type, cancel }: EditAccountProps) {
     cancel();
   }
 
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const toggleConfirmDelete = () => setConfirmDelete(!confirmDelete);
+
   // MARK: - Render EditLog
   return (
     <menu className='flex flex-col justify-around items-center p-2'>
@@ -140,9 +143,18 @@ export function EditAccount ({ acct, type, cancel }: EditAccountProps) {
         <button className='p-1 rounded-lg bg-light1 hover:bg-bbgray1' onClick={cancel}>Cancel</button>
 
         { acct &&
-          <button className='p-2 rounded-lg text-light2 bg-warn1 hover:opacity-80' onClick={removeLog}>Delete</button>
+          <button className='p-2 rounded-lg text-light2 bg-warn1 hover:opacity-80' onClick={toggleConfirmDelete}>Delete</button>
         }
       </li>
+
+      { confirmDelete &&
+        <div className='absolute z-55 bottom-0 right-0 w-full h-full bg-panel rounded-lg border-solid border-2 border-warn1 flex flex-col justify-center items-center'>
+         <span className='font-semibold text-lg'>Confirm delete?</span>
+         <span className='text-xs mb-2'>{acct?.id}</span>
+         <button className='text-white bg-warn1 font-semibold p-1 rounded-lg mb-1 hover:opacity-75' onClick={removeLog}>Delete</button>
+         <button className='rounded-lg bg-bbgray1 hover:opacity-75' onClick={toggleConfirmDelete}>Cancel</button>
+       </div>
+      }
       
     </menu>
   )
