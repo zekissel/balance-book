@@ -13,7 +13,7 @@ export default function AddAccount ({ cancel }: AddAccountProps) {
 
   // MARK: - Render AddLog
   return (
-    <menu className={'absolute z-100 top-16 right-6 p-4 flex flex-col justify-around items-center  rounded-xl bg-panel border-solid border-2 border-primary'}>
+    <menu className={'absolute z-300 top-16 right-6 p-4 flex flex-col justify-around items-center  rounded-xl bg-panel border-solid border-2 border-primary'}>
 
       <span className='bg-light2 p-1 rounded-lg'>
         <input className='ml-1' id='type-che' type='radio' value={UIState.Checking} name='acct-type' onChange={(e) => setState(Number(e.target.value))} defaultChecked />

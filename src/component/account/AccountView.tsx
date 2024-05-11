@@ -7,6 +7,7 @@
 import { Account, AccountType, Transaction } from "../../typedef";
 import { useEffect, useMemo, useState } from "react";
 import { EditAccount, UIState } from "./AddAccount";
+import AccountGraph from "./AccountGraph";
 
 interface AccountViewProps { 
   accounts: Account[]
@@ -43,7 +44,7 @@ export default function AccountView({ accounts, types, logs, refresh }: AccountV
   const formatAmount = (amount: number) => (amount < 0 ? `-$${Math.abs(amount / 100).toFixed(2)}` : `$${(amount / 100).toFixed(2)}`);
 
   return (
-    <main>
+    <main className='overflow-hidden overflow-y-scroll h-[calc(100vh-3rem)] '>
 
       <menu className='w-full h-12 flex flex-row justify-between bg-light1 '>
 
@@ -60,10 +61,10 @@ export default function AccountView({ accounts, types, logs, refresh }: AccountV
 
         <div className='flex flex-row items-center mx-2 '>
           <span>
-            Num. accounts: { curView === types.type1 ? primaryAccounts.length : secondaryAccounts.length }
+            # { curView } accounts: { curView === types.type1 ? primaryAccounts.length : secondaryAccounts.length } |
           </span>
-          <span>
-            Value: ${ (curView === types.type1 ? primaryAccounts.reduce((acc, a) => acc + a.balance, 0) : secondaryAccounts.reduce((acc, a) => acc + a.balance, 0)) / 100 }
+          <span className='ml-2 '>
+            Total Balance: ${ (curView === types.type1 ? primaryAccounts.reduce((acc, a) => acc + a.balance, 0) : secondaryAccounts.reduce((acc, a) => acc + a.balance, 0)) / 100 }
           </span>
         </div>
 
@@ -71,18 +72,26 @@ export default function AccountView({ accounts, types, logs, refresh }: AccountV
 
       { 
         (curView === types.type1 ? primaryAccounts : secondaryAccounts).map(a => (
-          <section key={a.id} className='w-[calc(100%-1rem)] bg-panel p-2 m-2 rounded-lg flex '>
+          <section key={a.id} className='w-[calc(100%-1rem)] h-[calc(32vh)] min-h-48 bg-panel p-2 m-2 rounded-lg flex flex-row justify-between '>
             
             <div className='flex flex-col items-center bg-light1 rounded-lg pt-1 pb-4 px-1 h-fit '>
               <button className='w-full pb-4 hover:opacity-65 ' onClick={() => setEditAccountId(a.id)}><img src='/misc/edit.svg' /></button>
-              <h3><b>{ a.name }</b></h3>
+              <h3 className='text-center '><b>{ a.name }</b></h3>
               <h4 className='bg-white font-mono text-lg font-semibold rounded-xl px-2 '>{ formatAmount(a.balance) }</h4>
               <em className='text-center '>Last update: <br/> { `${a.date.split('.')[0]}` }</em>
             </div>
-            { logs.filter(t => t.account_id === a.id).length }
 
+            <div className='w-full h-[calc(28vh)] min-h-40'>
+              <AccountGraph account={a} logs={logs.filter(t => t.account_id === a.id)} />
+            </div>
           </section>
         ))
+      }
+
+      {(curView === types.type1 ? primaryAccounts : secondaryAccounts).length === 0 &&
+        <section className='w-[calc(100%-1rem)] bg-panel p-2 m-2 rounded-lg flex '>
+          No { curView } accounts found
+        </section>
       }
 
       { editAccount !== undefined && 
