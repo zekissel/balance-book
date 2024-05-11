@@ -47,6 +47,8 @@ export default function Accounts({}: AccountsProps) {
       setLogs(trans);
     }
     fetchLogs();
+
+    return () => sessionStorage.removeItem('accView')
   }, []);
 
   const relaventLogs = useMemo(() => {

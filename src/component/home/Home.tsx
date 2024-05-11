@@ -33,11 +33,11 @@ export default function Home({}: HomeProps) {
         }
 
         { state === UIState.Budget &&
-          <>budget</>
+          <>(wip) budget</>
         }
 
         { state === UIState.News &&
-          <>news</>
+          <>(wip) news</>
         }
       </main>
 

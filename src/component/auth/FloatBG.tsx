@@ -72,7 +72,9 @@ export default function FloatBG() {
 		},
 	};
 	return (
-		<ReactECharts className="float-bg" option={option} style={{ height: height, width: width }} />
+		<div className='absolute -z-10 '>
+			<ReactECharts className="float-bg" option={option} style={{ height: height, width: width }} />
+		</div>
 	);
 }
 ///////////////////////////////////////////////////////////////////////////

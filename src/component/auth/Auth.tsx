@@ -54,7 +54,7 @@ export default function Auth ({ verifyUser }: AuthProps) {
   return (
     <main className='w-screen h-screen flex flex-col justify-center items-center'>
 
-      <FloatBG />
+      
       
       <menu 
         className='flex flex-col justify-center items-start border-primary border-2 border-solid rounded-2xl p-8 px-16 bg-panel absolute '
@@ -64,7 +64,7 @@ export default function Auth ({ verifyUser }: AuthProps) {
         <input id='name' type='text' value={username} onChange={(e) => setUsername(e.target.value)} />
 
         <label htmlFor='pass'>Password</label>
-        <input id='pass' type='password' value={password} onChange={(e) => setPassword(e.target.value)} />
+        <input id='pass' type='password' value={password} onChange={(e) => {console.log(e.target.value);setPassword(e.target.value)}} />
 
         { state === UIState.Register && 
           <>
@@ -88,6 +88,8 @@ export default function Auth ({ verifyUser }: AuthProps) {
         { error && <em>{error}</em> }
 
       </menu>
+
+      <FloatBG />
 
     </main>
   )
