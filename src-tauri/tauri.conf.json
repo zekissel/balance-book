@@ -7,7 +7,7 @@
 	},
 	"package": {
 		"productName": "balance-book",
-		"version": "1.0.1"
+		"version": "1.0.0"
 	},
 	"tauri": {
 		"allowlist": {
