@@ -26,9 +26,8 @@ export default function Market({}: MarketProps) {
         }
       />
       
-      { state === UIState.Stocks &&
-        <>stocks</>
-      }
+      work in progress
+      { state }
 
     </div>
   )

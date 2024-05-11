@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react"
 import { Account, AccountType } from "../../typedef";
 import { invoke } from "@tauri-apps/api";
 
-export enum UIState { Checking, Credit, Savings, Loan, Investment }
+export enum UIState { Checking, Credit, Savings, Investment, Loan, Other }
 
 interface AddAccountProps { 
   cancel: () => void;
@@ -25,11 +25,14 @@ export default function AddAccount ({ cancel }: AddAccountProps) {
         <input id='type-sav' type='radio' value={UIState.Savings} name='acct-type' onChange={(e) => setState(Number(e.target.value))} />
         <label className='mr-1 ml-1' htmlFor='type-sav'>Savings</label>
 
+        <input id='type-inv' type='radio' value={UIState.Investment} name='acct-type' onChange={(e) => setState(Number(e.target.value))} />
+        <label className='mr-1 ml-1' htmlFor='type-inv'>Investment</label>
+        
         <input id='type-loa' type='radio' value={UIState.Loan} name='acct-type' onChange={(e) => setState(Number(e.target.value))} />
         <label className='mr-1 ml-1' htmlFor='type-loa'>Loan</label>
 
-        <input id='type-inv' type='radio' value={UIState.Investment} name='acct-type' onChange={(e) => setState(Number(e.target.value))} />
-        <label className='mr-1 ml-1' htmlFor='type-inv'>Investment</label>
+        <input id='type-oth' type='radio' value={UIState.Other} name='acct-type' onChange={(e) => setState(Number(e.target.value))} />
+        <label className='mr-1 ml-1' htmlFor='type-oth'>Other</label>
       </span>
 
       <EditAccount type={state} cancel={cancel} />
@@ -61,7 +64,7 @@ export function EditAccount ({ acct, type, cancel }: EditAccountProps) {
       case UIState.Savings: return AccountType.Savings;
       case UIState.Loan: return AccountType.Loan;
       case UIState.Investment: return AccountType.Investment;
-      default: return AccountType.Checking;
+      default: return AccountType.Other;
     }
   }
 

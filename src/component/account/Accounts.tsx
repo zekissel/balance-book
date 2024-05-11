@@ -25,11 +25,11 @@ export default function Accounts({}: AccountsProps) {
   }, [accounts]);
 
   const saveAccounts = useMemo(() => {
-    return accounts.filter(a => ['Saving', 'Investment'].includes(a.type))
+    return accounts.filter(a => ['Savings', 'Investment'].includes(a.type))
   }, [accounts]);
 
   const otherAccounts = useMemo(() => {
-    return accounts.filter(a => ['Loan', 'Other'].includes(a.type))
+    return accounts.filter(a => ['Loan'].includes(a.type)).concat(accounts.filter(a => !['Checking', 'Credit', 'Savings', 'Loan', 'Investment'].includes(a.type)))
   }, [accounts]);
 
   useEffect(() => {
@@ -64,9 +64,9 @@ export default function Accounts({}: AccountsProps) {
       <Menu
         leftPanel={
           <>
-            <MenuButton onClick={() => setState(UIState.Spend)} children={<><img src='/menu/checking.svg' draggable={false} /> Spending</>} active={state === UIState.Spend} />
-            <MenuButton onClick={() => setState(UIState.Save)} children={<><img src='/menu/savings.svg' draggable={false} /> Saving</>} active={state === UIState.Save} />
-            <MenuButton onClick={() => setState(UIState.Other)} children={<><img src='/menu/loan.svg' draggable={false} /> Other</>} active={state === UIState.Other} />
+            <MenuButton onClick={() => {setState(UIState.Spend);sessionStorage.removeItem('accView');}} children={<><img src='/menu/checking.svg' draggable={false} /> Spending</>} active={state === UIState.Spend} />
+            <MenuButton onClick={() => {setState(UIState.Save);sessionStorage.removeItem('accView');}} children={<><img src='/menu/savings.svg' draggable={false} /> Saving</>} active={state === UIState.Save} />
+            <MenuButton onClick={() => {setState(UIState.Other);sessionStorage.removeItem('accView');}} children={<><img src='/menu/loan.svg' draggable={false} /> Other</>} active={state === UIState.Other} />
           </>
         }
         rightPanel={

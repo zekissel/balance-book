@@ -22,11 +22,11 @@ export default function AccountView({ accounts, types, logs, refresh }: AccountV
 
   const [curView, setCurView] = useState<typeof types.type1 | typeof types.type2>(types.type1);
   useEffect(() => {
-    setCurView(types.type1)
+    setCurView(sessionStorage.getItem('accView') !== null ? types.type2 : types.type1)
   }, [types]);
 
   const primaryAccounts = accounts.filter(a => a.type === types.type1);
-  const secondaryAccounts = accounts.filter(a => a.type === types.type2);
+  const secondaryAccounts = accounts.filter(a => (types.type2 !== 'Other' ? a.type === types.type2 : !['Checking', 'Credit', 'Savings', 'Loan', 'Investment'].includes(a.type)));
 
   const [editAccountId, setEditAccountId] = useState<string>('');
   const editAccount = useMemo(() => accounts.find(a => a.id === editAccountId), [editAccountId, accounts]);
@@ -37,7 +37,7 @@ export default function AccountView({ accounts, types, logs, refresh }: AccountV
       case AccountType.Savings: return UIState.Savings;
       case AccountType.Investment: return UIState.Investment;
       case AccountType.Loan: return UIState.Loan;
-      default: return UIState.Checking;
+      default: return UIState.Other;
     }
   }, [editAccount])
 
@@ -50,11 +50,11 @@ export default function AccountView({ accounts, types, logs, refresh }: AccountV
 
         <div className='flex flex-row items-center mx-2 '>
           Type: 
-          <button className={'rounded-xl px-2 ' + (curView === types.type1 ? 'bg-primary2 ' : 'hover:opacity-75 ')} onClick={() => setCurView(types.type1)}>
+          <button className={'rounded-xl px-2 ' + (curView === types.type1 ? 'bg-primary2 ' : 'hover:opacity-75 ')} onClick={() => {sessionStorage.removeItem('accView'); setCurView(types.type1)}}>
             { types.type1 }
           </button>
 
-          <button className={'rounded-xl px-2 ' + (curView === types.type2 ? 'bg-primary2 ' : 'hover:opacity-75 ')} onClick={() => setCurView(types.type2)}>
+          <button className={'rounded-xl px-2 ' + (curView === types.type2 ? 'bg-primary2 ' : 'hover:opacity-75 ')} onClick={() => {sessionStorage.setItem('accView', '0'); setCurView(types.type2)}}>
             { types.type2 }
           </button>
         </div>
@@ -72,13 +72,13 @@ export default function AccountView({ accounts, types, logs, refresh }: AccountV
 
       { 
         (curView === types.type1 ? primaryAccounts : secondaryAccounts).map(a => (
-          <section key={a.id} className='w-[calc(100%-1rem)] h-[calc(32vh)] min-h-48 bg-panel p-2 m-2 rounded-lg flex flex-row justify-between '>
+          <section key={a.id} className='w-[calc(100%-1rem)] min-h-[calc(32vh)] h-fit bg-panel p-2 m-2 rounded-lg flex flex-row justify-between '>
             
             <div className='flex flex-col items-center bg-light1 rounded-lg pt-1 pb-4 px-1 h-fit '>
-              <button className='w-full pb-4 hover:opacity-65 ' onClick={() => setEditAccountId(a.id)}><img src='/misc/edit.svg' /></button>
+              <button className='w-full pb-4 ' ><img className='hover:opacity-65 ' src='/misc/edit.svg' onClick={() => setEditAccountId(a.id)} /></button>
               <h3 className='text-center '><b>{ a.name }</b></h3>
               <h4 className='bg-white font-mono text-lg font-semibold rounded-xl px-2 '>{ formatAmount(a.balance) }</h4>
-              <em className='text-center '>Last update: <br/> { `${a.date.split('.')[0]}` }</em>
+              <em className='text-center '>Last update: <br/> { `${a.date.split('.')[0].replace('T', ' ')}` }</em>
             </div>
 
             <div className='w-full h-[calc(28vh)] min-h-40'>
@@ -124,11 +124,14 @@ function EditAccountBase({ account, type, cancel }: EditAccountBaseProps) {
         <input id='type-sav' type='radio' value={UIState.Savings} name='acct-type' onChange={(e) => setState(Number(e.target.value))} defaultChecked={type === UIState.Savings} />
         <label className='mr-1 ml-1' htmlFor='type-sav'>Savings</label>
 
+        <input id='type-inv' type='radio' value={UIState.Investment} name='acct-type' onChange={(e) => setState(Number(e.target.value))} defaultChecked={type === UIState.Investment} />
+        <label className='mr-1 ml-1' htmlFor='type-inv'>Investment</label>
+
         <input id='type-loa' type='radio' value={UIState.Loan} name='acct-type' onChange={(e) => setState(Number(e.target.value))} defaultChecked={type === UIState.Loan} />
         <label className='mr-1 ml-1' htmlFor='type-loa'>Loan</label>
 
-        <input id='type-inv' type='radio' value={UIState.Investment} name='acct-type' onChange={(e) => setState(Number(e.target.value))} defaultChecked={type === UIState.Investment} />
-        <label className='mr-1 ml-1' htmlFor='type-inv'>Investment</label>
+        <input id='type-oth' type='radio' value={UIState.Other} name='acct-type' onChange={(e) => setState(Number(e.target.value))} defaultChecked={type === UIState.Other} />
+        <label className='mr-1 ml-1' htmlFor='type-oth'>Other</label>
       </span>
       
       <EditAccount acct={account} type={state} cancel={cancel} />
