@@ -8,7 +8,7 @@ import { addHours } from "../Sync";
 interface FinancialProps { user: User }
 export default function Financial({ user }: FinancialProps) {
 
-  const { save, load } = useSecureStorage(user.id);
+  const { save, load } = useSecureStorage(user.id, 'rw');
 
   const [startLink, setStartLink] = useState<boolean>(false);
   const toggleStartLink = () => setStartLink(!startLink);
@@ -33,8 +33,8 @@ export default function Financial({ user }: FinancialProps) {
   }, [retry]);
 
   const savePlaidInfo = async () => {
-    await save('plaid-client-id', plaidClientID, user.id);
-    await save('plaid-secret', plaidSecret, user.id);
+    await save!('plaid-client-id', plaidClientID, user.id);
+    await save!('plaid-secret', plaidSecret, user.id);
   }
   
   const isDisabled = () => {

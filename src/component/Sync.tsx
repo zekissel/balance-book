@@ -7,7 +7,7 @@ import { PlaidKey } from './profile/Link';
 interface SyncProps { user: User }
 export default function Sync({ user }: SyncProps) {
 
-  const { save, load } = useSecureStorage(user.id);
+  const { save, load } = useSecureStorage(user.id, 'r');
 
   const [retry, setRetry] = useState<number>(0);
   const [pID, setPID] = useState<string>('');
@@ -31,9 +31,9 @@ export default function Sync({ user }: SyncProps) {
   useEffect(() => {
     const sync = async () => {
       await invoke('sync_info', { userId: user.id, key: plaidKey })
-        .then((data) => {
+        .then((_data) => {
           /* differentiate recently sync'd transactions */
-          const recent = data as string[];
+          //const recent = data as string[];
           //setUpdated(recent);
         })
     }

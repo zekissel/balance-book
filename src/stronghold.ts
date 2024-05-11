@@ -2,7 +2,7 @@ import { Stronghold } from 'tauri-plugin-stronghold-api';
 
 const STORAGE_NAME = 'vaults/vault.';
 
-export function useSecureStorage(userid: string) {
+export function useSecureStorage(userid: string, mode: 'rw' | 'r') {
   async function getClient(stronghold: Stronghold) {
     try {
       return await stronghold.loadClient(userid);
@@ -35,5 +35,5 @@ export function useSecureStorage(userid: string) {
     return `${await appDataDir()}${STORAGE_NAME}${userid.slice(0, 8)}`;
   };
 
-  return { save, load };
+  return mode === 'rw' ? { save, load } : { load };
 }
