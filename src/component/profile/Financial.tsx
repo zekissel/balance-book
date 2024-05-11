@@ -132,7 +132,7 @@ function InstitutionInfo ({ user, plaidKey }: StatusProps) {
 	}, [newStatus]);
 
   return (
-    <ol className='flex flex-col w-2/3 m-2 p-2 bg-panel rounded-lg '>
+    <ol className='flex flex-col w-2/3 h-[calc(50vh)] m-2 p-2 bg-panel rounded-lg '>
 
       <menu className='flex flex-row justify-between '>
         <span>Num. financial items: { status.length }</span>
@@ -144,13 +144,15 @@ function InstitutionInfo ({ user, plaidKey }: StatusProps) {
         </span>
       </menu>
 
-      { status.map((s, i) => (
-					<div key={i} className='bg-light1 w-fit p-1 rounded-lg text-center '>
-						<p className='font-semibold '>{s.name}</p>
-            <p>Status: {s.status}</p>
-						<p>Last successful sync: <br/>{ s.last_update }</p>
-					</div>
-      )) }
+      <div className='w-full grid grid-cols-2 h-full overflow-hidden overflow-y-scroll '>
+        { status.map((s, i) => (
+            <div key={i} className='bg-light1 w-fit h-fit p-1 rounded-lg text-center justify-self-center '>
+              <p className='font-semibold '>{s.name}</p>
+              <p>Status: {s.status}</p>
+              <p>Last successful sync: <br/>{ s.last_update }</p>
+            </div>
+        )) }
+      </div>
 
     </ol>
   )
