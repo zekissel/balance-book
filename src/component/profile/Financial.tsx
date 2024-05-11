@@ -33,8 +33,8 @@ export default function Financial({ user }: FinancialProps) {
   }, [retry]);
 
   const savePlaidInfo = async () => {
-    await save!('plaid-client-id', plaidClientID, user.id);
-    await save!('plaid-secret', plaidSecret, user.id);
+    await save('plaid-client-id', plaidClientID, user.id);
+    await save('plaid-secret', plaidSecret, user.id);
   }
   
   const isDisabled = () => {
