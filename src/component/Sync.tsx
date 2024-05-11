@@ -7,7 +7,7 @@ import { PlaidKey } from './profile/Link';
 interface SyncProps { user: User }
 export default function Sync({ user }: SyncProps) {
 
-  const { save, load } = useSecureStorage(user.id, 'r');
+  const { load } = useSecureStorage(user.id, 'r');
 
   const [retry, setRetry] = useState<number>(0);
   const [pID, setPID] = useState<string>('');
