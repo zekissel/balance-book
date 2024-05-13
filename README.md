@@ -65,7 +65,7 @@ Once you have configured the redirect URL, have working access to the developmen
 
 3. On the first launch, you will need to register a username and password.
 
-4. Once logged in, go to the "Profile" tab on the navigation menu. On the "Financial" tab you are presented with two inputs: one for your client_id and secret respectively. Fill in these values with the values found in the last step of <a href='https://dashboard.plaid.com/developers/keys'>Configure Plaid</a>, and save your changes.
+4. Once logged in, go to the "Profile" tab on the navigation menu. On the "Financial" tab you are presented with two inputs: one for your client ID and secret respectively. Fill in these values with the values found in the last step of <a href='#plaid'>Configure Plaid</a> (<a href='https://dashboard.plaid.com/developers/keys'>Key Dashboard</a>), and save your changes.
 
 5. At this point, you can select "Start Link Process", which will open Plaid/Link and allow you to choose your financial institution. Typically logins can be completed within the application, however (depending on the institution) it is also normal to be temporarily redirected to your default browser for authentication.
 
@@ -84,17 +84,21 @@ Once you have configured the redirect URL, have working access to the developmen
 
 <img align='center' src="./.github/img/list.png" alt="Activity view (list)">
 
+---
+
+<img align='center' src="./.github/img/cal.png" alt="Activity view (calendar)">
+
 
 
 <h3 id='stats'>Statistics: </h3>
 
 - Multiple graphs to illustrate income and expenses. Adjustable timeframe and filterable fields. Select to change graph view or double-click to toggle fullscreen.
 
-<img align='center' src="./.github/img/statistics.png" alt="Statistics view">
+<img align='center' src="./.github/img/stats1.png" alt="Statistics view">
 
 ---
 
-<img align='center' src="./.github/img/statistics2.png" alt="Statistics example alternate view">
+<img align='center' src="./.github/img/stats2.png" alt="Statistics example alternate view">
 
 
 
@@ -102,7 +106,7 @@ Once you have configured the redirect URL, have working access to the developmen
 
 - View current and recent account balances, for all types of financial accounts. Option to manually create accounts to track (cash).
 
-<img align='center' src="./.github/img/accounts.png" alt="Accounts view">
+<img align='center' src="./.github/img/account.png" alt="Accounts view">
 
 
 
@@ -143,24 +147,20 @@ If you would like to contribute for any reason, feel free to make a PR. I ask th
 
 #### Developing Locally
 
-To run the source code locally (using ```npm run tauri dev``` from the root directory, after installing npm dependencies), the file ./src-tauri/.env should be present, with the contents: "PLAID_ENV=development". This variable cannot be configured upon Plaid client instantiation from within plaid-rs at the moment.
+To run the source code locally, first navigate to the root directory and install dependecies with ```npm i```, then enter ```npm run tauri dev``` to start local Vite development server and Tauri backend. If you want to use sandbox or production Plaid keys, configure the value of PLAID_ENV that is set in the main function of src-tauri/src/main.rs.
 
 #### Required HTTPS redirect
 
 Plaid requires confirming a HTTPS redirect that financial institutions can send users to after account verification. Currently, I personally host the redirect URL that is hardcoded into the application, which lowers the barrier to entry for everyone. You can find the exact code I host at ./server/main.go. GCP offers 2 million free cloud function invocations per month, which I dont expect to surpass anytime soon. However, if you find that the redirect URL in the second to last step of <a href='#plaid'>Configure Plaid</a> does not redirect to localhost (you can test this right now by pasting the URL in your address bar), you must host the server yourself and configure the redirect URL in ./src/component/link/PlaidLink.tsx:getServerURL and your Plaid dashboard.
 
 
-#### Planned Features
-
-0. use tuari-stronghold for securely storing client ID, secret, access token
-
-0. use statemanagement for handling auth state
+#### Potential Future Features
 
 1. News on home page; 2-3 recent financial articles pulled from a public API yet to be determined (configurable what kinds of articles are fetched). Minimal information necessary: article title, picture, date, and external link (to default browser)
 
 2. Market tab; activity from investment accounts, including stock and crypto trades. Search functionality for publicly traded stocks (no plans for enacting trades/making payments from within app)
 
-3. Budget tab; set one-time or recurring budgets. Ex: save $300 for concert tickets by X-date (one-time), or limit fast food expense to $75 per month (recurring). Configurable if budgets appear on other pages (activity, stats, accounts).
+3. Budget tab (home page); set one-time or recurring budgets. Ex: save $300 for concert tickets by X-date (one-time), or limit fast food expense to $75 per month (recurring). Configurable if budgets appear on other pages (activity, stats, accounts).
 
 4. Collapsable view for account page: hide graphs and see more accounts at once without scrolling
 
@@ -168,15 +168,15 @@ Plaid requires confirming a HTTPS redirect that financial institutions can send 
 
 6. Email or phone verification and egress (solely for account recovery)
 
-7. Client ID, secret, and access key encryption on datastore. (Possible full database encryption? -> Rusqlcipher. Doesn't seem easy with Diesel)
+7. Possible full database encryption? -> Rusqlcipher (Doesn't seem easy with Diesel)
 
-8. Settings:
+8. Settings (save with tauri-store plugin):
 
 - general:
 
   - misc: exclude routes (home, stats, market, budget)
 
-  - home: option to replace account preview with budgets, news source
+  - home: customizable dashboard
 
   - stats: use outliers for boxplot yes/no, disable specific graphs
 
@@ -188,4 +188,4 @@ Plaid requires confirming a HTTPS redirect that financial institutions can send 
 
   - import/export DB user info to/from CSV/json?
 
-0. upgrade to tauri v2
+0. upgrade to tauri v2 (+ mobile app)
