@@ -114,7 +114,7 @@ Once you have configured the redirect URL, have working access to the developmen
 
 <h3 id='stack'>Stack: </h3>
 
-- Frontend: <a href='https://www.typescriptlang.org/'>TypeScript</a>, <a href='https://react.dev/'>React</a>, <a href='https://echarts.apache.org/en/index.html'>Apache ECharts</a>, <a href='https://developer.mozilla.org/en-US/docs/Web/CSS'>Vanilla CSS</a>
+- Frontend: <a href='https://www.typescriptlang.org/'>TypeScript</a>, <a href='https://react.dev/'>React</a>, <a href='https://echarts.apache.org/en/index.html'>Apache ECharts</a>, <a href='https://tailwindcss.com/'>Tailwind CSS</a>
 
 - Backend: <a href='https://www.rust-lang.org/'>Rust</a>, <a href='https://tauri.app/'>Tauri</a> (v1), <a href='https://diesel.rs/'>Diesel</a>, <a href='https://www.sqlite.org/'>SQLite</a>
 
