@@ -358,7 +358,7 @@ async fn get_status(handle: tauri::AppHandle, user_id: &str, key: PlaidKey) -> R
 
 
 fn main() {
-  //dotenv::dotenv().ok();
+  dotenv::dotenv().ok();
 
   tauri::Builder::default()
     .setup( |app| {
