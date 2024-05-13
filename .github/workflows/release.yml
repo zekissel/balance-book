@@ -58,6 +58,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PLAID_ENV: development # plaid dev env allows for free hobby use
+          STRONGHOLD_SALT: ${{ secrets.STRONGHOLD_SALT }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
