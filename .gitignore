@@ -23,4 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 #.env
-#src-tauri/.env
+src-tauri/.env
