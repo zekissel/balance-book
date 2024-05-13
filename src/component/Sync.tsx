@@ -33,8 +33,8 @@ export default function Sync({ user }: SyncProps) {
       await invoke('sync_info', { userId: user.id, key: plaidKey })
         .then((_data) => {
           /* differentiate recently sync'd transactions */
-          //const recent = data as string[];
-          //setUpdated(recent);
+          const recent = _data as string[];
+          sessionStorage.setItem('recent', recent.join('&'));
         })
     }
 

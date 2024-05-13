@@ -49,6 +49,7 @@ export default function List({ filters, signal, update }: ListProps) {
   const updateSelected = (transId: string) => {
     if (selectLogs.includes(transId)) setSelectLogs(selectLogs.filter(t => t !== transId));
     else setSelectLogs([...selectLogs, transId]);
+    markSeen(transId);
   }
   const selected: Transaction[] = useMemo(() => {
     return logs.filter(t => selectLogs.includes(t.id));
@@ -63,6 +64,12 @@ export default function List({ filters, signal, update }: ListProps) {
     return 0;
   }, [selected]);
 
+  const [recentlyUpdated, setRecentlyUpdated] = useState<string[]>(sessionStorage.getItem('recent')?.split('&') ?? []);
+  const markSeen = (transId: string) => {
+    const recent = recentlyUpdated.filter(t => t !== transId)
+    setRecentlyUpdated(recent);
+    sessionStorage.setItem('recent', recent.join('&'));
+  }
   
 
   useEffect(() => {
@@ -74,6 +81,7 @@ export default function List({ filters, signal, update }: ListProps) {
       setTotalLogs(count);
     }
     fetchLogs();
+    setRecentlyUpdated(sessionStorage.getItem('recent')?.split('&') ?? []);
     setDataState(DataState.Success);
   }, [signal]);
 
@@ -118,7 +126,10 @@ export default function List({ filters, signal, update }: ListProps) {
                 <span className='font-serif overflow-hidden w-full '>{ log.store }</span>
                 
                 <span className='justify-self-end bg-white rounded-lg px-1 font-semibold font-mono h-fit '>{ formatAmount(log.amount, ['Transfer', 'Credit'].includes(log.category.split('>')[1])) }</span>
-                <span className={'font-medium w-fit px-1 rounded-lg h-fit ' + getColor(log.amount, log.category)}>{ formatCategory(log.category) }</span>
+                <span className={'font-medium w-fit px-1 rounded-lg h-fit ' + getColor(log.amount, log.category)}>
+                  { formatCategory(log.category) }
+                  { recentlyUpdated.includes(log.id) && <span className='rounded-full font-semibold animate-ping '>!</span> }
+                </span>
                 
 
                 <span className='hidden justify-self-end md:grid overflow-hidden w-[calc(120%)] '>{ log.desc }</span>

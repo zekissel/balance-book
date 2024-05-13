@@ -358,7 +358,9 @@ async fn get_status(handle: tauri::AppHandle, user_id: &str, key: PlaidKey) -> R
 
 
 fn main() {
-  dotenv::dotenv().ok();
+  //dotenv::dotenv().ok();
+  std::env::set_var("VAULT_SALT", "ZGpoOGFqaDM5LWpxXyhKSF9BVUpkaDhzZDBodzktSkQqKUFkaHlkaU5IQUQ4NzBIWSpEaGhuCg");
+  std::env::set_var("PLAID_ENV", "development");
 
   tauri::Builder::default()
     .setup( |app| {
@@ -375,7 +377,7 @@ fn main() {
         ..Default::default()
       };
 
-      let salt = env::var("STRONGHOLD_SALT").unwrap();
+      let salt = env::var("VAULT_SALT").unwrap();
       let key = argon2::hash_raw(
         pw.as_ref(),
         salt.as_bytes(),

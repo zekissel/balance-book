@@ -30,7 +30,7 @@ async fn sync_transactions(key: PlaidKey, token: Token) -> Result<TransactionsSy
   let client = establish_plaid(key).await;
   let response = client
     .transactions_sync(access_token)
-    .count(100)
+    .count(250)
     .cursor(cursor)
     .options(TransactionsSyncRequestOptions {
       days_requested: None,
@@ -40,7 +40,6 @@ async fn sync_transactions(key: PlaidKey, token: Token) -> Result<TransactionsSy
     })
     .await
     .unwrap();
-  println!("{:#?}", response);
   Ok(response)
 }
 
