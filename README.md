@@ -123,7 +123,9 @@ Once you have configured the redirect URL, have working access to the developmen
 
 <h3 id='arch'>Architecture: </h3>
 
-<img src='./.github/img/architecture.png' />
+<img src='./.github/img/arch.png' />
+
+Users, financial accounts, transactions, and Plaid synchronization cursors associated with financial items are stored in the SQLite database. Personal Plaid client IDs and Plaid secrets are encrypted and stored in the indicated location (one vault for each user).
 
 #### Link Initialization
 
