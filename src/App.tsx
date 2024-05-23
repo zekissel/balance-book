@@ -42,7 +42,7 @@ function App() {
           { user !== null &&
             <Route element={<Nav />}>
 
-              <Route path='/home' element={<Home />} />
+              <Route path='/home' element={<Home user={user} />} />
               <Route path='/activity' element={<Activity />} />
               <Route path='/stats' element={<Statistics />} />
               <Route path='/accounts' element={<Accounts />} />

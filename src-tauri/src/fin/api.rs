@@ -70,7 +70,7 @@ pub async fn fetch_transactions(handle: tauri::AppHandle, key: PlaidKey, token: 
   let mut more = true;
   let mut count = 1;
   while more {
-    println!("Fetching transactions: {:#?}", count);
+    println!("Fetching transactions: {:#?} ({:#?})", count, cursor);
     count += 1;
     match sync_transactions(key.clone(), token.clone()).await {
       Ok(mut d) => {
@@ -96,8 +96,8 @@ pub async fn fetch_transactions(handle: tauri::AppHandle, key: PlaidKey, token: 
       Err(_) => more = false,
     };
   };
-  //let _ = crate::dbase::api::update_token_cursor(&token.id, &cursor).await;
-  crate::dbase::api::update_cursor(handle, &token.id, &cursor).await.unwrap();
+
+  let _ = crate::dbase::api::update_cursor(handle, &token.id, &cursor).await.unwrap();
 
   Ok(updated)
 }

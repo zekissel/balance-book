@@ -22,10 +22,10 @@ export default function Menu({ leftPanel, rightPanel }: MenuProps) {
   )
 }
 
-export function MenuButton({ onClick, children, active, filterActive }: { onClick: () => void, children: JSX.Element, active: boolean, filterActive?: boolean }) {
+export function MenuButton({ onClick, children, active, filterActive, disabled }: { onClick: () => void, children: JSX.Element, active: boolean, filterActive?: boolean, disabled?: boolean }) {
   const filterStyle = { backgroundColor: `#abc` };
   return (
-    <button onClick={onClick} className={'h-8 m-1 px-3 py-1 rounded-xl hover:bg-highlight flex flex-row border-b-dark2 border-b-solid border-b-2 overflow-hidden ' + (active ? 'bg-highlight' : 'bg-light1')} style={filterActive === true ? filterStyle : undefined}>
+    <button onClick={onClick} className={'h-8 m-1 px-3 py-1 rounded-xl hover:bg-highlight flex flex-row border-b-dark2 border-b-solid border-b-2 overflow-hidden ' + (active ? 'bg-highlight' : 'bg-light1')} style={filterActive === true ? filterStyle : undefined} disabled={disabled}>
       {children}
     </button>
   )

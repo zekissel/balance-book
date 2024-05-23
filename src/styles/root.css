@@ -20,3 +20,9 @@
 	-moz-user-select: none;
 	-o-user-select: none;
 }
+
+menu {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
