@@ -67,6 +67,10 @@ jobs:
             - Windows 10/11: .exe or .msi
             - MacOS (M1 use aarch64): .dmg or .app.tar.gz
             - Linux: .AppImage or .deb
+
+            v__VERSION__ Changelog:
+            - Add manual sync to homepage
+            - Styling updates
           releaseDraft: true
           prerelease: false
           includeDebug: false

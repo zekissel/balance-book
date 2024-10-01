@@ -12,7 +12,7 @@ import {
 } from 'react-plaid-link';
 
 function getServerURL(_port: number) {
-	// in Plaid dev and prod: change to hosted server (https://your-server.com)
+	// in Plaid production environment: change to hosted server (https://your-server.com)
 	return `https://us-central1-balance-book-auth.cloudfunctions.net/balance`;
 	//return `http://localhost:${_port}`
 }
@@ -72,7 +72,7 @@ const PlaidLink = ({ user, pKey }: PlaidLinkWithOAuthProps) => {
 		};
 	}, []);
 
-	// send public_token to server: https://plaid.com/docs/api/tokens/#token-exchange-flow
+	// send public_token to server: https://plaid.com/docs/api/link/
 	const onSuccess = useCallback<PlaidLinkOnSuccess>(async (publicToken, metadata) => {
 		console.log(publicToken, metadata);
 		await invoke('authorize', { userId: user.id, publicToken: publicToken, key: pKey });
@@ -96,17 +96,21 @@ const PlaidLink = ({ user, pKey }: PlaidLinkWithOAuthProps) => {
 	}, []);
 
 	const config: PlaidLinkOptions = {
-		token,
+		token,//: sessionStorage.getItem('link_token'),
 		onSuccess,
 		onEvent,
 		onExit,
 		receivedRedirectUri: redirect,
 	};
-	const { open, ready /* exit, error */ } = usePlaidLink(config);
+	
+	const { open, ready, /* exit, error */ } = usePlaidLink(config);
 
 	useEffect(() => {
-		if (ready) open();
-	}, [ready, open, state]);
+		if (ready) {
+			//console.log('opening Link');
+			open();
+		}
+	}, []);
 
 	// No need to render a button on OAuth redirect as link opens instantly
 	return sessionStorage.getItem('auth_state') ? (

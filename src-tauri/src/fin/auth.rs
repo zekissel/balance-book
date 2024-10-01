@@ -63,6 +63,8 @@ pub async fn authorize(
   key: PlaidKey,
   public_token: &str,
 ) -> Result<String, ()> {
+
+  println!("{}", public_token);
   
   let client = establish_plaid(key.clone()).await;
   let response = client
