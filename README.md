@@ -3,6 +3,8 @@
   Balance Book
 </h1>
 
+# PROJECT ON HOLD WHILE PLAID UPDATES AND TAURI STABILIZES
+
 ## Contents
 - <a href='#intro'>Introduction</a>
 - <a href='#start'>Getting Started</a><br/>
