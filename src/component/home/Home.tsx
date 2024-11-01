@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react"
-import { invoke } from '@tauri-apps/api';
-import { useSecureStorage } from "../../stronghold";
+import { invoke } from '@tauri-apps/api/core';
 import Menu, { MenuButton } from "../Menu"
 import Logo from "./Logo";
 import { User } from "../../typedef";
@@ -13,9 +12,6 @@ export default function Home({ user }: HomeProps) {
   enum UIState { Dashboard, Budget, News }
   const [state, setState] = useState<UIState>(UIState.Dashboard);
 
-  const { load } = useSecureStorage(user.id, 'r');
-
-  const [retry, setRetry] = useState<number>(0);
   const [pID, setPID] = useState<string>('');
   const [pSecret, setPSecret] = useState<string>('');
 
@@ -25,14 +21,12 @@ export default function Home({ user }: HomeProps) {
 
   useEffect(() => {
     const loadPlaidInfo = async () => {
-      await load('plaid-client-id', user.id).then(id => {if (id !== '') setPID(id)})
-        .catch(() => setRetry(retry + 1));
-      await load('plaid-secret', user.id).then(secret => {if (secret !== '') setPSecret(secret)})
-        .catch(() => setRetry(retry + 1));
+      setPID(localStorage.getItem('plaid-client-id') || '');
+      setPSecret(localStorage.getItem('plaid-secret') || '');
     }
 
-    if (retry <= 5) loadPlaidInfo();
-  }, [retry]);
+    loadPlaidInfo();
+  }, []);
 
   const [loading, setLoading] = useState<boolean>(false);
   const sync = async () => {

@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react"
 import { Account, AccountType } from "../../typedef";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 
 export enum UIState { Checking, Credit, Savings, Investment, Loan, Other }
 

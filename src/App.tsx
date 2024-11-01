@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import Profile from "./component/profile/Profile";
 import { User } from "./typedef";
 import Auth from "./component/auth/Auth";
@@ -27,7 +27,7 @@ function App() {
     sessionStorage.setItem('umail', user.email ?? '');
   }
   const logout = async () => {
-    if (user?.id) await invoke('logout', { id: user.id })
+    if (user?.id) await invoke('logout_user', { id: user.id })
     setUser(null);
     sessionStorage.clear();
   }

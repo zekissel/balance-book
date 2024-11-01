@@ -1,15 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useSecureStorage } from '../stronghold';
 import { User } from '../typedef';
-import { invoke } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 import { PlaidKey } from './profile/Link';
 
 interface SyncProps { user: User }
 export default function Sync({ user }: SyncProps) {
 
-  const { load } = useSecureStorage(user.id, 'r');
-
-  const [retry, setRetry] = useState<number>(0);
+  //const [retry, setRetry] = useState<number>(0);
   const [pID, setPID] = useState<string>('');
   const [pSecret, setPSecret] = useState<string>('');
 
@@ -19,14 +16,12 @@ export default function Sync({ user }: SyncProps) {
 
   useEffect(() => {
     const loadPlaidInfo = async () => {
-      await load('plaid-client-id', user.id).then(id => {if (id !== '') setPID(id)})
-        .catch(() => setRetry(retry + 1));
-      await load('plaid-secret', user.id).then(secret => {if (secret !== '') setPSecret(secret)})
-        .catch(() => setRetry(retry + 1));
+      setPID(localStorage.getItem('plaid-client-id') || '');
+      setPSecret(localStorage.getItem('plaid-secret') || '');
     }
-
-    if (retry <= 5) loadPlaidInfo();
-  }, [retry]);
+    loadPlaidInfo();
+    //if (retry <= 5) loadPlaidInfo();
+  }, [/*retry*/]);
 
   useEffect(() => {
     const sync = async () => {

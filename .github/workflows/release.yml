@@ -69,8 +69,7 @@ jobs:
             - Linux: .AppImage or .deb
 
             v__VERSION__ Changelog:
-            - Add manual sync to homepage
-            - Styling updates
+            - Rewrite Tauri v1 to v2
           releaseDraft: true
           prerelease: false
           includeDebug: false

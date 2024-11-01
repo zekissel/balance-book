@@ -1,5 +1,10 @@
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { Filter } from "./component/filter";
+
+export interface BookError {
+	code: number;
+	message: string;
+}
 
 export interface User {
   id: string;
@@ -9,7 +14,7 @@ export interface User {
 
 export interface Account {
 	id: string;
-	type: AccountType;
+	type_: AccountType;
 	name: string;
 	balance: number;
 	date: string;//Date;
@@ -95,6 +100,10 @@ export async function getAccounts(): Promise<Account[]> {
 		const acc = data as Account[];
 		//acc.forEach((a) => (a.date =  new Date(a.date)))
 		return acc;//.sort((a, b) => (a.date > b.date ? -1 : 1));
+	})
+	.catch((e) => {
+		console.log(e);
+		return [];
 	});
 }
 
@@ -139,7 +148,7 @@ const matchAccountType = (type: string | undefined) => {
 }
 export const formatAccount = (id: string, accounts: Account[]) => {
 	if (id === 'Multiple') return 'Multiple';
-	return `${matchAccountType(accounts.find(a => a.id === id)?.type)}:${accounts.find(a => a.id === id)?.name}`;
+	return `${matchAccountType(accounts.find(a => a.id === id)?.type_)}:${accounts.find(a => a.id === id)?.name}`;
 }
 
 /* format date like DOW MON DAY */

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { invoke } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api/core';
 import { useNavigate } from 'react-router-dom';
-import { User } from '../../typedef';
+import { BookError, User } from '../../typedef';
 import FloatBG from './FloatBG';
 
 interface AuthProps {
@@ -34,28 +34,22 @@ export default function Auth ({ verifyUser }: AuthProps) {
       setError('Passwords do not match');
     }
 
-    const data = {
-      name: username,
-      password: password,
-    }
+    const data = { name: username, pass: password }
 
-    let user: User;
-    if (state === UIState.Register) {
-      user = await invoke('register', data)
-    } else {
-      user = await invoke('login', data)
-    }
+    let response: User | BookError;
+    let command = state === UIState.Register ? 'register_user' : 'verify_user';
+    
+    response = await invoke(command, data);
+    console.log(response);
 
     clearPass();
-    if (user) { verifyUser(user); navigate('/home'); }
-    else setError('Invalid credentials');
+    if (response && ('id' in response)) { verifyUser(response); navigate('/home'); }
+    else if ('message' in response) setError(response.message);
   }
 
   return (
     <main className='w-screen h-screen flex flex-col justify-center items-center'>
 
-      
-      
       <menu 
         className='flex flex-col justify-center items-start border-primary border-2 border-solid rounded-2xl p-8 px-16 bg-panel absolute '
       >

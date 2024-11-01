@@ -1,7 +1,7 @@
 import { Transaction, Account, formatAmount, formatAccount, getAccounts, Category, CrossLeaf, IncomeLeaf, ExpenseLeaf } from "../../typedef";
 import TreeSelect from "../TreeSelect";
 import { useMemo, useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 
 interface MultiLogProps { 
   transactions: Transaction[];

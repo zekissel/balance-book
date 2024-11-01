@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react"
 import { Category, ExpenseLeaf, IncomeLeaf, Transaction, getAccounts, Account, CrossLeaf, formatAccount } from "../../typedef";
 import TreeSelect from "../TreeSelect";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 
 export enum UIState { Withdraw, Transfer, Deposit }
 
@@ -210,7 +210,7 @@ export function EditLog ({ log, type, cancel, update }: EditLogProps) {
             <label className='text-sm'>{ typeState !== 0 ? 'Account' : 'Source'}: </label>
             <select className='border-primary border-dashed border rounded' value={editLog.account_id} onChange={(e) => setEditLog({ ...editLog!, account_id: e.target.value })}>
               <option value=''>Select Account</option>
-              { accounts.map((a) => <option key={a.id} value={a.id}>{`${a.type.slice(0,5)}:${a.name}`}</option>) }
+              { accounts.map((a) => <option key={a.id} value={a.id}>{`${a.type_.slice(0,5)}:${a.name}`}</option>) }
             </select>
           </span>
         </span>

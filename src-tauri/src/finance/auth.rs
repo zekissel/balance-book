@@ -2,8 +2,8 @@ use plaid::model::LinkTokenCreateResponse;
 use plaid::request::LinkTokenCreateRequired;
 use plaid::model::*;
 
-use super::api::establish_plaid;
-use crate::dbase::api::deposit_token;
+use super::api_finance::establish_plaid;
+use crate::database::api_token::deposit_token;
 use super::models::PlaidKey;
 
 
@@ -75,8 +75,8 @@ pub async fn authorize(
 
   let token = deposit_token(handle.clone(), user_id, &token_id).await.unwrap();
 
-  let _ = super::api::extract_accounts(handle.clone(), user_id, key.clone(), token.clone()).await;
-  let _ = super::api::fetch_transactions(handle, key, token).await;
+  let _ = super::api_finance::extract_accounts(handle.clone(), user_id, key.clone(), token.clone()).await;
+  let _ = super::api_finance::fetch_transactions(handle, key, token).await;
 
   Ok("Authorized".to_string())
 }
@@ -87,6 +87,9 @@ pub async fn open_link(
 ) -> Result<(), ()> {
   match open::that(url) {
     Ok(_) => Ok(()),
-    Err(_) => Err(()),
+    Err(err) => {
+      eprintln!("An error occurred when opening '{}': {}", url, err);
+      Err(())
+    },
   }
 }

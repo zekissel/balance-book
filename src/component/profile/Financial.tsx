@@ -1,40 +1,46 @@
 import { useEffect, useMemo, useState } from "react";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { User } from "../../typedef";
-import { useSecureStorage } from "../../stronghold";
+
 import PlaidLink, { PlaidKey } from "./Link";
 import { addHours } from "../Sync";
 
 interface FinancialProps { user: User }
 export default function Financial({ user }: FinancialProps) {
 
-  const { save, load } = useSecureStorage(user.id, 'rw');
+  //const { save, load } = useSecureStorage(user.id, 'rw');
 
-  const [startLink, setStartLink] = useState<boolean>(false);
-  const toggleStartLink = () => setStartLink(!startLink);
+  const [startLink, setStartLink] = useState<boolean>(sessionStorage.getItem('start-link') === 'true');
+  const toggleStartLink = () => { 
+    setStartLink(!startLink); 
+    if (!startLink) sessionStorage.setItem('start-link', 'true')
+    else sessionStorage.removeItem('start-link');
+  };
 
   const [plaidClientID, setPlaidClientID] = useState<string>('');
   const [plaidSecret, setPlaidSecret] = useState<string>('');
 
-  const [retry, setRetry] = useState<number>(0);
+  //const [retry, setRetry] = useState<number>(0);
   const plaidKey = useMemo(() => {
     return new Object({ client_id: plaidClientID, secret: plaidSecret }) as PlaidKey;
   }, [plaidClientID, plaidSecret]);
 
   useEffect(() => {
     const loadPlaidInfo = async () => {
-      await load('plaid-client-id', user.id).then(id => {if (id !== '') setPlaidClientID(id)})
-        .catch(() => setRetry(retry + 1));
-      await load('plaid-secret', user.id).then(secret => {if (secret !== '') setPlaidSecret(secret)})
-        .catch(() => setRetry(retry + 1));
+      setPlaidClientID(localStorage.getItem('plaid-client-id') || '');
+      setPlaidSecret(localStorage.getItem('plaid-secret') || '');
     }
 
     loadPlaidInfo();
-  }, [retry]);
+
+    return () => {
+      sessionStorage.removeItem('start-link');
+    }
+  }, []);
 
   const savePlaidInfo = async () => {
-    await save('plaid-client-id', plaidClientID, user.id);
-    await save('plaid-secret', plaidSecret, user.id);
+    localStorage.setItem('plaid-client-id', plaidClientID);
+    localStorage.setItem('plaid-secret', plaidSecret);
   }
   
   const isDisabled = () => {
@@ -66,13 +72,14 @@ export default function Financial({ user }: FinancialProps) {
         <span className='w-full flex flex-row justify-between '>
           <button className={'text-white w-fit px-2 rounded-lg mx-auto mt-2 ' + (isDisabled() ? 'bg-bbgray1 ' : 'bg-neutral1 hover:opacity-80 ')} onClick={() => savePlaidInfo()}>Update Plaid Info</button>
         </span>
+
       </menu>
 
       <menu className='flex flex-col w-2/3 m-2 my-8 p-2 bg-panel rounded-lg '>
 
         <button className={'text-white text-lg w-fit px-2 rounded-lg mx-auto mt-2 ' + (isDisabled() ? 'bg-bbgray1 ' : 'bg-primary hover:opacity-80 ')} onClick={isDisabled() ? undefined : toggleStartLink}>Link Bank Account</button>
 
-        { startLink && <PlaidLink user={user} pKey={plaidKey} /> }
+        { !isDisabled() && startLink && <PlaidLink user={user} pKey={plaidKey} /> }
 
       </menu>
 

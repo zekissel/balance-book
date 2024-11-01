@@ -3,8 +3,8 @@ import { Outlet } from 'react-router';
 import { Link } from 'react-router-dom';
 
 export default function Nav() {
-	const [fullSize, setFullSize] = useState(false);
-	//const toggleNav = () => setFullSize(!fullSize);
+	const [fullSize, _setFullSize] = useState(false);
+	//const toggleNav = () => _setFullSize(!fullSize);
 
 	const [curPage, setCurPage] = useState(new URL(window.location.href).pathname);
 
@@ -13,8 +13,8 @@ export default function Nav() {
 			<nav 
         className={'h-screen w-fit bg-light1 text-white flex flex-col justify-between items-start p-0 border-r-primary border-r-solid border-r-2' + (fullSize ? '' : ' w-12')}
         onClick={() => setCurPage(new URL(window.location.href).pathname)}
-				onMouseEnter={() => setFullSize(true)}
-				onMouseLeave={() => setFullSize(false)}
+				//onMouseEnter={() => setFullSize(true)}
+				//onMouseLeave={() => setFullSize(false)}
       >
 				<ul className='w-full '>
 					{/*<li className={'bg-bbgray3 roundedxl m-2 p-2 rounded-xl hover:bg-bbgray1 ' + (fullSize ? 'w-full' : 'w-fit')} onClick={toggleNav}>

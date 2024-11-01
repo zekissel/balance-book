@@ -37,12 +37,12 @@ export default function TreeSelect({ value, options, onChange, multi, option2 }:
 			const replace = value.filter(
 				(v) =>
 					!options
-						.filter((a) => a.type === root)
+						.filter((a) => a.type_ === root)
 						.map((a) => a.id)
 						.includes(v),
 			);
 			const addValue = value.concat(
-				options.filter((a) => a.type === root).map((a) => a.id),
+				options.filter((a) => a.type_ === root).map((a) => a.id),
 			);
 
 			if (selected) onChange(replace);
@@ -68,7 +68,7 @@ export default function TreeSelect({ value, options, onChange, multi, option2 }:
 	const acctTypes = useMemo(() => {
 		if (isAccount(options)) {
 			return options
-				.map((key) => key.type)
+				.map((key) => key.type_)
 				.filter((val, ind, arr) => arr.indexOf(val) === ind);
 		}
 		return [];
@@ -76,13 +76,13 @@ export default function TreeSelect({ value, options, onChange, multi, option2 }:
 	const rootSelected = (root: string) => {
 		if (!isAccount(options)) return false;
 		const selected = options.filter((o) => value.includes(o.id));
-		return selected.length > 0 && selected.map((a) => `${a.type}`).includes(root);
+		return selected.length > 0 && selected.map((a) => `${a.type_}`).includes(root);
 	};
 	const acctValues = useMemo(() => {
 		if (isAccount(options)) {
 			return options
 				.filter((a) => value.includes(a.id))
-				.map((a) => `${a.type}:${a.name}`);
+				.map((a) => `${a.type_}:${a.name}`);
 		}
 		return [];
 	}, [options, value]);
@@ -207,7 +207,7 @@ export default function TreeSelect({ value, options, onChange, multi, option2 }:
 								{`${key}:`}
 								<div className='hidden relative h-6 z-60 bottom-6 left-36 group-hover:block '>
 									{options
-										.filter((a) => a.type === key)
+										.filter((a) => a.type_ === key)
 										.map((subOption) => (
 											<div
 												className='bg-panel h-6 hover:bg-light2'

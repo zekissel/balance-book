@@ -1,8 +1,10 @@
 use plaid::PlaidClient;
 use plaid::model::*;
 
+use crate::database;
+
 use super::map::extract_category;
-use crate::dbase::models::Token;
+use crate::database::models::Token;
 use super::models::PlaidKey;
 use super::models::InstitutionStatus;
 
@@ -79,16 +81,16 @@ pub async fn fetch_transactions(handle: tauri::AppHandle, key: PlaidKey, token: 
 
         for trans in list {
           let new_trans = format_transaction(trans);
-          let _ = match crate::dbase::api::read_trans_by_id(handle.clone(), &new_trans.0).await {
-            Some(_tr) => {
-              crate::dbase::api::fix_trans(handle.clone(), &new_trans.0, Some(&new_trans.1), Some(new_trans.2), None, Some(&new_trans.4), Some(&new_trans.5), None).await
+          let _ = match database::api_trans::read_trans_by_id(handle.clone(), &new_trans.0).await {
+            Ok(_tr) => {
+              crate::database::api_trans::update_trans(handle.clone(), &new_trans.0, Some(&new_trans.1), Some(new_trans.2), None, Some(&new_trans.4), Some(&new_trans.5), None).await
             },
-            None => crate::dbase::api::create_trans(handle.clone(), Some(&new_trans.0), &new_trans.1, new_trans.2, &new_trans.3, &new_trans.4, &new_trans.5, &new_trans.6).await,
+            _ => crate::database::api_trans::create_trans(handle.clone(), Some(&new_trans.0), &new_trans.1, new_trans.2, &new_trans.3, &new_trans.4, &new_trans.5, &new_trans.6).await,
           };
           updated.push(new_trans.0);
         };
         for trans in d.removed {
-          let _ = crate::dbase::api::delete_trans(handle.clone(), &trans.transaction_id.unwrap());
+          let _ = crate::database::api_trans::delete_trans(handle.clone(), &trans.transaction_id.unwrap());
         }
         more = d.has_more;
         cursor = d.next_cursor.to_owned();
@@ -97,7 +99,7 @@ pub async fn fetch_transactions(handle: tauri::AppHandle, key: PlaidKey, token: 
     };
   };
 
-  let _ = crate::dbase::api::update_cursor(handle, &token.id, &cursor).await.unwrap();
+  let _ = crate::database::api_token::update_cursor(handle, &token.id, Some(cursor)).await.unwrap();
 
   Ok(updated)
 }
@@ -111,9 +113,9 @@ pub async fn fetch_balance(handle: tauri::AppHandle, key: PlaidKey, token: Token
 
   for acc in response.accounts {
     let a_id = &acc.account_id;
-    let balance = (acc.balances.current.unwrap() * 100.) as i32;
+    let balance = (acc.balances.current.unwrap() * 100.) as i64;
     let date = &chrono::Utc::now().to_string();
-    let _ = crate::dbase::api::update_account_balance(handle.clone(), &a_id, balance, date).await;
+    let _ = crate::database::api_account::update_account_balance(handle.clone(), &a_id, balance, date).await;
   }
   Ok(true)
 }
@@ -136,7 +138,7 @@ pub async fn extract_accounts(handle: tauri::AppHandle, user_id: &str, key: Plai
   for acc in response.accounts {
     let a_id = &acc.account_id;
     let account_name = &acc.name;
-    let balance = (acc.balances.current.unwrap() * 100.) as i32;
+    let balance = (acc.balances.current.unwrap() * 100.) as i64;
     let date = &chrono::Utc::now().to_string();
     let account_type = match acc.type_.as_ref() {
       "depository" => match acc.subtype.as_ref() {
@@ -152,7 +154,7 @@ pub async fn extract_accounts(handle: tauri::AppHandle, user_id: &str, key: Plai
       _ => "Other".to_owned(),
     };
     
-    let _new_acc = crate::dbase::api::create_account(handle.clone(), Some(a_id), &account_type, account_name, balance, date, user_id).await;
+    let _new_acc = crate::database::api_account::create_account(handle.clone(), Some(a_id), account_name, &account_type, balance, date, user_id).await.unwrap();
   }
   Ok(true)
 }
@@ -188,4 +190,33 @@ pub async fn read_status(key: PlaidKey, token: Token) -> Result<InstitutionStatu
     None => "Unknown".to_owned(),
   };
   Ok(InstitutionStatus{ name, last_update: recent, status })
+}
+
+
+#[tauri::command]
+pub async fn sync_info(handle: tauri::AppHandle, user_id: &str, key: PlaidKey) -> Result<Vec<String>, ()> {
+  let mut updated: Vec<String> = vec![];
+  let tokens = database::api_token::read_token(handle.clone(), user_id).await.unwrap();
+  for token in tokens { 
+    let _ = fetch_balance(handle.clone(), key.clone(), token.clone()).await;
+    let changed = fetch_transactions(handle.clone(), key.clone(), token.clone()).await;
+    match changed {
+      Ok(c) => {
+        for t_id in c { updated.push(t_id); }
+      },
+      Err(_) => (),
+    }
+  }
+  Ok(updated)
+}
+
+#[tauri::command]
+pub async fn get_status(handle: tauri::AppHandle, user_id: &str, key: PlaidKey) -> Result<Vec<InstitutionStatus>, ()> {
+  let tokens = database::api_token::read_token(handle.clone(), user_id).await.unwrap();
+  let mut status: Vec<InstitutionStatus> = vec![];
+  for token in tokens { 
+    let inst_stat = read_status(key.clone(), token).await;
+    status.push(inst_stat?);
+  }
+  Ok(status)
 }

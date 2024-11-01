@@ -1,7 +1,7 @@
 import { Transaction, Account, formatAmount, formatAccount } from "../../typedef";
 import { useState } from "react";
 import { EditLog, UIState } from "./AddLog";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 
 interface ViewLogProps { 
   transaction: Transaction;

@@ -1,67 +1,36 @@
 {
-	"build": {
-		"beforeDevCommand": "npm run dev",
-		"beforeBuildCommand": "npm run build",
-		"devPath": "http://localhost:1420",
-		"distDir": "../dist"
-	},
-	"package": {
-		"productName": "balance-book",
-		"version": "1.0.1"
-	},
-	"tauri": {
-		"allowlist": {
-			"all": false,
-			"fs": {
-				"all": true,
-				"scope": ["$APPDATA/**", "$APPLOCALDATA/**"]
-			},
-			"path": {
-				"all": true
-			},
-			"shell": {
-				"all": false,
-				"open": true
-			}
-		},
-		"windows": [
-			{
-				"title": "Balance Book",
-				"width": 1080,
-				"height": 720,
-				"resizable": true,
-				"maximizable": true,
-				"minimizable": true
-			}
-		],
-		"security": {
-			"csp": null
-		},
-		"bundle": {
-			"active": true,
-			"targets": "all",
-			"identifier": "finance.balance-book.app",
-			"publisher": "ZK",
-			"icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-			"category": "Finance",
-			"shortDescription": "Manage personal finances",
-			"longDescription": "Balance Book is a personal finance management app that helps you log and visualize your recent transactions and account balances."
-		},
-		"updater": {
-      "active": true,
-      "endpoints": [
-        "https://github.com/zekissel/balance-book/releases/download/balance-book-v1.0.1/latest.json"
-      ],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEExMEY0NUMzN0Q4MUI5RUIKUldUcnVZRjl3MFVQb2ExMXQ0QWdWd09iOSt4TU40bGFRVFZRN3Rheis5NUxsRmJLVVhZMFJSUEkK",
-			"windows": {
-        "installMode": "passive"
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "balance-book",
+  "version": "2.0.1",
+  "identifier": "finance.balance.book",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Balance Book",
+        "width": 1080,
+        "height": 720
       }
+    ],
+    "security": {
+      "csp": null
     }
-	}
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+  
 }

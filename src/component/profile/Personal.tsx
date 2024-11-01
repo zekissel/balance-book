@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { removeFile, BaseDirectory } from '@tauri-apps/api/fs';
+import { remove, BaseDirectory } from '@tauri-apps/plugin-fs';
 import { User } from "../../typedef";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { useNavigate } from "react-router-dom";
 
 interface PersonalProps { user: User, setUser: (user: User) => void, logout: () => void }
@@ -66,7 +66,7 @@ export default function Personal({ user, setUser, logout }: PersonalProps) {
   }
 
   const removeVault = async () => {
-    await removeFile(`vaults/vault.${user.id.slice(0, 8)}`, { dir: BaseDirectory.AppData });
+    await remove(`vaults/vault.${user.id.slice(0, 8)}`, { baseDir: BaseDirectory.AppLocalData });
   }
 
   const isDisabled = () => {
