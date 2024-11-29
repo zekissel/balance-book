@@ -20,20 +20,20 @@ export default function List({ filters, signal, update }: ListProps) {
   const updatePerPage = (perPage: number) => setPerPage(perPage);
 
   interface Sorter { 
-    field: 'date' | 'store' | 'category' | 'amount' | 'type' | 'account';
+    field: 0 | 1 | 2 | 3 | 4;
     order: -1 | 1;
   }
-  const [sortBy, setSortBy] = useState<Sorter>({ field: 'date', order: -1 });
-  const getSVG = (field: string, order: -1 | 1) => {
+  const [sortBy, setSortBy] = useState<Sorter>({ field: 0, order: -1 });
+  const getSVG = (field: number, order: -1 | 1) => {
     let ret = '';
-    if (field === 'Date') ret = '/misc/sort-down.svg';
-    if (field === 'Store') ret = '/misc/sort-a-z.svg';
-    if (field === 'Category') ret = '/misc/sort-a-z.svg';
-    if (field === 'Amount') ret = '/misc/sort-down.svg';
-    if (field === 'Type') return '/misc/sort.svg';
-    if (field === 'Account') ret = '/misc/sort-a-z.svg';
-
-    if (sortBy.field === field.toLowerCase() && order > 0) {
+    if (field === 0) ret = '/misc/sort-down.svg';
+    if (field === 1) ret = '/misc/sort-a-z.svg';
+    if (field === 2) ret = '/misc/sort-a-z.svg';
+    if (field === 3) ret = '/misc/sort-down.svg';
+    if (field === 4) ret = '/misc/sort-a-z.svg';
+    if (field === 5) ret = '/misc/sort.svg';
+    
+    if (sortBy.field === field && order > 0) {
       ret = ret.replace('down', 'up').replace('a-z', 'z-a');
     }
     return ret;
@@ -102,13 +102,15 @@ export default function List({ filters, signal, update }: ListProps) {
       <div className='flex flex-col h-12 pb-1 md:flex-row-reverse '>
         <menu className='w-full h-12 flex flex-row justify-around bg-light1 md:w-2/3 '>
 
-          { ['Date', 'Store', 'Category', 'Amount', 'Type', 'Account'].map(field => (
-            <button
-              key={field}
-              className={'flex flex-row h-fit mx-0 mt-2 p-1 rounded ' + (sortBy.field === field.toLowerCase() ? 'bg-primary2 ' : 'bg-bbgray1 hover:bg-bbgray3 ')}
-              onClick={() => {setSortBy({ field: field.toLowerCase() as Sorter['field'], order: sortBy.field === field.toLowerCase() ? (-1 * sortBy.order) as (-1 | 1) : -1 }); update()}}
-            ><img src={getSVG(field, sortBy.order)} />{ field }</button>
-          )) }
+          { ['Date', 'Store', 'Category', 'Amount', 'Account', 'Type'].map(
+            (field, index) => (
+              <button
+                key={field}
+                className={'flex flex-row h-fit mx-0 mt-2 p-1 rounded ' + (sortBy.field === index ? 'bg-primary2 ' : 'bg-bbgray1 hover:bg-bbgray3 ')}
+                onClick={() => {setSortBy({ field: index as Sorter['field'], order: sortBy.field === index ? (-1 * sortBy.order) as (-1 | 1) : -1 }); update()}}
+              ><img src={getSVG(index, sortBy.order)} />{ field }</button>
+            )) 
+          }
         </menu>
 
         <Control maxPage={Math.ceil(totalLogs / perPage)} curPage={curPage} setCurPage={setCurPage} perPage={perPage} setPerPage={updatePerPage} update={update} />

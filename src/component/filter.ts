@@ -4,8 +4,8 @@ export interface Filter {
 	type_: number | null;
 	start_date: Date | null;
 	end_date: Date | null;
+  store: string[];
 	category: string[];
-	store: string[];
 	low_amount: number;
 	high_amount: number;
 	account: string[];

@@ -70,8 +70,8 @@ impl Serialize for Account {
     }
 }
 
-#[allow(dead_code)]
-#[derive(sqlx::FromRow)]
+//#[allow(dead_code)]
+#[derive(sqlx::FromRow, Clone)]
 pub struct Transaction {
     pub id: String,
     pub store: String,

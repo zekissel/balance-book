@@ -109,7 +109,7 @@ export async function getAccounts(): Promise<Account[]> {
 
 export async function getTransactions(
 	filters: Filter,
-	index: { current_page: number, page_size: number, sort_field: string, sort_asc: boolean }
+	index: { current_page: number, page_size: number, sort_field: number, sort_asc: boolean }
 ): Promise<[Transaction[], number]> {
 	return await invoke('fetch_transaction', { filters, index }).then(
 		(data) => {
