@@ -1,6 +1,7 @@
-pub mod api_account;
-pub mod api_user;
+pub mod api;
+pub mod api_users;
+pub mod api_accts;
 pub mod api_trans;
-pub mod api_token;
+pub mod api_tokens;
 pub mod models;
 pub mod schema;

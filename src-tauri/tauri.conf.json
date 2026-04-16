@@ -1,20 +1,20 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "balance-book",
-  "version": "2.0.0",
-  "identifier": "finance.balance.book",
+  "version": "3.0.0",
+  "identifier": "fin.book.bal",
   "build": {
-    "beforeDevCommand": "npm run dev",
+    "beforeDevCommand": "yarn dev",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "npm run build",
+    "beforeBuildCommand": "yarn build",
     "frontendDist": "../dist"
   },
   "app": {
     "windows": [
       {
-        "title": "Balance Book",
-        "width": 1280,
-        "height": 768
+        "title": "balance-book",
+        "width": 1080,
+        "height": 720
       }
     ],
     "security": {
@@ -32,5 +32,5 @@
       "icons/icon.ico"
     ]
   }
-  
+
 }

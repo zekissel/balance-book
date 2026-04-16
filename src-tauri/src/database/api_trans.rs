@@ -1,26 +1,24 @@
-use super::models::Transaction;
-use sqlx::query::QueryAs;
-use sqlx::SqlitePool;
-use sqlx::{query_builder::QueryBuilder, Execute};
-use tauri::{Manager, State};
-use tokio::sync::Mutex;
-
 use serde::Deserialize;
-use crate::AuthState;
-use crate::database::models::BookError;
-use crate::database;
+use diesel::prelude::*;
+use diesel::sqlite::Sqlite;
+use diesel::sql_types::{Text, Integer};
+use diesel::internal::table_macro::{BoxedSelectStatement, FromClause};
+
+use super::api::establish_connection;
+use super::models::{ Transaction, AddTransaction, UpdateTransaction };
+
 
 #[derive(Deserialize)]
 pub struct Index {
-  current_page: u32,
-  page_size: u8,
-  sort_field: u8,
+  current_page: i32,
+  page_size: i8,
+  sort_field: String,
   sort_asc: bool,
 }
 
 #[derive(Deserialize, Clone)]
 pub struct Filters {
-  type_: Option<i8>,
+  type_: Option<i8>, // "income", "expense", "transfer"
   start_date: Option<String>,
   end_date: Option<String>,
   store: Vec<String>,
@@ -31,403 +29,215 @@ pub struct Filters {
 }
 
 
-/* MARK: NEW
- */
-#[tauri::command]
-pub async fn new_transaction(
-  handle: tauri::AppHandle,
-  store: &str,
+/* Transaction CRUD */
+#[tauri::command(rename_all = "snake_case")]
+pub async fn create_transaction(
+  app_handle: tauri::AppHandle,
+  id_i: Option<&str>,
   amount: i32,
+  timestamp: &str,
+  store: &str, 
   category: &str,
-  date: &str,
-  desc: &str,
+  description: &str,
   account_id: &str,
-) -> Result<(), BookError> {
-  let pool = handle.state::<Mutex<SqlitePool>>().lock().await.clone();
-  let id = uuid::Uuid::new_v4().to_string();
+) -> Result<Option<Transaction>, String> {
+  use super::schema::transactions;
 
-  println!("{}", date);
-
-  match sqlx::query("
-      INSERT INTO transactions (id, store, amount, category, date, desc, account_id)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
-    ")
-    .bind(id)
-    .bind(store)
-    .bind(amount)
-    .bind(category)
-    .bind(date)
-    .bind(desc)
-    .bind(account_id)
-    .execute(&pool)
-    .await {
-      Ok(_) => Ok(()),
-      Err(e) => Err(BookError { code: 2, message: e.to_string() }),
-    }
-
-}
-
-
-/* MARK: FETCH
-*/
-#[tauri::command]
-pub async fn fetch_transaction(
-  handle: tauri::AppHandle, 
-  state: State<'_, AuthState>,
-  filters: Filters,
-  index: Index,
-) -> Result<(Vec<Transaction>, i64), BookError> {
-  let user = state.user.lock().await;
-  if user.is_none() { return Err(BookError { code: 1, message: "User not found".to_string() }); }
-
-  let user_accounts = match database::api_account::read_account(handle.clone(), &user.as_ref().unwrap().id).await {
-    Ok(accounts) => accounts.iter().map(|a| a.id.clone()).collect(),
-    _ => vec![],
+  let id = match id_i {
+    Some(i) => i.to_string(),
+    None => uuid::Uuid::new_v4().to_string(),
   };
-
-  match read_trans(handle.clone(), user_accounts.clone(), filters.clone(), Some(index)).await {
-    Some(trans) => Ok((trans, count_trans(handle, user_accounts, filters).await)),
-    None => Err(BookError { code: 2, message: "Error reading transactions".to_string() }),
-  }
-}
-
-#[tauri::command]
-pub async fn fetch_transaction_calendar(
-  handle: tauri::AppHandle, 
-  state: State<'_, AuthState>,
-  filters: Filters,
-) -> Result<Vec<Transaction>, BookError> {
-  let user = state.user.lock().await;
-  if user.is_none() { return Err(BookError { code: 1, message: "User not found".to_string() }); }
-
-  let user_accounts = match database::api_account::read_account(handle.clone(), &user.as_ref().unwrap().id).await {
-    Ok(accounts) => accounts.iter().map(|a| a.id.clone()).collect(),
-    _ => vec![],
+  let new_trans = AddTransaction { 
+    id: &id, amount, timestamp,
+    store, category, description, account_id,
   };
+  let trans = diesel::insert_into(transactions::table)
+    .values(&new_trans)
+    .returning(Transaction::as_returning())
+    .get_result(&mut establish_connection(app_handle.clone()))
+    .expect("error saving new transaction");
 
-  match read_trans(handle.clone(), user_accounts, filters.clone(), None).await {
-    Some(trans) => Ok(trans),
-    None => Err(BookError { code: 2, message: "Error reading transactions".to_string() }),
+  Ok(Some(trans))
+}
+
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn read_transactions(
+  app_handle: tauri::AppHandle, 
+  account_id_i: Vec<&str>
+) -> Result<Vec<Transaction>, String> {
+  use super::schema::transactions::dsl::*;
+
+  if account_id_i.is_empty() {
+    return Ok(vec![]); // Return an empty vector if no account IDs are provided
   }
+
+  Ok(transactions
+    .filter(account_id.eq_any(account_id_i))
+    .load::<Transaction>(&mut establish_connection(app_handle))
+    .expect("error loading transactions"))
 }
 
-/* MARK: FIX
-*/
-#[tauri::command]
-pub async fn fix_transaction(
-  handle: tauri::AppHandle,
-  id: &str,
-  // TODO
-) -> Result<(), BookError> {
-  let pool = handle.state::<Mutex<SqlitePool>>().lock().await.clone();
-  match sqlx::query("
-      UPDATE transactions SET TODO = 1 
-      WHERE id = $1
-    ")
-    .bind(id)
-    .execute(&pool)
-    .await {
-      Ok(_) => Ok(()),
-      Err(e) => Err(BookError { code: 2, message: e.to_string() }),
-    }
-}
-
-/* MARK: REMOVE
-*/
-#[tauri::command]
-pub async fn remove_transaction(
-  handle: tauri::AppHandle,
-  id: &str,
-) -> Result<(), BookError> {
-  let pool = handle.state::<Mutex<SqlitePool>>().lock().await.clone();
-  match sqlx::query("
-      DELETE FROM transactions WHERE id = $1
-    ")
-    .bind(id)
-    .execute(&pool)
-    .await {
-      Ok(_) => Ok(()),
-      Err(e) => Err(BookError { code: 2, message: e.to_string() }),
-    }
-}
-
-
-/* MARK: UTIL
- */
-async fn read_trans(
-  handle: tauri::AppHandle,
-  user_accounts: Vec<String>,
-  filters: Filters,
-  index: Option<Index>,
-) -> Option<Vec<Transaction>> {
-  let pool = handle.state::<Mutex<SqlitePool>>().lock().await.clone();
-  let mut transactions = vec![];
+async fn construct_trans_query(
+  user_accounts: Vec<String>, 
+  filters: Filters
+) -> BoxedSelectStatement<'static, (Text, Integer, Text, Text, Text, Text, Text), FromClause<super::schema::transactions::table>, Sqlite, ()> 
+{
+  use super::schema::transactions;
+  use super::schema::transactions::dsl::*;
 
   let exclude_accounts = filters.account.contains(&"X".to_owned());
   let exclude_stores = filters.store.contains(&"X".to_owned());
   let exclude_categories = filters.category.contains(&"X".to_owned());
 
-  let mut query_string: QueryBuilder<'_, sqlx::sqlite::Sqlite> = QueryBuilder::new("
-    SELECT * FROM transactions
-    WHERE account_id IN ("
-  );
-  // filters active, exclude option, account is in list
-  struct A(bool, bool, bool);
-  for account in user_accounts.iter() {
-    match A(filters.account.len() > 0, exclude_accounts, filters.account.contains(account)) {
-      A(true, true, true) => continue,
-      A(true, false, false) => continue,
-      _ => {
-        query_string.push_bind(account.clone());
-        query_string.push(",");
-      },
-    }
+  let mut query = transactions::table.into_boxed();
+  query = query.filter(account_id.eq_any(user_accounts));
+
+  if filters.start_date.is_some() {
+    query = query.filter(timestamp.ge(filters.start_date.unwrap()));
   }
-  // remove last comma
-  query_string = QueryBuilder::new(
-    &query_string.sql()[..query_string.sql().len()-1]
-  );
-  query_string.push(")");
+  if filters.end_date.is_some() {
+    query = query.filter(timestamp.le(filters.end_date.unwrap()));
+  }
 
-  if let Some(ref start_date) = filters.start_date {
-    query_string.push(" AND date >= ");
-    query_string.push_bind(start_date.clone());
-  };
-  if let Some(ref end_date) = filters.end_date {
-    query_string.push(" AND date <= ");
-    query_string.push_bind(end_date.clone());
-  };
+  if exclude_accounts {
+    query = query.filter(account_id.ne_all(filters.account));
+  } else if filters.account.len() > 0 {
+    query = query.filter(account_id.eq_any(filters.account));
+  }
 
-  if filters.store.len() > 0 {
-    if exclude_stores { query_string.push(" AND store NOT IN ("); }
-    else { query_string.push(" AND store IN ("); }
-    for store in filters.store.iter() {
-      if store == "X" { continue; }
-      query_string.push_bind(store.clone());
-      query_string.push(",");
-    }
-    // remove last comma
-    query_string = QueryBuilder::new(
-      &query_string.sql()[..query_string.sql().len()-1]
-    );
-    query_string.push(")");
+  if exclude_stores {
+    query = query.filter(store.ne_all(filters.store));
+  } else if filters.store.len() > 0 {
+    query = query.filter(store.eq_any(filters.store));
+  }
+
+  if exclude_categories {
+    query = query.filter(category.ne_all(filters.category));
+  } else if filters.category.len() > 0 {
+    query = query.filter(category.eq_any(filters.category));
+  }
+
+  if filters.low_amount > 0 {
+    let low_amount = filters.low_amount - 1;
+    query = query.filter(amount.not_between(-low_amount, low_amount));
+  }
+  if filters.high_amount > 0 {
+    query = query.filter(amount.between(-filters.high_amount, filters.high_amount));
   }
   
-  if filters.category.len() > 0 {
-    if exclude_categories { query_string.push(" AND category NOT IN ("); }
-    else { query_string.push(" AND category IN ("); }
-    for category in filters.category.iter() {
-      if category == "X" { continue; }
-      query_string.push_bind(category.clone());
-      query_string.push(",");
-    }
-    query_string = QueryBuilder::new(
-      &query_string.sql()[..query_string.sql().len()-1]
-    );
-    query_string.push(")");
+
+  match filters.type_ {
+    Some(-1) => query = query.filter(amount.lt(0)).filter(category.ne_all(vec!["Financial>Transfer", "FinanceIncome>Transfer", "Financial>Credit", "FinanceIncome>Credit"])),
+    Some(1) => query = query.filter(amount.gt(0)).filter(category.ne_all(vec!["Financial>Transfer", "FinanceIncome>Transfer", "Financial>Credit", "FinanceIncome>Credit"])),
+    Some(0) => query = query.filter(category.eq_any(vec!["Financial>Transfer", "FinanceIncome>Transfer", "Financial>Credit", "FinanceIncome>Credit"])),
+    _ => (),
   }
 
-  if filters.low_amount > 0 {
-    query_string.push(" AND (amount >= ");
-    query_string.push_bind(filters.low_amount);
-    query_string.push(" OR amount <= -");
-    query_string.push_bind(filters.low_amount);
-    query_string.push(")");
-  }
-  if filters.high_amount > 0 {
-    query_string.push(" AND amount <= ");
-    query_string.push_bind(filters.high_amount.clone());
-  }
-
-  if let Some(ref index) = index {
-    query_string.push(" ORDER BY ");
-    match index.sort_field {
-      1 => query_string.push("store"),
-      2 => query_string.push("category"),
-      3 => query_string.push("amount"),
-      4 => query_string.push("account_id"),
-      _ => query_string.push("date"),
-    };
-
-    match index.sort_asc {
-      true => query_string.push(" ASC".to_string()),
-      false => query_string.push(" DESC".to_string()),
-    };
-
-    query_string.push(" LIMIT ");
-    match index.page_size {
-      50 => query_string.push("50"),
-      100 => query_string.push("100"),
-      200 => query_string.push("200"),
-      _ => query_string.push("25"),
-    };
-
-    query_string.push(" OFFSET ");
-    query_string.push((index.current_page - 1).to_string());
-  }
-
-  let sql = query_string.build().sql();
-  println!("{}", sql);
-
-  let mut query = sqlx::query_as::<_, Transaction>(
-    sql//query_string.build().sql()
-  );
-  for account in user_accounts.iter() {
-    match A(filters.account.len() > 0, exclude_accounts, filters.account.contains(account)) {
-      A(true, true, true) => continue,
-      A(true, false, false) => continue,
-      _ => {
-        query = query.bind(account.clone());
-      },
-    }
-  }
-
-  query = query
-    .bind(filters.start_date.clone())
-    .bind(filters.end_date.clone());
-
-  for store in filters.store.iter() {
-    if store == &"X".to_owned() { continue; }
-    query = query.bind(store.clone());
-  }
-  for cat in filters.category.iter() {
-    if cat == &"X".to_owned() { continue; }
-    query = query.bind(cat.clone());
-  }
-  if filters.low_amount > 0 {
-    query = query.bind(filters.low_amount).bind(filters.low_amount);
-  }
-  if filters.high_amount > 0 {
-    query = query.bind(filters.high_amount.clone());
-  }
-
-  match query.fetch_all(&pool).await {
-    Ok(trans) => transactions.extend(trans),
-    Err(_) => (),
-  };
-
-    //transactions.extend(query.fetch_all(&pool).await.unwrap());
-  //}
-  Some(transactions)
+  query
 }
 
-async fn count_trans(
-  handle: tauri::AppHandle,
+async fn sort_query(
+  mut query: BoxedSelectStatement<'static, (Text, Integer, Text, Text, Text, Text, Text), FromClause<super::schema::transactions::table>, Sqlite, ()>,
+  index: Index,
+) -> BoxedSelectStatement<'static, (Text, Integer, Text, Text, Text, Text, Text), FromClause<super::schema::transactions::table>, Sqlite> {
+  use super::schema::transactions::dsl::*;
+
+  query = match index.sort_asc {
+    true => match index.sort_field.as_str() {
+      "store" => query.order(store.desc()),
+      "account" => query.order(account_id.asc()),
+      "amount" => query.order(amount.asc()),
+      "category" => query.order(category.desc()),
+      "date" => query.order(timestamp.asc()),
+      "type" => query.order(category.desc()).then_order_by(amount.asc()),
+      _ => query,
+    },
+    false => match index.sort_field.as_str() {
+      "store" => query.order(store.asc()),
+      "account" => query.order(account_id.desc()),
+      "amount" => query.order(amount.desc()),
+      "category" => query.order(category.asc()),
+      "date" => query.order(timestamp.desc()),
+      "type" => query.order(category.asc()).then_order_by(amount.desc()),
+      _ => query,
+    },
+  };
+
+  query = query.limit(index.page_size as i64);
+
+  query = query.offset((index.current_page - 1) as i64 * index.page_size as i64);
+  
+  query
+}
+
+pub async fn read_trans_by_id(app_handle: tauri::AppHandle, t_id: &str) -> Option<Transaction> {
+  use super::schema::transactions::dsl::*;
+
+  transactions
+    .filter(id.eq(t_id))
+    .first::<Transaction>(&mut establish_connection(app_handle))
+    .ok()
+}
+
+pub async fn read_trans(
+  app_handle: tauri::AppHandle,
   user_accounts: Vec<String>,
   filters: Filters,
-) -> i64 {
-  let pool = handle.state::<Mutex<SqlitePool>>().lock().await.clone();
-  let mut count = 0;
-  for account in user_accounts.iter() {
-    let query = sqlx::query_as::<_, Transaction>("
-      SELECT * FROM transactions
-      WHERE account_id = $1
-    ")
-    .bind(account);
-    count += query.fetch_all(&pool).await.unwrap().len() as i64;
-  }
-  count
-}
+  index: Option<Index>,
+) -> Option<Vec<Transaction>> {
 
+  let mut query = construct_trans_query(user_accounts, filters).await;
 
-
-/* MARK: CREATE
- */
-pub async fn create_trans(
-  handle: tauri::AppHandle,
-  id: Option<&str>,
-  store: &str,
-  amount: i32,
-  category: &str,
-  date: &str,
-  desc: &str,
-  account_id: &str,
-) -> Result<(), BookError> {
-  let pool = handle.state::<Mutex<SqlitePool>>().lock().await.clone();
-  let t_id = match id {
-    Some(id) => id.to_string(), 
-    None => uuid::Uuid::new_v4().to_string(),
-  };
-
-  match sqlx::query(
-    "
-    INSERT INTO transactions (id, store, amount, category, date, desc, account_id) 
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
-  ",
-  )
-  .bind(t_id.clone())
-  .bind(store)
-  .bind(amount)
-  .bind(category)
-  .bind(date)
-  .bind(desc)
-  .bind(account_id)
-  .execute(&pool)
-  .await {
-    Ok(_) => Ok(()),
-    Err(e) => Err(BookError { code: 2, message: e.to_string() }),
+  if index.is_some() {
+    query = sort_query(query, index.unwrap()).await;
   }
 
-  //let trans = read_trans_by_id(handle.clone(), &t_id).await.unwrap();
+  Some(query
+    .load::<Transaction>(&mut establish_connection(app_handle))
+    .expect("Error loading transactions"))
 }
 
-/* MARK: READ
- */
-pub async fn read_trans_by_id(
-  handle: tauri::AppHandle,
-  id: &str,
-) -> Result<Transaction, BookError> {
-  let pool = handle.state::<Mutex<SqlitePool>>().lock().await.clone();
 
-  let trans = sqlx::query_as::<_, Transaction>("
-    SELECT * FROM transactions WHERE id = $1 LIMIT 1
-  ",)
-  .bind(id)
-  .fetch_one(&pool)
-  .await;
 
-  match trans {
-    Ok(trans) => Ok(trans),
-    Err(e) => Err(BookError { code: 2, message: e.to_string() }),
-  }
+/* account_id and id provided to double check */
+#[tauri::command(rename_all = "snake_case")]
+pub async fn update_transaction(
+  app_handle: tauri::AppHandle, 
+  id_i: &str,
+  new_amount: Option<i32>,
+  new_timestamp: Option<&str>,
+  new_store: Option<&str>, 
+  new_category: Option<&str>,
+  new_description: Option<&str>,
+  account_id_i: &str,
+) -> Result<Transaction, String> {
+  use super::schema::transactions::dsl::*;
+
+  diesel::update(transactions.filter(id.eq(id_i)))
+    .set(&UpdateTransaction {
+      id: id_i,
+      amount: new_amount,
+      timestamp: new_timestamp,
+      store: new_store,
+      category: new_category,
+      description: new_description,
+      account_id: account_id_i, //maybe set None, depending if transactions can change accts
+    })
+    .returning(Transaction::as_returning())
+    .get_result(&mut establish_connection(app_handle))
+    .map_err(|_| "error updating transaction".to_string())
 }
 
-/* MARK: UPDATE
- */
-pub async fn update_trans(
-  handle: tauri::AppHandle,
-  id: &str,
-  store: Option<&str>,
-  amount: Option<i32>,
-  category: Option<&str>,
-  date: Option<&str>,
-  desc: Option<&str>,
-  account_id: Option<&str>,
-) -> Result<(), BookError> {
-  let pool = handle.state::<Mutex<SqlitePool>>().lock().await.clone();
 
-  
+#[tauri::command(rename_all = "snake_case")]
+pub async fn delete_transaction(
+  app_handle: tauri::AppHandle, 
+  id_i: &str
+) -> Result<usize, String> {
+  use super::schema::transactions::dsl::*;
 
-  Ok(())
+  diesel::delete(transactions.filter(id.eq(id_i)))
+    .execute(&mut establish_connection(app_handle))
+    .map_err(|_| "error deleting transaction".to_string())
 }
-
-/* MARK: DELETE 
-*/
-pub async fn delete_trans(
-  handle: tauri::AppHandle,
-  id: &str,
-) -> Result<(), BookError> {
-  let pool = handle.state::<Mutex<SqlitePool>>().lock().await.clone();
-  match sqlx::query(
-    "
-    DELETE FROM transactions WHERE id = $1
-  ",
-  )
-  .bind(id)
-  .execute(&pool)
-  .await {
-    Ok(_) => Ok(()),
-    Err(e) => Err(BookError { code: 2, message: e.to_string() }),
-  }
-}
-

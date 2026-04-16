@@ -1,8 +1,8 @@
 [package]
 name = "balance-book"
-version = "2.5.0"
-description = "Desktop application for managing personal finance"
-authors = ["Zane Kissel"]
+version = "3.0.0"
+description = "Desktop application for managing personal finances"
+authors = ["ZK"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -19,17 +19,14 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 tauri = { version = "2", features = [] }
-tauri-plugin-shell = "2"
+tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-sqlx = { version = "0.8.2", features = [ "runtime-tokio", "tls-native-tls", "sqlite" ] }
-tokio = { version = "1.41.0", features = ["full"] }
-uuid = { version = "1.11.0", features = ["v4"] }
-rust-argon2 = { version = "2.1" }
-password-hash = { version = "0.5.0", features = [ "getrandom" ] }
-chrono = "0.4.38"
-tauri-plugin-fs = "2"
-rusqlite = { version = "0.32.0", features = ["bundled-sqlcipher"] }
-plaid = "8.0.0"
-open = "5.3.0"
-tauri-plugin-oauth = { git = "https://github.com/FabianLars/tauri-plugin-oauth.git", branch = "v2" }
+diesel = { version = "2.3.5", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
+diesel_migrations = "2.3.1"
+tauri-plugin-fs = "2.4.5"
+uuid = { version = "1.19.0", features = ["v4"] }
+chrono = "0.4.43"
+
+# uncomment this line if you run into setup issues
+# libsqlite3-sys = { version = "0.30", features = ["bundled"] }

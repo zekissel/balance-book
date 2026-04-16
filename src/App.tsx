@@ -1,63 +1,72 @@
-import { useState } from "react";
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { invoke } from "@tauri-apps/api/core";
-import Profile from "./component/profile/Profile";
-import { User } from "./typedef";
-import Auth from "./component/auth/Auth";
-import Nav from "./component/Nav";
-import Activity from "./component/activity/Activity";
-import Statistics from "./component/stats/Statistics";
-import Accounts from "./component/account/Accounts";
-import Market from "./component/market/Market";
-import Home from "./component/home/Home";
-import Settings from "./component/settings/Settings";
-import Sync from "./component/Sync";
+import { useEffect, useState } from "react";
+import { Routes, Route } from "react-router";
+import { getAccounts, getTransactions, Transaction, Account } from "./typedef";
+
+import Disclaimer from "./routes/Disclaimer";
+import SetupPlaid from "./routes/SetupPlaid";
+import Login from "./routes/Login";
+import Register from "./routes/Register";
+import Home from "./routes/Home";
+import BaseLayout from "./routes/BaseLayout";
+import List from "./routes/Home/List";
+import Calendar from "./routes/Home/Calendar";
+import Statistics from "./routes/Home/Statistics";
+import Profile from "./routes/Home/Profile";
+import { EditAccount } from "./routes/Home/AccountTools";
+
+import "./App.css";
+
 
 function App() {
 
-  const [user, setUser] = useState<User | null>({ 
-    id: sessionStorage.getItem('uid') ?? '', 
-    name: sessionStorage.getItem('uname') ?? '', 
-    email: sessionStorage.getItem('umail') ?? '',
-  });
-  const verifyUser = (user: User) => { 
-    setUser(user);
-    sessionStorage.setItem('uid', user.id);
-    sessionStorage.setItem('uname', user.name);
-    sessionStorage.setItem('umail', user.email ?? '');
+  const [refresh, setRefresh] = useState(false);
+  const signalRefresh = () => setRefresh(!refresh);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const clearData = () => {
+    setAccounts([]);
+    setTransactions([]);
+    console.log('cleared data');
   }
-  const logout = async () => {
-    if (user?.id) await invoke('logout_user', { id: user.id })
-    setUser(null);
-    sessionStorage.clear();
-  }
+  
+  useEffect(() => {
+    const fetchAccounts = async () => setAccounts(await getAccounts());
+    fetchAccounts();
+    console.log('fetched accounts');
+  }, [ refresh ]);
+  
+  useEffect(() => {
+    const fetchTransactions = async () => setTransactions(await getTransactions(accounts.map(a => a.id)));
+    fetchTransactions();
+    console.log('fetched transactions');
+  }, [ accounts ]);
+
+
+    
 
   return (
-    <div className='w-screen h-screen flex flex-row overflow-hidden '>
-      <BrowserRouter>
-				<Routes>
-          
-          <Route path='/' element={<Auth verifyUser={verifyUser} />} />
+    <Routes>
+      <Route path='/' />
+        <Route index element={<Disclaimer />} />
 
-          { user !== null &&
-            <Route element={<Nav />}>
+        <Route element={<BaseLayout />}>
+          <Route path="plaid" element={<SetupPlaid />} />
+          <Route path='login' element={<Login />} />
+          <Route path='register' element={<Register />} />
+        </Route>
 
-              <Route path='/home' element={<Home user={user} />} />
-              <Route path='/activity' element={<Activity />} />
-              <Route path='/stats' element={<Statistics />} />
-              <Route path='/accounts' element={<Accounts />} />
-              <Route path='/market' element={<Market />} />
+        <Route 
+          path="profile/:profile" 
+          element={<Home signal={signalRefresh} clear={clearData}/>}
+        >
+          <Route index element={<Profile accounts={accounts} refresh={signalRefresh} /> } />
+          <Route path="account/:account" element={<EditAccount accounts={accounts} refresh={signalRefresh} />} />
 
-              <Route path='/profile' element={<Profile user={user} setUser={verifyUser} logout={logout} />} />
-              <Route path='/settings' element={<Settings />} />
-
-            </Route>
-          }
-        </Routes>
-      </BrowserRouter>
-
-      { user !== null && <Sync user={user} /> }
-    </div>
+          <Route path="list" element={<List accounts={accounts} transactions={transactions} />} />
+          <Route path="calendar" element={<Calendar />} />
+          <Route path="stats" element={<Statistics />} />
+        </Route>
+    </Routes>
   );
 }
 

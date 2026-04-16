@@ -1,26 +1,19 @@
-mod database;
-mod finance;
-
-use crate::database::schema;
-use crate::database::api_user::{logout_user, register_user, verify_user};
-use crate::database::api_account::{new_account, fetch_account};
-use crate::database::api_trans::{new_transaction, fix_transaction, fetch_transaction, fetch_transaction_calendar, remove_transaction};
-
-use crate::finance::auth::{authenticate, authorize, open_link};
-use crate::finance::api_finance::{get_status, sync_info};
-
+use std::env;
+//use fin::models::PlaidKey;
 use tauri::Manager;
-use tokio::sync::Mutex;
-use crate::database::models::User;
 
-pub struct AuthState {
-    user: Mutex<Option<User>>,
-}
+
+pub mod database;
+use database::api;
+use database::api_users;
+use database::api_accts;
+use database::api_trans;
+//use database::api_tokens;
+pub mod finance;
+
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    std::env::set_var("PLAID_ENV", "sandbox");
-
     tauri::Builder::default()
         .setup(|app| {
             let handle = app.handle();
@@ -28,26 +21,21 @@ pub fn run() {
             if !app_data_dir.exists() {
                 std::fs::create_dir(&app_data_dir).unwrap();
             }
-
-            schema::init_db(
-                app_data_dir.join("archive.db").to_str().unwrap(),
-                handle.clone(),
-            );
+            api::init_db(handle.clone());
             Ok(())
         })
-        .plugin(tauri_plugin_oauth::init())
-        .plugin(tauri_plugin_shell::init())
-        .plugin(tauri_plugin_fs::init())
-        .manage(AuthState {
-            user: Mutex::new(None),
-        })
+        .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            register_user, verify_user, logout_user,
-            authenticate, authorize, open_link,
-            get_status, sync_info,
-            new_account, fetch_account,
-            new_transaction, fix_transaction, remove_transaction,
-            fetch_transaction, fetch_transaction_calendar,
+            api_users::create_user, api_users::read_users, 
+            api_users::update_user, api_users::delete_user,
+
+            api_accts::create_account, api_accts::read_accounts,
+            api_accts::update_account, api_accts::delete_account,
+
+            api_trans::create_transaction, api_trans::read_transactions,
+            api_trans::update_transaction, api_trans::delete_transaction,
+
+            
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
