@@ -43,14 +43,25 @@ export default function Home ({ signal, clear }: HomeProps) {
       </nav>
 
       { (location.pathname.split('/').length > 3) && 
-        (location.pathname.split('/')[3] !== 'account') && 
+        ((location.pathname.split('/')[3] !== 'account') ? 
         
         <menu>
           <button onClick={() => {}}>
             <img src='/filter.svg' alt='Filter' />
           </button>
         </menu>
+        :
+        <menu>
+          <button onClick={() => navigate(-1)}>
+            <img src='/back.svg' alt='Back' />
+          </button>
+        </menu>)
       }
+
+      
+    
+
+
 
       <Outlet />
     </main>

@@ -20,19 +20,19 @@ export function EditAccount ({ accounts, refresh }: ProfileProps) {
 
   const [uiDeleteConfirmAcct, setUiDeleteConfirmAcct] = useState(false);
 
-  const nav = useNavigate();
+  const navigate = useNavigate();
   useEffect(() => {
     const acct = accounts.find(a => a.id === location.pathname.split('/').pop());
     if (!acct) {
       console.error("account not found:", location.pathname.split('/').pop());
-      nav("/profile/" + location.pathname.split('/')[2]);
+      navigate("/profile/" + location.pathname.split('/')[2]);
       return;
     }
     setAccount(acct);
     setNewAcctName(acct.name);
     setNewCategory(acct.category);
     setNewBalance(acct.balance);
-  }, [accounts]);
+  }, [accounts, uiEdit]);
   
   const updateAccount = async () => {
 
@@ -58,7 +58,7 @@ export function EditAccount ({ accounts, refresh }: ProfileProps) {
     await invoke("delete_account", { 
       id_i: accountId
     })
-      .then((_del) => {refresh(); nav(`/profile/${location.pathname.split('/')[2]}`)})
+      .then((_del) => {refresh(); navigate(`/profile/${location.pathname.split('/')[2]}`)})
       .catch((e) => { {
         console.error("error deleting account:", e);
     }});
