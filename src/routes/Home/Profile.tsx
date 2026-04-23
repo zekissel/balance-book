@@ -66,7 +66,10 @@ export default function Profile ({ accounts, /*transactions*/ refresh }: Profile
       </div>
 
       <div className='profile-plaid'>
-
+          <p>Link your bank account with Plaid to automatically import transactions and balances.</p>
+          <button onClick={() => {}}>
+            <img src='/plaid.svg' alt='Plaid' />
+          </button>
       </div>
 
       <div className='profile-edit'>

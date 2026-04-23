@@ -8,10 +8,8 @@ export default function List ({ accounts, transactions }: ListProps) {
 
   return (
     <div>
-      List Component
 
-
-      <ul>
+      <ul className='transaction-list'>
         { transactions.map((t) => (
           <li key={t.id}>
             <span>{t.timestamp}</span>
@@ -19,6 +17,7 @@ export default function List ({ accounts, transactions }: ListProps) {
             <span>{t.amount}</span>
             <span>{t.category}</span>
             <span>{t.description}</span>
+            <span>{accounts.find(a => a.id === t.accountId)?.name}</span>
           </li>
         )) }
 

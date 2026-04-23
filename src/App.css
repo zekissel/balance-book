@@ -167,3 +167,12 @@ nav ul span a {
   border-radius: .5em;
   transition: background-color 0.25s;
 }
+
+.transaction-list li {
+  display: flex;
+  justify-content: space-between;
+  width: 100vw;
+  padding: 0.5em;
+  border-radius: .5em;
+  transition: background-color 0.25s;
+}

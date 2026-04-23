@@ -23,6 +23,7 @@ function App() {
   const signalRefresh = () => setRefresh(!refresh);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  
   const clearData = () => {
     setAccounts([]);
     setTransactions([]);
