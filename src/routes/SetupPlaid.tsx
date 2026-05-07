@@ -18,12 +18,17 @@ export default function SetupPlaid ({}: SetupPlaidProps) {
   }
 
   return (
-    <div onSubmit={saveCreds}>
-      <input type="text" placeholder="Plaid ID" value={pID} onChange={(e) => setPId(e.target.value)} />
-      <input type="text" placeholder="Plaid Key" value={pKey} onChange={(e) => setPKey(e.target.value)} />
+    <div className="setup-plaid-page">
+      <div className="top-buttons">
+        <button className="top-button help-button"><img src='/q.svg' /></button>
+      </div>
+      <h1>Setup Plaid</h1>
+      <div className="setup-form">
+        <input type="text" placeholder="Plaid ID" value={pID} onChange={(e) => setPId(e.target.value)} />
+        <input type="text" placeholder="Plaid Key" value={pKey} onChange={(e) => setPKey(e.target.value)} />
 
-      <button onClick={saveCreds}>Save</button>
-      <input type='button' value='?' />
+        <button onClick={saveCreds}>Save</button>
+      </div>
     </div>
   )
 }

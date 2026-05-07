@@ -23,13 +23,14 @@ export default function Register ({}: RegisterProps) {
   }
 
   return (
-    <div>
-      <input type="text" placeholder="Profile name" value={name} onChange={(e) => setName(e.target.value)} />
-
-      <button onClick={saveProfile}>Save</button>
-      <Link to='/login'>Cancel</Link>
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+    <div className="register-page">
+      <h1>Create Profile</h1>
+      <div className="register-form">
+        <input type="text" placeholder="Profile name" value={name} onChange={(e) => setName(e.target.value)} />
+        <button onClick={saveProfile}>Save</button>
+        <Link to='/login'>Cancel</Link>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+      </div>
     </div>
   )
 }

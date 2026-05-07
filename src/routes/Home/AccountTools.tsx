@@ -105,6 +105,10 @@ export function EditAccount ({ accounts, refresh }: ProfileProps) {
         </button>
       }
 
+      <button onClick={() => navigate(-1)}>
+        <img src='/back.svg' alt='Back' />
+      </button>
+
       <button onClick={toggleEdit}>
         <img 
           src={ uiEdit ? '/cancel.svg' : '/edit.svg' }

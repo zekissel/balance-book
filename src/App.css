@@ -1,18 +1,25 @@
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
-}
 
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafb);
-}
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
 
-  color: #0f0f0f;
-  background-color: #f6f6f6;
+  /* Mint green color palette */
+  --mint-25: #e6fcf5;
+  --mint-50: #b2f2e6;
+  --mint-100: #99e2d0;
+  --mint-200: #7cd1b8;
+  --mint-300: #5fb79b;
+  --mint-400: #4dab8b;
+  --mint-500: #39997a;
+  --mint-600: #278f68;
+  --mint-700: #1b7d59;
+  --mint-800: #0e6b47;
+  --mint-900: #005f3d;
+
+  color: #1f2937;
+  background-color: var(--mint-25);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -21,98 +28,19 @@
   -webkit-text-size-adjust: 100%;
 }
 
-.container {
-  margin: 0;
-  padding-top: 10vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
-}
-
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
-}
-
-.row {
-  display: flex;
-  justify-content: center;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #f3f4f6;
+    background-color: var(--mint-900);
+  }
 }
 
 h1 {
   text-align: center;
-}
-
-input,
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: #0f0f0f;
-  background-color: #ffffff;
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-}
-
-button {
-  cursor: pointer;
-}
-
-button:hover {
-  border-color: #396cd8;
-}
-button:active {
-  border-color: #396cd8;
-  background-color: #e8e8e8;
-}
-
-input,
-button {
-  outline: none;
-}
-
-#greet-input {
-  margin-right: 5px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
-  }
-
-  a:hover {
-    color: #24c8db;
-  }
-
-  input,
-  button {
-    color: #ffffff;
-    background-color: #0f0f0f98;
-  }
-  button:active {
-    background-color: #0f0f0f69;
-  }
+  margin: 0;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--mint-700);
 }
 
 #root, body, main {
@@ -121,19 +49,26 @@ button {
 }
 
 main {
-  height: 100vh;  
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 nav {
   display: flex;
   justify-content: space-between;
-  padding: 0.5em 1em;
-  margin: 0;
+  align-items: center;
+  padding: .4rem 1rem;
+  background: linear-gradient(135deg, var(--mint-600) 0%, var(--mint-500) 100%);
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.15);
+  border-bottom: 1px solid var(--mint-400);
+  flex-shrink: 0;
 }
 
 nav ul {
   display: flex;
-  gap: 0.3em;
+  gap: 0.5rem;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -141,21 +76,104 @@ nav ul {
 
 nav ul span {
   padding: 0;
-  border-radius: .5em;
-  transition: background-color 0.25s;
+  border-radius: 0.625rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 nav ul span:hover {
-  background-color: #c3c3c3;
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
 }
+
 nav ul span a {
-  display: block;
-  padding: 0.5em;
-  border-radius: .3em;
-  transition: background-color 0.25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: white;
 }
-.nav-left  a.active {
-  background-color: #cbcbcb;
+
+nav ul span a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+nav ul span a img {
+  width: 1.5rem;
+  height: 1.5rem;
+  filter: brightness(0) invert(1);
+}
+
+.nav-left a.active {
+  background-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 2px var(--mint-300);
+}
+
+nav button,
+nav input[type='button'] {
+  padding: 0.625rem;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+nav button:hover,
+nav input[type='button']:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+nav button img {
+  width: 1.5rem;
+  height: 1.5rem;
+  filter: brightness(0) invert(1);
+}
+
+menu {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  margin: 0;
+  background-color: var(--mint-25);
+  border-bottom: 1px solid var(--mint-200);
+  flex-shrink: 0;
+  
+}
+
+menu button {
+  padding: 0.625rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--mint-300);
+  background-color: white;
+  color: var(--mint-700);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+menu button:hover {
+  background-color: var(--mint-25);
+  border-color: var(--mint-400);
+  color: var(--mint-600);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+}
+
+menu button img {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 
@@ -168,11 +186,672 @@ nav ul span a {
   transition: background-color 0.25s;
 }
 
+.transaction-list {
+  list-style: none;
+  padding: .1rem .5rem;
+  margin: 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
 .transaction-list li {
   display: flex;
   justify-content: space-between;
-  width: 100vw;
-  padding: 0.5em;
-  border-radius: .5em;
-  transition: background-color 0.25s;
+  gap: .1rem;
+  padding: 0;
+  margin: 0;
+  background-color: rgb(242, 247, 245);
+  border: 1px solid var(--mint-100);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.transaction-list li:hover {
+  background-color: var(--mint-50);
+  border-color: var(--mint-400);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+}
+
+.transaction-list li span {
+  flex: 1;
+  min-width: 100px;
+  color: var(--mint-800);
+  font-weight: 500;
+}
+
+.transaction-list li span:first-child {
+  color: var(--mint-600);
+  font-size: 0.875rem;
+  min-width: 130px;
+}
+
+.transaction-list li span:last-child {
+  color: var(--mint-700);
+  font-weight: 600;
+}
+
+.transaction-list p {
+  text-align: center;
+  color: var(--mint-600);
+  padding: 2rem;
+  font-size: 1.125rem;
+}
+
+.calendar-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1rem;
+  flex-wrap: wrap;
+}
+
+.calendar-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: var(--mint-800);
+}
+
+.calendar-meta {
+  margin: 0.35rem 0 0;
+  color: var(--mint-600);
+  font-size: 0.95rem;
+}
+
+.calendar-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.calendar-controls button {
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--mint-300);
+  background-color: white;
+  color: var(--mint-700);
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  font-weight: 600;
+}
+
+.calendar-controls button:hover {
+  background-color: var(--mint-25);
+  border-color: var(--mint-400);
+  transform: translateY(-1px);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.calendar-grid.calendar-days-grid {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+  gap: 0;
+}
+
+.calendar-weekdays {
+  margin-bottom: 0;
+}
+
+.calendar-weekday {
+  text-align: center;
+  padding: 0.7rem 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--mint-700);
+  border-radius: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid var(--mint-200);
+}
+
+.day-cell {
+  min-height: 0;
+  padding: 0.75rem;
+  border-radius: 0;
+  background-color: #fff;
+  border: 1px solid rgba(103, 191, 165, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+.day-cell.outside {
+  opacity: 0.55;
+  background-color: rgba(248, 252, 250, 0.98);
+}
+
+.day-number {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  color: var(--mint-800);
+}
+
+.day-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background-color: var(--mint-100);
+  color: var(--mint-800);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.day-transactions {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.35rem;
+  flex: 1;
+  overflow: hidden;
+}
+
+.transaction-chip {
+  display: block;
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.85rem;
+  background-color: var(--mint-25);
+  color: var(--mint-800);
+  font-size: 0.82rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.transaction-chip.negative {
+  background-color: rgba(255, 102, 102, 0.14);
+  color: #9f2a2a;
+}
+
+.transaction-chip.positive {
+  background-color: rgba(0, 131, 80, 0.14);
+  color: #195f2f;
+}
+
+.more-count {
+  margin-top: auto;
+  font-size: 0.84rem;
+  color: var(--mint-600);
+  font-weight: 600;
+}
+
+.empty-day {
+  margin: 0;
+  color: var(--mint-500);
+  font-size: 0.9rem;
+}
+
+.floating-filter {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--mint-600) 0%, var(--mint-500) 100%);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(13, 148, 136, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 40;
+}
+
+.floating-filter:hover {
+  transform: scale(1.1) translateY(-4px);
+  box-shadow: 0 8px 24px rgba(13, 148, 136, 0.4);
+}
+
+.floating-filter img {
+  width: 1.5rem;
+  height: 1.5rem;
+  filter: brightness(0) invert(1);
+}
+
+.filter-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.filter-popup {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.popup-exit {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: var(--mint-25);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+}
+
+.popup-exit:hover {
+  background-color: var(--mint-100);
+  transform: rotate(90deg);
+}
+
+.popup-exit img {
+  width: 1.25rem;
+  height: 1.25rem;
+  filter: brightness(0) invert(0);
+}
+
+@media (max-width: 768px) {
+  .transaction-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .transaction-list li span {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  nav ul {
+    gap: 0.25rem;
+  }
+
+  nav ul span a {
+    padding: 0.2rem;
+  }
+
+  nav ul span a img {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .calendar-header {
+    padding: 0.75rem 0.75rem 0;
+  }
+
+  .calendar-controls button {
+    padding: 0.55rem 0.65rem;
+    font-size: 0.9rem;
+  }
+
+  .calendar-weekday {
+    padding: 0.5rem 0;
+    font-size: 0.75rem;
+  }
+
+  .day-cell {
+    padding: 0.6rem;
+  }
+
+  .day-badge {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    font-size: 14px;
+  }
+
+  .transaction-list {
+    padding: 1rem;
+  }
+
+  .transaction-list li {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  nav {
+    padding: 0.5rem 0.75rem;
+  }
+
+  menu {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Login Page Styles */
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: var(--mint-25);
+  position: relative;
+}
+
+.login-page .top-buttons {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.login-page .top-button {
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--mint-100);
+  color: var(--mint-700);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
+}
+
+.login-page .top-button:hover {
+  background-color: var(--mint-200);
+}
+
+.login-page .top-button a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.login-page h1 {
+  margin-bottom: 2rem;
+  color: var(--mint-700);
+}
+
+.login-page ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 800px;
+}
+
+.login-page li {
+  background-color: white;
+  border: 1px solid var(--mint-200);
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  flex: 0 0 auto;
+  min-width: 150px;
+}
+
+.login-page li:hover {
+  background-color: var(--mint-50);
+  border-color: var(--mint-400);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+}
+
+.login-page li a {
+  display: block;
+  padding: 1rem;
+  text-decoration: none;
+  color: var(--mint-700);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Register Page Styles */
+.register-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: var(--mint-25);
+}
+
+.register-page h1 {
+  margin-bottom: 2rem;
+  color: var(--mint-700);
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--mint-200);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+}
+
+.register-form input {
+  padding: 0.75rem;
+  border: 1px solid var(--mint-300);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.register-form input:focus {
+  outline: none;
+  border-color: var(--mint-500);
+  box-shadow: 0 0 0 2px rgba(57, 153, 122, 0.2);
+}
+
+.register-form button {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, var(--mint-600) 0%, var(--mint-500) 100%);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.register-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+}
+
+.register-form a {
+  align-self: center;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: var(--mint-600);
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.register-form a:hover {
+  color: var(--mint-700);
+}
+
+.register-form p {
+  color: red;
+  text-align: center;
+  margin: 0;
+}
+
+/* Disclaimer Page Styles */
+.disclaimer-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: var(--mint-25);
+  text-align: center;
+}
+
+.disclaimer-page h2 {
+  margin-bottom: 1rem;
+  color: var(--mint-700);
+}
+
+.disclaimer-page p {
+  margin-bottom: 2rem;
+  color: var(--mint-600);
+  max-width: 600px;
+}
+
+.disclaimer-page a {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, var(--mint-600) 0%, var(--mint-500) 100%);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.disclaimer-page a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+}
+
+.disclaimer-page button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--mint-100);
+  color: var(--mint-700);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.disclaimer-page button:hover {
+  background-color: var(--mint-200);
+}
+
+/* Setup Plaid Page Styles */
+.setup-plaid-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: var(--mint-25);
+  position: relative;
+}
+
+.setup-plaid-page .top-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--mint-100);
+  color: var(--mint-700);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: 500;
+}
+
+.setup-plaid-page .top-button:hover {
+  background-color: var(--mint-200);
+}
+
+.setup-plaid-page h1 {
+  margin-bottom: 2rem;
+  color: var(--mint-700);
+}
+
+.setup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--mint-200);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+}
+
+.setup-form input {
+  padding: 0.75rem;
+  border: 1px solid var(--mint-300);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.setup-form input:focus {
+  outline: none;
+  border-color: var(--mint-500);
+  box-shadow: 0 0 0 2px rgba(57, 153, 122, 0.2);
+}
+
+.setup-form button {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, var(--mint-600) 0%, var(--mint-500) 100%);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.setup-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
 }

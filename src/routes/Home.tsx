@@ -1,11 +1,13 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
 
 
 interface HomeProps { signal: () => void; clear: () => void; }
 export default function Home ({ signal, clear }: HomeProps) {
   const navigate = useNavigate();
+  const [showFilter, setShowFilter] = useState(false);
+  
   useEffect(() => {
     signal();
   }, []);
@@ -43,25 +45,22 @@ export default function Home ({ signal, clear }: HomeProps) {
       </nav>
 
       { (location.pathname.split('/').length > 3) && 
-        ((location.pathname.split('/')[3] !== 'account') ? 
-        
-        <menu>
-          <button onClick={() => {}}>
-            <img src='/filter.svg' alt='Filter' />
-          </button>
-        </menu>
-        :
-        <menu>
-          <button onClick={() => navigate(-1)}>
-            <img src='/back.svg' alt='Back' />
-          </button>
-        </menu>)
+        <button className='floating-filter' onClick={() => setShowFilter(true)}>
+          <img src='/filter.svg' alt='Filter' />
+        </button>
       }
 
       
-    
 
-
+      {showFilter && 
+        <div className='filter-overlay' onClick={() => setShowFilter(false)}>
+          <div className='filter-popup' onClick={(e) => e.stopPropagation()}>
+            <button className='popup-exit' onClick={() => setShowFilter(false)}>
+              <img src='/exit.svg' alt='Close' />
+            </button>
+          </div>
+        </div>
+      }
 
       <Outlet />
     </main>

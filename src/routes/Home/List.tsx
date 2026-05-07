@@ -7,12 +7,15 @@ interface ListProps {
 export default function List ({ accounts, transactions }: ListProps) {
 
   return (
-    <div>
+    <section className='list-shell'>
+      <header className="list-header">
+        
+      </header>
 
       <ul className='transaction-list'>
         { transactions.map((t) => (
           <li key={t.id}>
-            <span>{t.timestamp}</span>
+            <span>{new Date(t.timestamp).toUTCString().slice(0, 16)}</span>
             <span>{t.store}</span>
             <span>{t.amount}</span>
             <span>{t.category}</span>
@@ -24,6 +27,6 @@ export default function List ({ accounts, transactions }: ListProps) {
         { transactions.length === 0 && <p>No transactions yet.</p> }
       </ul>
 
-    </div>
+    </section>
   )
 }

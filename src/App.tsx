@@ -64,7 +64,7 @@ function App() {
           <Route path="account/:account" element={<EditAccount accounts={accounts} refresh={signalRefresh} />} />
 
           <Route path="list" element={<List accounts={accounts} transactions={transactions} />} />
-          <Route path="calendar" element={<Calendar />} />
+          <Route path="calendar" element={<Calendar accounts={accounts} transactions={transactions} />} />
           <Route path="stats" element={<Statistics />} />
         </Route>
     </Routes>

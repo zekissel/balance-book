@@ -7,7 +7,7 @@ export default function Disclaimer ({}: DisclaimerProps) {
 
 
   return (
-    <div>
+    <div className="disclaimer-page">
       <h2>Disclaimer Component</h2>
       <p>This is the disclaimer page.</p>
 

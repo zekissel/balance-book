@@ -41,7 +41,7 @@ export default function Profile ({ accounts, /*transactions*/ refresh }: Profile
 
   
   return (
-    <div className='profile-main'>
+    <section className='profile-main'>
       
       <div className='profile-accounts'>
 
@@ -91,6 +91,6 @@ export default function Profile ({ accounts, /*transactions*/ refresh }: Profile
         </div>
       }
         
-    </div>
+    </section>
   )
 }
